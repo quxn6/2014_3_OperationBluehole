@@ -10,6 +10,8 @@ namespace OperationBlueholeContent
     {
         static void Main(string[] args)
         {
+            DungeonMaster newMaster = new DungeonMaster();
+            newMaster.Init( null, 40 );
         }
     }
 }
