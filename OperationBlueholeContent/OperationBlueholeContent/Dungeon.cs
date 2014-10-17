@@ -90,31 +90,21 @@ namespace OperationBlueholeContent
             leftChild.GenerateRecursivly();
             rightChild.GenerateRecursivly();
         }
-
-        public void Insert(Stack<GenerationTreeNode> stack)
-        {
-            stack.Push( this );
-            
-            if ( leftChild != null )
-                leftChild.Insert( stack );
-            
-            if ( rightChild != null )
-                rightChild.Insert( stack );
-        }
     }
 
     class Dungeon
     {
+        const int MAX_OFFSET = 2;
         private int size;
 
         // null 이면 그냥 타일로? 모든 타일의 객체 생성 비용이 부담되면 나중에 수정할 것
         // 일단 구현부터 빨리...
-        private GameObject[,] map;  
+        private MapObject[,] map;  
 
         public Dungeon( int size )
         {
             this.size = size;
-            map = new GameObject[size, size];
+            map = new MapObject[size, size];
 
             GenerateMap();
         }
@@ -133,34 +123,103 @@ namespace OperationBlueholeContent
             // 완료 후에 root부터 depth가 작은 애들부터 스택에 집어 넣는다
             // 스택에 있는 애들 꺼내면서 leaf인 경우에는 아이템이나 몬스터 배치를 하고
             // 서로 연결한다 - 이걸 표시하는 자료형이 하나 내부에 존재해야 할 듯
+            // sibling과 연결할 때 depth가 높은 노드부터 처리하기 위해서 queue 사용
             Stack<GenerationTreeNode> nodes = new Stack<GenerationTreeNode>();
+            Queue<GenerationTreeNode> queue = new Queue<GenerationTreeNode>();
 
-            root.Insert( nodes );
+            queue.Enqueue( root );
+
+            while ( queue.Count != 0 )
+            {
+                GenerationTreeNode tempNode = queue.Dequeue();
+
+                nodes.Push( tempNode );
+
+                // 반드시 left - right 순서로 넣을 것
+                // 나중에 두 영역을 복도로 연결할 때 영향을 준다!
+                if ( tempNode.leftChild != null )
+                    queue.Enqueue( tempNode.leftChild );
+
+                if ( tempNode.rightChild != null )
+                    queue.Enqueue( tempNode.rightChild );
+            }
 
             // for debug
             int zoneId = 0;
+            bool link = true;
             int[,] testMap = new int[size, size];
 
             while( nodes.Count > 0 )
             {
                 GenerationTreeNode current = nodes.Pop();
 
-                if ( current.depth < current.upperDepth )
-                    continue;
-
-                ++zoneId;
-                for ( int i = current.lower.y; i <= current.upper.y; ++i )
+                if ( current.depth == current.upperDepth )
                 {
-                    for ( int j = current.lower.x; j <= current.upper.x; ++j )
+                    // leaf인 경우
+                    // 일정 거리를 offset해서 벽을 생성하고
+                    // 그 안에 아이템과 몬스터를 배치하자
+                    ++zoneId;
+
+                    int offset = current.random.Next( 0, MAX_OFFSET );
+                    current.lower.x += offset;
+                    current.upper.x -= offset;
+                    current.lower.y += offset;
+                    current.upper.y -= offset;
+
+                    for ( int i = current.lower.y; i <= current.upper.y; ++i )
                     {
-                        testMap[i, j] = zoneId;
+                        for ( int j = current.lower.x; j <= current.upper.x; ++j )
+                        {
+                            if ( i == current.lower.y || i == current.upper.y || j == current.lower.x || j == current.upper.x )
+                            {
+                                map[i, j] = new MapObject( MapObjectId.WALL, null );
+                            }
+                            else
+                            {
+                                map[i, j] = new MapObject( MapObjectId.TILE, null );
+                            }
+                                
+                            
+                        }
                     }
                 }
+
+                // sibling과 연결하자
+                // stack 안에는 이미 depth가 높은 노드들이 위에 오도록 들어있으므로 그냥 차례대로 꺼내면서 연결하면 된다
+                // 항상 sibling과 쌍으로 들어가고, 순서는 left - right 이므로 
+                // 하나 꺼내서 부모를 통해서 sibling(right)를 찾고, 둘이 나누어진 방식(horizontal, vertical)에 따라서 
+                // 겹쳐지는 영역을 설정하고, 그 범위 안에서 임의의 idx 선택
+                if ( link )
+                {
+                    if ( current.parent == null )
+                        continue;
+
+                    GenerationTreeNode siblingNode = current.parent.rightChild;
+
+                    if ( current.direction )
+                    {
+                        // y축으로 겹치는 구간 탐색
+
+                        int corridorIdx = current.random.Next( Math.Min(current.lower.y, siblingNode.lower.y), Math.Max(current.upper.y, siblingNode.upper.y) );
+
+                        // 연결 통로를 뚫자
+                    }
+                    else
+                    {
+                        // x축으로 겹치는 구간 탐색
+
+                        int corridorIdx = current.random.Next( Math.Min( current.lower.x, siblingNode.lower.x ), Math.Max( current.upper.x, siblingNode.upper.x ) );
+
+                        // 연결 통로를 뚫어
+                    }
+                }
+
+                link = !link;
 
                 // Console.WriteLine( "lower x : " + current.lower.x + " y : " + current.lower.y );
                 // Console.WriteLine( "upper x : " + current.upper.x + " y : " + current.upper.y );
             }
-
+            /*
             for ( int i = 0; i < size; ++i )
             {
                 for ( int j = 0; j < size; ++j )
@@ -169,19 +228,22 @@ namespace OperationBlueholeContent
                 }
                 Console.WriteLine( "" );
             }
-
-            /*
+            */
+            
             // for debug
-            char[] visualizer = { ' ', 'X', 'I', 'M', 'P' };
+            char[] visualizer = { ' ', '*', 'X', 'I', 'M', 'P' };
 
             for ( int i = 0; i < size; ++i )
             {
                 for ( int j = 0; j < size; ++j )
                 {
-                    Console.Write( visualizer[(int)map[i, j].id] );
+                    if ( map[i,j] == null )
+                        Console.Write( visualizer[0] );
+                    else
+                        Console.Write( visualizer[(int)map[i, j].objectId] );
                 }
                 Console.WriteLine("");
-            }*/
+            }
         }
 
 
