@@ -10,17 +10,4 @@ namespace OperationBlueholeContent
     {
         
     }
-
-    class Player : GameObject
-    {
-        public Player()
-        {
-           
-        }
-    }
-
-    class Mob : GameObject
-    {
-
-    }
 }
