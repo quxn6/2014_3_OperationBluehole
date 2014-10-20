@@ -11,7 +11,7 @@ namespace OperationBlueholeContent
         static void Main(string[] args)
         {
             DungeonMaster newMaster = new DungeonMaster();
-            newMaster.Init( null, 40 );
+            newMaster.Init( null, 60 );
 
             Console.WriteLine( "end" );
             Console.ReadLine();

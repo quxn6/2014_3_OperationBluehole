@@ -15,7 +15,10 @@ namespace OperationBlueholeContent
 
     public class GenerationTreeNode
     {
-        const int MININUM_SPAN = 10;
+        const int MININUM_SPAN = 12;
+        const int SLICE_WEIGHT_1 = 1;
+        const int SLICE_WEIGHT_2 = 2;
+        const int SILCE_WEIGHT_TOTAL = SLICE_WEIGHT_1 + SLICE_WEIGHT_2;
 
         public GenerationTreeNode parent, leftChild, rightChild;
         public int depth, upperDepth;
@@ -42,8 +45,6 @@ namespace OperationBlueholeContent
             if ( depth >= upperDepth )
                 return;
 
-            int smallUpper;
-            
             leftChild = new GenerationTreeNode();
             rightChild = new GenerationTreeNode();
 
@@ -57,12 +58,23 @@ namespace OperationBlueholeContent
 
             leftChild.random = rightChild.random = random;
 
+            SliceArea();
+            
+            leftChild.GenerateRecursivly();
+            rightChild.GenerateRecursivly();
+        }
+
+        private void SliceArea()
+        {
+            int smallUpper = 0;
 
             if ( !siblingDirection )
             {
                 // 조심해!
                 // 일단 하드코딩
-                smallUpper = random.Next( ( upperBoundary.x + 2 * lowerBoundary.x ) / 3, ( 2 * upperBoundary.x + lowerBoundary.x ) / 3 );
+                smallUpper = random.Next(
+                    ( SLICE_WEIGHT_1 * upperBoundary.x + SLICE_WEIGHT_2 * lowerBoundary.x ) / SILCE_WEIGHT_TOTAL,
+                    ( SLICE_WEIGHT_2 * upperBoundary.x + SLICE_WEIGHT_1 * lowerBoundary.x ) / SILCE_WEIGHT_TOTAL );
 
                 leftChild.lowerBoundary.x = lowerBoundary.x;
                 leftChild.upperBoundary.x = smallUpper;
@@ -77,7 +89,9 @@ namespace OperationBlueholeContent
             {
                 // 조심해!
                 // 중복 코드다
-                smallUpper = random.Next( ( upperBoundary.y + 2 * lowerBoundary.y ) / 3, ( 2 * upperBoundary.y + lowerBoundary.y ) / 3 );
+                smallUpper = random.Next(
+                    ( SLICE_WEIGHT_1 * upperBoundary.y + SLICE_WEIGHT_2 * lowerBoundary.y ) / SILCE_WEIGHT_TOTAL,
+                    ( SLICE_WEIGHT_2 * upperBoundary.y + SLICE_WEIGHT_1 * lowerBoundary.y ) / SILCE_WEIGHT_TOTAL );
 
                 leftChild.lowerBoundary.x = rightChild.lowerBoundary.x = lowerBoundary.x;
                 leftChild.upperBoundary.x = rightChild.upperBoundary.x = upperBoundary.x;
@@ -88,9 +102,6 @@ namespace OperationBlueholeContent
                 rightChild.lowerBoundary.y = smallUpper + 1;
                 rightChild.upperBoundary.y = upperBoundary.y;
             }
-
-            leftChild.GenerateRecursivly();
-            rightChild.GenerateRecursivly();
         }
     }
 
@@ -110,6 +121,58 @@ namespace OperationBlueholeContent
             map = new MapObject[size, size];
 
             GenerateMap();
+        }
+
+        private void LinkHorizontalArea( int corridorIdx, int targetIdx, int step )
+        {
+            while ( map[corridorIdx, targetIdx] == null || map[corridorIdx, targetIdx].objectId != MapObjectId.TILE )
+            {
+                map[corridorIdx, targetIdx] = new MapObject( MapObjectId.TILE, null );
+
+                bool isLinked = false;
+
+                if ( map[corridorIdx - 1, targetIdx] == null || map[corridorIdx - 1, targetIdx].objectId != MapObjectId.TILE )
+                    map[corridorIdx - 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
+                else
+                    isLinked = true;
+
+                if ( map[corridorIdx + 1, targetIdx] == null || map[corridorIdx + 1, targetIdx].objectId != MapObjectId.TILE )
+                    map[corridorIdx + 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
+                else
+                    isLinked = true;
+
+                // 두 공간이 연결되었다면 탈출
+                if ( isLinked )
+                    break;
+
+                targetIdx += step;
+            }
+        }
+
+        private void LinkVerticalArea( int corridorIdx, int targetIdx, int step )
+        {
+            while ( map[targetIdx, corridorIdx] == null || map[targetIdx, corridorIdx].objectId != MapObjectId.TILE )
+            {
+                map[targetIdx, corridorIdx] = new MapObject( MapObjectId.TILE, null );
+
+                bool isLinked = false;
+
+                if ( map[targetIdx, corridorIdx - 1] == null || map[targetIdx, corridorIdx - 1].objectId != MapObjectId.TILE )
+                    map[targetIdx, corridorIdx - 1] = new MapObject( MapObjectId.WALL, null );
+                else
+                    isLinked = true;
+
+                if ( map[targetIdx, corridorIdx + 1] == null || map[targetIdx, corridorIdx + 1].objectId != MapObjectId.TILE )
+                    map[targetIdx, corridorIdx + 1] = new MapObject( MapObjectId.WALL, null );
+                else
+                    isLinked = true;
+
+                // 두 공간이 연결되었다면 탈출
+                if ( isLinked )
+                    break;
+
+                targetIdx += step;
+            }
         }
 
         private void GenerateMap()
@@ -162,8 +225,13 @@ namespace OperationBlueholeContent
                     // 일정 거리를 offset해서 벽을 생성하고
                     // 그 안에 아이템과 몬스터를 배치하자
                     ++zoneId;
+                    int shortSpan = Math.Min( current.upperBoundary.x - current.lowerBoundary.x, current.upperBoundary.y - current.lowerBoundary.y ) + 1;
 
-                    int offset = current.random.Next( 0, MAX_OFFSET );
+                    if ( shortSpan < 3 )
+                        Console.WriteLine( "No!!" );
+
+                    int offset = Math.Min( current.random.Next( 0, MAX_OFFSET ), (shortSpan - 3) / 2 );
+
                     current.lowerBoundary.x += offset;
                     current.upperBoundary.x -= offset;
                     current.lowerBoundary.y += offset;
@@ -174,15 +242,9 @@ namespace OperationBlueholeContent
                         for ( int j = current.lowerBoundary.x; j <= current.upperBoundary.x; ++j )
                         {
                             if ( i == current.lowerBoundary.y || i == current.upperBoundary.y || j == current.lowerBoundary.x || j == current.upperBoundary.x )
-                            {
                                 map[i, j] = new MapObject( MapObjectId.WALL, null );
-                            }
                             else
-                            {
                                 map[i, j] = new MapObject( MapObjectId.TILE, null );
-                            }
-                                
-                            
                         }
                     }
                 }
@@ -204,126 +266,21 @@ namespace OperationBlueholeContent
                         // y축으로 겹치는 구간 탐색
                         int corridorIdx = current.random.Next( Math.Max( current.lowerBoundary.y, siblingNode.lowerBoundary.y ) + 1, Math.Min( current.upperBoundary.y, siblingNode.upperBoundary.y ) - 1 );
 
-                        // 연결 통로를 뚫자
-                        // wall이 있는 idx를 선택하면? 망한다
-                        // wall을 피해서 만들어야 되는데
-                        int targetIdx = current.upperBoundary.x;
-                        while ( map[corridorIdx, targetIdx] == null || map[corridorIdx, targetIdx].objectId != MapObjectId.TILE )
-                        {
-                            map[corridorIdx, targetIdx] = new MapObject( MapObjectId.TILE, null );
-
-                            bool tempTest = false;
-
-                            if ( map[corridorIdx - 1, targetIdx] == null || map[corridorIdx - 1, targetIdx].objectId != MapObjectId.TILE )
-                                map[corridorIdx - 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
-                            else
-                                tempTest = true;
-
-                            if ( map[corridorIdx + 1, targetIdx] == null || map[corridorIdx + 1, targetIdx].objectId != MapObjectId.TILE )
-                                map[corridorIdx + 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
-                            else
-                                tempTest = true;
-
-                            // 둘 중에 하나라도 타일이면 반대편 벽으로 만들고 루프 탈출해야 하는데
-                            if ( tempTest )
-                                break;
-
-                            --targetIdx;
-                        }
-
-                        targetIdx = current.upperBoundary.x + 1;
-                        while ( map[corridorIdx, targetIdx] == null || map[corridorIdx, targetIdx].objectId != MapObjectId.TILE )
-                        {
-                            map[corridorIdx, targetIdx] = new MapObject( MapObjectId.TILE, null );
-
-                            bool tempTest = false;
-
-                            if ( map[corridorIdx - 1, targetIdx] == null || map[corridorIdx - 1, targetIdx].objectId != MapObjectId.TILE )
-                                map[corridorIdx - 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
-                            else
-                                tempTest = true;
-
-                            if ( map[corridorIdx + 1, targetIdx] == null || map[corridorIdx + 1, targetIdx].objectId != MapObjectId.TILE )
-                                map[corridorIdx + 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
-                            else
-                                tempTest = true;
-
-                            // 둘 중에 하나라도 타일이면 반대편 벽으로 만들고 루프 탈출해야 하는데
-                            if ( tempTest )
-                                break;
-
-                            ++targetIdx;
-                        }
+                        LinkHorizontalArea( corridorIdx, current.upperBoundary.x, -1 );
+                        LinkHorizontalArea( corridorIdx, current.upperBoundary.x + 1, 1 );
                     }
                     else
                     {
                         // x축으로 겹치는 구간 탐색
                         int corridorIdx = current.random.Next( Math.Max( current.lowerBoundary.x, siblingNode.lowerBoundary.x ) + 1, Math.Min( current.upperBoundary.x, siblingNode.upperBoundary.x ) - 1 );
 
-                        // 연결 통로를 뚫자
-                        int targetIdx = current.upperBoundary.y;
-                        while ( map[targetIdx, corridorIdx] == null || map[targetIdx, corridorIdx].objectId != MapObjectId.TILE )
-                        {
-                            map[targetIdx, corridorIdx] = new MapObject( MapObjectId.TILE, null );
-
-                            bool tempTest = false;
-
-                            if ( map[targetIdx, corridorIdx - 1] == null || map[targetIdx, corridorIdx - 1].objectId != MapObjectId.TILE )
-                                map[targetIdx, corridorIdx - 1] = new MapObject( MapObjectId.WALL, null );
-                            else
-                                tempTest = true;
-
-                            if ( map[targetIdx, corridorIdx + 1] == null || map[targetIdx, corridorIdx + 1].objectId != MapObjectId.TILE )
-                                map[targetIdx, corridorIdx + 1] = new MapObject( MapObjectId.WALL, null );
-                            else
-                                tempTest = true;
-
-                            // 둘 중에 하나라도 타일이면 반대편 벽으로 만들고 루프 탈출해야 하는데
-                            if ( tempTest )
-                                break;
-
-                            --targetIdx;
-                        }
-
-                        targetIdx = current.upperBoundary.y + 1;
-                        while ( map[targetIdx, corridorIdx] == null || map[targetIdx, corridorIdx].objectId != MapObjectId.TILE )
-                        {
-                            map[targetIdx, corridorIdx] = new MapObject( MapObjectId.TILE, null );
-
-                            bool tempTest = false;
-
-                            if ( map[targetIdx, corridorIdx - 1] == null || map[targetIdx, corridorIdx - 1].objectId != MapObjectId.TILE )
-                                map[targetIdx, corridorIdx - 1] = new MapObject( MapObjectId.WALL, null );
-                            else
-                                tempTest = true;
-
-                            if ( map[targetIdx, corridorIdx + 1] == null || map[targetIdx, corridorIdx + 1].objectId != MapObjectId.TILE )
-                                map[targetIdx, corridorIdx + 1] = new MapObject( MapObjectId.WALL, null );
-                            else
-                                tempTest = true;
-
-                            // 둘 중에 하나라도 타일이면 반대편 벽으로 만들고 루프 탈출해야 하는데
-                            if ( tempTest )
-                                break;
-
-                            ++targetIdx;
-                        }
+                        LinkVerticalArea( corridorIdx, current.upperBoundary.y, -1 );
+                        LinkVerticalArea( corridorIdx, current.upperBoundary.y + 1, 1 );
                     }
                 }
-                // Console.WriteLine( "lower x : " + current.lower.x + " y : " + current.lower.y );
-                // Console.WriteLine( "upper x : " + current.upper.x + " y : " + current.upper.y );
             }
-            /*
-            for ( int i = 0; i < size; ++i )
-            {
-                for ( int j = 0; j < size; ++j )
-                {
-                    Console.Write( testMap[i, j] );
-                }
-                Console.WriteLine( "" );
-            }
-            */
-            
+
+
             // for debug
             char[] visualizer = { ' ', ' ', 'X', 'I', 'M', 'P' };
 
