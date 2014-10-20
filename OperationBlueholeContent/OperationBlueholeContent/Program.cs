@@ -12,6 +12,9 @@ namespace OperationBlueholeContent
         {
             DungeonMaster newMaster = new DungeonMaster();
             newMaster.Init( null, 40 );
+
+            Console.WriteLine( "end" );
+            Console.ReadLine();
         }
     }
 }

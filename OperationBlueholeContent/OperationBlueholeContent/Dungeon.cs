@@ -19,9 +19,10 @@ namespace OperationBlueholeContent
 
         public GenerationTreeNode parent, leftChild, rightChild;
         public int depth, upperDepth;
-        public bool direction, side;    // true : horizontal, closer to origin point
+        public bool siblingDirection;   // 자신의 sibling zone이 있는 방향 - true이면 수평 방향
+        public bool isLeft;             // leftChild인가
 
-        public Int2D lower, upper;
+        public Int2D lowerBoundary, upperBoundary;      
 
         public Random random;
 
@@ -29,10 +30,11 @@ namespace OperationBlueholeContent
         {
             this.random = new Random();
 
-            this.upper.x = size - 1;
-            this.upper.y = size - 1;
+            this.upperBoundary.x = size - 1;
+            this.upperBoundary.y = size - 1;
             this.upperDepth = size / MININUM_SPAN;  // 결과가 짝수이면 각각의 축에 대해서 이 결과만큼의 조각으로 나누어짐
-            this.direction = ( random.Next( 0, 1 ) % 2 == 0 );
+            this.siblingDirection = ( random.Next( 0, 1 ) % 2 == 0 );
+            this.isLeft = false;
         }
 
         public void GenerateRecursivly()
@@ -47,44 +49,44 @@ namespace OperationBlueholeContent
 
             leftChild.parent = rightChild.parent = this;
 
-            leftChild.direction = rightChild.direction = !direction;
+            leftChild.siblingDirection = rightChild.siblingDirection = !siblingDirection;
             leftChild.depth = rightChild.depth = depth + 1;
             leftChild.upperDepth = rightChild.upperDepth = upperDepth;
-            leftChild.side = true;
-            rightChild.side = false;
+            leftChild.isLeft = true;
+            rightChild.isLeft = false;
 
             leftChild.random = rightChild.random = random;
 
 
-            if ( direction )
+            if ( !siblingDirection )
             {
                 // 조심해!
                 // 일단 하드코딩
-                smallUpper = random.Next( ( upper.x + 2 * lower.x ) / 3, ( 2 * upper.x + lower.x ) / 3 );
+                smallUpper = random.Next( ( upperBoundary.x + 2 * lowerBoundary.x ) / 3, ( 2 * upperBoundary.x + lowerBoundary.x ) / 3 );
 
-                leftChild.lower.x = lower.x;
-                leftChild.upper.x = smallUpper;
+                leftChild.lowerBoundary.x = lowerBoundary.x;
+                leftChild.upperBoundary.x = smallUpper;
 
-                rightChild.lower.x = smallUpper + 1;
-                rightChild.upper.x = upper.x;
+                rightChild.lowerBoundary.x = smallUpper + 1;
+                rightChild.upperBoundary.x = upperBoundary.x;
 
-                leftChild.lower.y = rightChild.lower.y = lower.y;
-                leftChild.upper.y = rightChild.upper.y = upper.y;
+                leftChild.lowerBoundary.y = rightChild.lowerBoundary.y = lowerBoundary.y;
+                leftChild.upperBoundary.y = rightChild.upperBoundary.y = upperBoundary.y;
             }
             else
             {
                 // 조심해!
                 // 중복 코드다
-                smallUpper = random.Next( ( upper.y + 2 * lower.y ) / 3, ( 2 * upper.y + lower.y ) / 3 );
+                smallUpper = random.Next( ( upperBoundary.y + 2 * lowerBoundary.y ) / 3, ( 2 * upperBoundary.y + lowerBoundary.y ) / 3 );
 
-                leftChild.lower.x = rightChild.lower.x = lower.x;
-                leftChild.upper.x = rightChild.upper.x = upper.x;
+                leftChild.lowerBoundary.x = rightChild.lowerBoundary.x = lowerBoundary.x;
+                leftChild.upperBoundary.x = rightChild.upperBoundary.x = upperBoundary.x;
 
-                leftChild.lower.y = lower.y;
-                leftChild.upper.y = smallUpper;
+                leftChild.lowerBoundary.y = lowerBoundary.y;
+                leftChild.upperBoundary.y = smallUpper;
 
-                rightChild.lower.y = smallUpper + 1;
-                rightChild.upper.y = upper.y;
+                rightChild.lowerBoundary.y = smallUpper + 1;
+                rightChild.upperBoundary.y = upperBoundary.y;
             }
 
             leftChild.GenerateRecursivly();
@@ -94,6 +96,7 @@ namespace OperationBlueholeContent
 
     class Dungeon
     {
+        // 컨텐츠 관련 상수들 따로 뺄 것
         const int MAX_OFFSET = 2;
         private int size;
 
@@ -137,6 +140,7 @@ namespace OperationBlueholeContent
 
                 // 반드시 left - right 순서로 넣을 것
                 // 나중에 두 영역을 복도로 연결할 때 영향을 준다!
+                // child가 하나인 경우에 대한 예외 처리 필요 - assert!
                 if ( tempNode.leftChild != null )
                     queue.Enqueue( tempNode.leftChild );
 
@@ -146,7 +150,6 @@ namespace OperationBlueholeContent
 
             // for debug
             int zoneId = 0;
-            bool link = true;
             int[,] testMap = new int[size, size];
 
             while( nodes.Count > 0 )
@@ -161,16 +164,16 @@ namespace OperationBlueholeContent
                     ++zoneId;
 
                     int offset = current.random.Next( 0, MAX_OFFSET );
-                    current.lower.x += offset;
-                    current.upper.x -= offset;
-                    current.lower.y += offset;
-                    current.upper.y -= offset;
+                    current.lowerBoundary.x += offset;
+                    current.upperBoundary.x -= offset;
+                    current.lowerBoundary.y += offset;
+                    current.upperBoundary.y -= offset;
 
-                    for ( int i = current.lower.y; i <= current.upper.y; ++i )
+                    for ( int i = current.lowerBoundary.y; i <= current.upperBoundary.y; ++i )
                     {
-                        for ( int j = current.lower.x; j <= current.upper.x; ++j )
+                        for ( int j = current.lowerBoundary.x; j <= current.upperBoundary.x; ++j )
                         {
-                            if ( i == current.lower.y || i == current.upper.y || j == current.lower.x || j == current.upper.x )
+                            if ( i == current.lowerBoundary.y || i == current.upperBoundary.y || j == current.lowerBoundary.x || j == current.upperBoundary.x )
                             {
                                 map[i, j] = new MapObject( MapObjectId.WALL, null );
                             }
@@ -189,33 +192,124 @@ namespace OperationBlueholeContent
                 // 항상 sibling과 쌍으로 들어가고, 순서는 left - right 이므로 
                 // 하나 꺼내서 부모를 통해서 sibling(right)를 찾고, 둘이 나누어진 방식(horizontal, vertical)에 따라서 
                 // 겹쳐지는 영역을 설정하고, 그 범위 안에서 임의의 idx 선택
-                if ( link )
+                if ( current.isLeft )
                 {
                     if ( current.parent == null )
                         continue;
 
                     GenerationTreeNode siblingNode = current.parent.rightChild;
 
-                    if ( current.direction )
+                    if ( current.siblingDirection )
                     {
                         // y축으로 겹치는 구간 탐색
-
-                        int corridorIdx = current.random.Next( Math.Min(current.lower.y, siblingNode.lower.y), Math.Max(current.upper.y, siblingNode.upper.y) );
+                        int corridorIdx = current.random.Next( Math.Max( current.lowerBoundary.y, siblingNode.lowerBoundary.y ) + 1, Math.Min( current.upperBoundary.y, siblingNode.upperBoundary.y ) - 1 );
 
                         // 연결 통로를 뚫자
+                        // wall이 있는 idx를 선택하면? 망한다
+                        // wall을 피해서 만들어야 되는데
+                        int targetIdx = current.upperBoundary.x;
+                        while ( map[corridorIdx, targetIdx] == null || map[corridorIdx, targetIdx].objectId != MapObjectId.TILE )
+                        {
+                            map[corridorIdx, targetIdx] = new MapObject( MapObjectId.TILE, null );
+
+                            bool tempTest = false;
+
+                            if ( map[corridorIdx - 1, targetIdx] == null || map[corridorIdx - 1, targetIdx].objectId != MapObjectId.TILE )
+                                map[corridorIdx - 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
+                            else
+                                tempTest = true;
+
+                            if ( map[corridorIdx + 1, targetIdx] == null || map[corridorIdx + 1, targetIdx].objectId != MapObjectId.TILE )
+                                map[corridorIdx + 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
+                            else
+                                tempTest = true;
+
+                            // 둘 중에 하나라도 타일이면 반대편 벽으로 만들고 루프 탈출해야 하는데
+                            if ( tempTest )
+                                break;
+
+                            --targetIdx;
+                        }
+
+                        targetIdx = current.upperBoundary.x + 1;
+                        while ( map[corridorIdx, targetIdx] == null || map[corridorIdx, targetIdx].objectId != MapObjectId.TILE )
+                        {
+                            map[corridorIdx, targetIdx] = new MapObject( MapObjectId.TILE, null );
+
+                            bool tempTest = false;
+
+                            if ( map[corridorIdx - 1, targetIdx] == null || map[corridorIdx - 1, targetIdx].objectId != MapObjectId.TILE )
+                                map[corridorIdx - 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
+                            else
+                                tempTest = true;
+
+                            if ( map[corridorIdx + 1, targetIdx] == null || map[corridorIdx + 1, targetIdx].objectId != MapObjectId.TILE )
+                                map[corridorIdx + 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
+                            else
+                                tempTest = true;
+
+                            // 둘 중에 하나라도 타일이면 반대편 벽으로 만들고 루프 탈출해야 하는데
+                            if ( tempTest )
+                                break;
+
+                            ++targetIdx;
+                        }
                     }
                     else
                     {
                         // x축으로 겹치는 구간 탐색
+                        int corridorIdx = current.random.Next( Math.Max( current.lowerBoundary.x, siblingNode.lowerBoundary.x ) + 1, Math.Min( current.upperBoundary.x, siblingNode.upperBoundary.x ) - 1 );
 
-                        int corridorIdx = current.random.Next( Math.Min( current.lower.x, siblingNode.lower.x ), Math.Max( current.upper.x, siblingNode.upper.x ) );
+                        // 연결 통로를 뚫자
+                        int targetIdx = current.upperBoundary.y;
+                        while ( map[targetIdx, corridorIdx] == null || map[targetIdx, corridorIdx].objectId != MapObjectId.TILE )
+                        {
+                            map[targetIdx, corridorIdx] = new MapObject( MapObjectId.TILE, null );
 
-                        // 연결 통로를 뚫어
+                            bool tempTest = false;
+
+                            if ( map[targetIdx, corridorIdx - 1] == null || map[targetIdx, corridorIdx - 1].objectId != MapObjectId.TILE )
+                                map[targetIdx, corridorIdx - 1] = new MapObject( MapObjectId.WALL, null );
+                            else
+                                tempTest = true;
+
+                            if ( map[targetIdx, corridorIdx + 1] == null || map[targetIdx, corridorIdx + 1].objectId != MapObjectId.TILE )
+                                map[targetIdx, corridorIdx + 1] = new MapObject( MapObjectId.WALL, null );
+                            else
+                                tempTest = true;
+
+                            // 둘 중에 하나라도 타일이면 반대편 벽으로 만들고 루프 탈출해야 하는데
+                            if ( tempTest )
+                                break;
+
+                            --targetIdx;
+                        }
+
+                        targetIdx = current.upperBoundary.y + 1;
+                        while ( map[targetIdx, corridorIdx] == null || map[targetIdx, corridorIdx].objectId != MapObjectId.TILE )
+                        {
+                            map[targetIdx, corridorIdx] = new MapObject( MapObjectId.TILE, null );
+
+                            bool tempTest = false;
+
+                            if ( map[targetIdx, corridorIdx - 1] == null || map[targetIdx, corridorIdx - 1].objectId != MapObjectId.TILE )
+                                map[targetIdx, corridorIdx - 1] = new MapObject( MapObjectId.WALL, null );
+                            else
+                                tempTest = true;
+
+                            if ( map[targetIdx, corridorIdx + 1] == null || map[targetIdx, corridorIdx + 1].objectId != MapObjectId.TILE )
+                                map[targetIdx, corridorIdx + 1] = new MapObject( MapObjectId.WALL, null );
+                            else
+                                tempTest = true;
+
+                            // 둘 중에 하나라도 타일이면 반대편 벽으로 만들고 루프 탈출해야 하는데
+                            if ( tempTest )
+                                break;
+
+                            ++targetIdx;
+                        }
                     }
                 }
-
-                link = !link;
-
                 // Console.WriteLine( "lower x : " + current.lower.x + " y : " + current.lower.y );
                 // Console.WriteLine( "upper x : " + current.upper.x + " y : " + current.upper.y );
             }
@@ -231,7 +325,7 @@ namespace OperationBlueholeContent
             */
             
             // for debug
-            char[] visualizer = { ' ', '*', 'X', 'I', 'M', 'P' };
+            char[] visualizer = { ' ', ' ', 'X', 'I', 'M', 'P' };
 
             for ( int i = 0; i < size; ++i )
             {
