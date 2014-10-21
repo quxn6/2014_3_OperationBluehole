@@ -24,7 +24,7 @@ namespace OperationBlueholeContent
 				Mobs.AddCharacter(p);
 			Battle newBattle = new Battle(Users, Mobs);
 			newBattle.StartBattle();
-			Console.WriteLine("Test: {0} Win.", newBattle.mBattleResult);
+			Console.WriteLine("Test: {0} Win.", newBattle.battleResult);
 			// -----------------
 
 			Console.ReadKey();
