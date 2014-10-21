@@ -15,14 +15,17 @@ namespace OperationBlueholeContent
         // 대충 뭐 그런 거 하면 되는 거 아닌가
 
         private Dungeon dungeon;
-        private Player[] players;
+        private Party users;
 
-        public bool Init( Player[] players, int size )
+        public bool Init( Party users, int size )
         {
-            // game init
-            this.players = players;
+            this.users = users;
 
-            dungeon = new Dungeon( size );
+            // 일단은 빈 리스트들이지만 던전이 생성되고 나면 내부에서 배치된 것들이 안에 등록된다.
+            List<Party> mobs = new List<Party>();
+            List<Item> items = new List<Item>();
+
+            dungeon = new Dungeon( size, mobs, items, users );
 
             return true;
         }

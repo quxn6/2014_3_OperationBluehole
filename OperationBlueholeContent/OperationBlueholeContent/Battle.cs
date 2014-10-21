@@ -27,14 +27,14 @@ namespace OperationBlueholeContent
 			while (mBattleResult == 0)
             {
 				// 전투상 모든 캐릭터들에 턴행동 후 전멸 체크
-                foreach (Character i in mParty[0].mCharacters)
+                foreach (Character i in mParty[0].characters)
                 {
 					if (i.mHpCur > 0)
 						TurnAction(i, 0);
 					if (EndCheck())
 						return;
                 }
-                foreach (Character i in mParty[1].mCharacters)
+                foreach (Character i in mParty[1].characters)
                 {
 					if (i.mHpCur > 0)
 						TurnAction(i, 1);
@@ -65,12 +65,12 @@ namespace OperationBlueholeContent
 		// mBattleResult에 이긴 파티의 번호를 저장.
 		bool EndCheck()
 		{
-			if (mParty[0].mCharacters.Sum(chr => chr.mHpCur) <= 0)
+			if (mParty[0].characters.Sum(chr => chr.mHpCur) <= 0)
 			{
 				mBattleResult = 2;
 				return true;
 			}
-			if (mParty[1].mCharacters.Sum(chr => chr.mHpCur) <= 0)
+			if (mParty[1].characters.Sum(chr => chr.mHpCur) <= 0)
 			{
 				mBattleResult = 1;
 				return true;

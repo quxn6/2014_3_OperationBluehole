@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
 {
-    enum MapObjectId
+    enum MapObjectType
     {
         VOID = 0,
         TILE,
@@ -17,12 +17,13 @@ namespace OperationBlueholeContent
     // TILE인 경우에는 gameObject가 null인지 보고, 아니면 해당 오브젝트를 렌더?
     class MapObject
     {
-        public MapObjectId objectId;
+        public MapObjectType objectType;
         public GameObject gameObject;
+        public Party party { get; set; }
 
-        public MapObject( MapObjectId id, GameObject obj )
+        public MapObject( MapObjectType id, GameObject obj )
         {
-            this.objectId = id;
+            this.objectType = id;
             this.gameObject = obj;
         }
     }

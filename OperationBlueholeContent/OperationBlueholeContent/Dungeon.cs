@@ -29,9 +29,9 @@ namespace OperationBlueholeContent
 
         public Random random;
 
-        public void SetRoot( int size )
+        public void SetRoot( int size, Random random )
         {
-            this.random = new Random();
+            this.random = random;
 
             this.upperBoundary.x = size - 1;
             this.upperBoundary.y = size - 1;
@@ -48,6 +48,7 @@ namespace OperationBlueholeContent
             leftChild = new GenerationTreeNode();
             rightChild = new GenerationTreeNode();
 
+            // children 멤버 변수들 초기화
             leftChild.parent = rightChild.parent = this;
 
             leftChild.siblingDirection = rightChild.siblingDirection = !siblingDirection;
@@ -58,8 +59,10 @@ namespace OperationBlueholeContent
 
             leftChild.random = rightChild.random = random;
 
+            // 실제로 영역 분할
             SliceArea();
             
+            // children 단계에서 다시 반복하도록 호출
             leftChild.GenerateRecursivly();
             rightChild.GenerateRecursivly();
         }
@@ -71,7 +74,7 @@ namespace OperationBlueholeContent
             if ( !siblingDirection )
             {
                 // 조심해!
-                // 일단 하드코딩
+                // 중복 코드다
                 smallUpper = random.Next(
                     ( SLICE_WEIGHT_1 * upperBoundary.x + SLICE_WEIGHT_2 * lowerBoundary.x ) / SILCE_WEIGHT_TOTAL,
                     ( SLICE_WEIGHT_2 * upperBoundary.x + SLICE_WEIGHT_1 * lowerBoundary.x ) / SILCE_WEIGHT_TOTAL );
@@ -109,35 +112,38 @@ namespace OperationBlueholeContent
     {
         // 컨텐츠 관련 상수들 따로 뺄 것
         const int MAX_OFFSET = 2;
+        const float MOB_DENSITY = 0.05f;
+        const float ITEM_DENSITY = 0.05f;
+
         private int size;
 
         // null 이면 그냥 타일로? 모든 타일의 객체 생성 비용이 부담되면 나중에 수정할 것
         // 일단 구현부터 빨리...
-        private MapObject[,] map;  
+        private MapObject[,] map;
 
-        public Dungeon( int size )
+        public Dungeon( int size, List<Party> mobs, List<Item> items, Party users )
         {
             this.size = size;
             map = new MapObject[size, size];
 
-            GenerateMap();
+            GenerateMap( mobs, items, users );
         }
 
         private void LinkHorizontalArea( int corridorIdx, int targetIdx, int step )
         {
-            while ( map[corridorIdx, targetIdx] == null || map[corridorIdx, targetIdx].objectId != MapObjectId.TILE )
+            while ( map[corridorIdx, targetIdx] == null || map[corridorIdx, targetIdx].objectType != MapObjectType.TILE )
             {
-                map[corridorIdx, targetIdx] = new MapObject( MapObjectId.TILE, null );
+                map[corridorIdx, targetIdx] = new MapObject( MapObjectType.TILE, null );
 
                 bool isLinked = false;
 
-                if ( map[corridorIdx - 1, targetIdx] == null || map[corridorIdx - 1, targetIdx].objectId != MapObjectId.TILE )
-                    map[corridorIdx - 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
+                if ( map[corridorIdx - 1, targetIdx] == null || map[corridorIdx - 1, targetIdx].objectType != MapObjectType.TILE )
+                    map[corridorIdx - 1, targetIdx] = new MapObject( MapObjectType.WALL, null );
                 else
                     isLinked = true;
 
-                if ( map[corridorIdx + 1, targetIdx] == null || map[corridorIdx + 1, targetIdx].objectId != MapObjectId.TILE )
-                    map[corridorIdx + 1, targetIdx] = new MapObject( MapObjectId.WALL, null );
+                if ( map[corridorIdx + 1, targetIdx] == null || map[corridorIdx + 1, targetIdx].objectType != MapObjectType.TILE )
+                    map[corridorIdx + 1, targetIdx] = new MapObject( MapObjectType.WALL, null );
                 else
                     isLinked = true;
 
@@ -151,19 +157,19 @@ namespace OperationBlueholeContent
 
         private void LinkVerticalArea( int corridorIdx, int targetIdx, int step )
         {
-            while ( map[targetIdx, corridorIdx] == null || map[targetIdx, corridorIdx].objectId != MapObjectId.TILE )
+            while ( map[targetIdx, corridorIdx] == null || map[targetIdx, corridorIdx].objectType != MapObjectType.TILE )
             {
-                map[targetIdx, corridorIdx] = new MapObject( MapObjectId.TILE, null );
+                map[targetIdx, corridorIdx] = new MapObject( MapObjectType.TILE, null );
 
                 bool isLinked = false;
 
-                if ( map[targetIdx, corridorIdx - 1] == null || map[targetIdx, corridorIdx - 1].objectId != MapObjectId.TILE )
-                    map[targetIdx, corridorIdx - 1] = new MapObject( MapObjectId.WALL, null );
+                if ( map[targetIdx, corridorIdx - 1] == null || map[targetIdx, corridorIdx - 1].objectType != MapObjectType.TILE )
+                    map[targetIdx, corridorIdx - 1] = new MapObject( MapObjectType.WALL, null );
                 else
                     isLinked = true;
 
-                if ( map[targetIdx, corridorIdx + 1] == null || map[targetIdx, corridorIdx + 1].objectId != MapObjectId.TILE )
-                    map[targetIdx, corridorIdx + 1] = new MapObject( MapObjectId.WALL, null );
+                if ( map[targetIdx, corridorIdx + 1] == null || map[targetIdx, corridorIdx + 1].objectType != MapObjectType.TILE )
+                    map[targetIdx, corridorIdx + 1] = new MapObject( MapObjectType.WALL, null );
                 else
                     isLinked = true;
 
@@ -175,16 +181,24 @@ namespace OperationBlueholeContent
             }
         }
 
-        private void GenerateMap()
+        private void GenerateMap( List<Party> mobs, List<Item> items, Party users )
         {
             // 맵 상의 임의의 영역에 대해서
             // 각 영역은 멤버로 자신이 생성된 방향(horizontal, verical)과 영역좌표(AABB)를 가진다
             // 부모 영역에 대한 참조와 트리에서의 depth정보도 가진다.
             // 만약 자신의 depth가 upper bound보다 작으면 아래의 작업을 수행한다
             // 자신의 반대 방향으로 임의의 위치에서 다시 잘라서 해당 영역을 자식으로 추가
+            Random random = new Random();
+
             GenerationTreeNode root = new GenerationTreeNode();
-            root.SetRoot( size );
+            root.SetRoot( size, random );
             root.GenerateRecursivly();
+
+            // playerParty와 ringOfErr.. 배치용도로 사용
+            RingOfErrethAkbe ring = new RingOfErrethAkbe();
+            int leafNodeCount = (int)Math.Pow( 2, root.upperDepth );
+            bool isPlayerRegistered = false;
+            bool isRingRegisteres = false;
 
             // 완료 후에 root부터 depth가 작은 애들부터 스택에 집어 넣는다
             // 스택에 있는 애들 꺼내면서 leaf인 경우에는 아이템이나 몬스터 배치를 하고
@@ -211,10 +225,7 @@ namespace OperationBlueholeContent
                     queue.Enqueue( tempNode.rightChild );
             }
 
-            // for debug
-            int zoneId = 0;
-            int[,] testMap = new int[size, size];
-
+            int leafNodeIdx = 0;// 1부터 유효한 값
             while( nodes.Count > 0 )
             {
                 GenerationTreeNode current = nodes.Pop();
@@ -222,29 +233,112 @@ namespace OperationBlueholeContent
                 if ( current.depth == current.upperDepth )
                 {
                     // leaf인 경우
+                    ++leafNodeIdx; 
+
                     // 일정 거리를 offset해서 벽을 생성하고
                     // 그 안에 아이템과 몬스터를 배치하자
-                    ++zoneId;
                     int shortSpan = Math.Min( current.upperBoundary.x - current.lowerBoundary.x, current.upperBoundary.y - current.lowerBoundary.y ) + 1;
-
-                    if ( shortSpan < 3 )
-                        Console.WriteLine( "No!!" );
-
-                    int offset = Math.Min( current.random.Next( 0, MAX_OFFSET ), (shortSpan - 3) / 2 );
+                    int offset = Math.Min( random.Next( 0, MAX_OFFSET ), (shortSpan - 3) / 2 );
 
                     current.lowerBoundary.x += offset;
                     current.upperBoundary.x -= offset;
                     current.lowerBoundary.y += offset;
                     current.upperBoundary.y -= offset;
 
+                    // 벽과 타일 생성
                     for ( int i = current.lowerBoundary.y; i <= current.upperBoundary.y; ++i )
                     {
                         for ( int j = current.lowerBoundary.x; j <= current.upperBoundary.x; ++j )
                         {
-                            if ( i == current.lowerBoundary.y || i == current.upperBoundary.y || j == current.lowerBoundary.x || j == current.upperBoundary.x )
-                                map[i, j] = new MapObject( MapObjectId.WALL, null );
+                            if ( i == current.lowerBoundary.y || i == current.upperBoundary.y 
+                                || j == current.lowerBoundary.x || j == current.upperBoundary.x )
+                                map[i, j] = new MapObject( MapObjectType.WALL, null );
                             else
-                                map[i, j] = new MapObject( MapObjectId.TILE, null );
+                                map[i, j] = new MapObject( MapObjectType.TILE, null );
+                        }
+                    }
+
+                    // player와 ring 배치
+                    if ( leafNodeIdx <= leafNodeCount / 2 )
+                    {
+                        if ( !isPlayerRegistered && random.Next(leafNodeIdx, leafNodeCount / 2) == leafNodeCount / 2 )
+                        {
+                            isPlayerRegistered = true;
+
+                            // player 배치
+                            int x = random.Next( current.lowerBoundary.x + 1, current.upperBoundary.x - 1 );
+                            int y = random.Next( current.lowerBoundary.y + 1, current.upperBoundary.y - 1 );
+
+                            map[y, x].party = users; // 파티는 어차피 하나만 넣으니까 다른 오브젝트들 확인 안 함
+                        }
+                    }
+                    else 
+                    {
+                        if ( !isRingRegisteres && random.Next(leafNodeIdx, leafNodeCount) == leafNodeCount )
+                        {
+                            isRingRegisteres = true;
+
+                            // ring 배치
+                            while ( true )
+                            {
+                                int x = random.Next( current.lowerBoundary.x + 1, current.upperBoundary.x - 1 );
+                                int y = random.Next( current.lowerBoundary.y + 1, current.upperBoundary.y - 1 );
+
+                                if ( map[y, x].gameObject == null )
+                                {
+                                    map[y, x].gameObject = ring;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // 아이템과 몹 배치
+                    int tileCount = ( current.upperBoundary.y - current.lowerBoundary.y - 1 ) 
+                        * ( current.upperBoundary.x - current.lowerBoundary.x - 1 );
+
+                    int mobCount = (int)( tileCount * MOB_DENSITY );
+                    for ( int i = 0; i < mobCount; ++i )
+                    {
+                        while ( true )
+                        {
+                            int x = random.Next( current.lowerBoundary.x + 1, current.upperBoundary.x - 1 );
+                            int y = random.Next( current.lowerBoundary.y + 1, current.upperBoundary.y - 1 );
+
+                            if ( map[y, x].party == null )
+                            {
+
+                                mobs.Add( new Party( PartyType.MOB ) );
+                                int idx = mobs.Count - 1;
+
+                                // 조심해!
+                                // party에 자신의 idx 기록은 안 해도 되려나...
+                                map[y, x].party = mobs[idx];
+
+                                break;
+                            }
+                        }
+                    }
+                    
+                    int itemCOunt = (int)( tileCount * ITEM_DENSITY );
+                    for ( int i = 0; i < itemCOunt; ++i )
+                    {
+                        while ( true )
+                        {
+                            int x = random.Next( current.lowerBoundary.x + 1, current.upperBoundary.x - 1 );
+                            int y = random.Next( current.lowerBoundary.y + 1, current.upperBoundary.y - 1 );
+
+                            if ( map[y, x].gameObject == null )
+                            {
+                                items.Add( new Item() );
+                                int idx = items.Count - 1;
+
+                                // 조심해!
+                                // item에 자신의 idx 기록은 안 해도 되려나...
+                                map[y, x].gameObject = items[idx];
+
+                                break;
+                            }
                         }
                     }
                 }
@@ -264,7 +358,9 @@ namespace OperationBlueholeContent
                     if ( current.siblingDirection )
                     {
                         // y축으로 겹치는 구간 탐색
-                        int corridorIdx = current.random.Next( Math.Max( current.lowerBoundary.y, siblingNode.lowerBoundary.y ) + 1, Math.Min( current.upperBoundary.y, siblingNode.upperBoundary.y ) - 1 );
+                        int corridorIdx = random.Next( 
+                            Math.Max( current.lowerBoundary.y, siblingNode.lowerBoundary.y ) + 1, 
+                            Math.Min( current.upperBoundary.y, siblingNode.upperBoundary.y ) - 1 );
 
                         LinkHorizontalArea( corridorIdx, current.upperBoundary.x, -1 );
                         LinkHorizontalArea( corridorIdx, current.upperBoundary.x + 1, 1 );
@@ -272,7 +368,9 @@ namespace OperationBlueholeContent
                     else
                     {
                         // x축으로 겹치는 구간 탐색
-                        int corridorIdx = current.random.Next( Math.Max( current.lowerBoundary.x, siblingNode.lowerBoundary.x ) + 1, Math.Min( current.upperBoundary.x, siblingNode.upperBoundary.x ) - 1 );
+                        int corridorIdx = random.Next( 
+                            Math.Max( current.lowerBoundary.x, siblingNode.lowerBoundary.x ) + 1, 
+                            Math.Min( current.upperBoundary.x, siblingNode.upperBoundary.x ) - 1 );
 
                         LinkVerticalArea( corridorIdx, current.upperBoundary.y, -1 );
                         LinkVerticalArea( corridorIdx, current.upperBoundary.y + 1, 1 );
@@ -291,7 +389,20 @@ namespace OperationBlueholeContent
                     if ( map[i,j] == null )
                         Console.Write( visualizer[0] );
                     else
-                        Console.Write( visualizer[(int)map[i, j].objectId] );
+                    {
+                        if ( map[i, j].gameObject != null ) // 일단 무조건 아이템
+                            Console.Write( visualizer[3] );
+                        else if ( map[i, j].party != null )
+                        {
+                            if ( map[i, j].party.partyType == PartyType.MOB )
+                                Console.Write( visualizer[4] );
+                            else
+                                Console.Write( visualizer[5] );
+                        }
+                        else
+                            Console.Write( visualizer[(int)map[i, j].objectType] );
+                    }
+                        
                 }
                 Console.WriteLine("");
             }

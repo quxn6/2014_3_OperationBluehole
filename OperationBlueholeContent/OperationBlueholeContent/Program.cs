@@ -10,14 +10,11 @@ namespace OperationBlueholeContent
     {
         static void Main(string[] args)
         {
-            DungeonMaster newMaster = new DungeonMaster();
-            newMaster.Init( null, 40 );
-
 			// 전투 테스트--------
 			Player[] player = { new Player(), new Player(), new Player() };
 			Mob[] mob = { new Mob(), new Mob(), new Mob() };
-			Party Users = new Party();
-			Party Mobs = new Party();
+            Party Users = new Party( PartyType.PLAYER );
+            Party Mobs = new Party( PartyType.MOB );
 			foreach( Player p in player )
 				Users.AddCharacter(p);
 			foreach ( Mob p in mob )
@@ -26,6 +23,11 @@ namespace OperationBlueholeContent
 			newBattle.StartBattle();
 			Console.WriteLine("Test: {0} Win.", newBattle.mBattleResult);
 			// -----------------
+
+            // 던전 테스트--------
+            DungeonMaster newMaster = new DungeonMaster();
+            newMaster.Init( Users, 60 );
+            // ------------------
 
 			Console.ReadKey();
         }

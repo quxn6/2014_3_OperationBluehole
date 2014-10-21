@@ -8,6 +8,6 @@ namespace OperationBlueholeContent
 {
     class GameObject
     {
-        
+        // 덩!기덕! 쿵!더러러러 쿵!기덕! 쿵덕!
     }
 }
