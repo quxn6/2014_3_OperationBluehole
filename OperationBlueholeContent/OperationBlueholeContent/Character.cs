@@ -62,7 +62,7 @@ namespace OperationBlueholeContent
 		// 현재는 그냥 가장 체력 낮은 적부터 다굴...
 		public void BattleTurnAction(Party Ally, Party Enemy)
 		{
-			Character weakEnemy = Enemy.mCharacters.Where(c => c.hp > 0).OrderBy(c => c.hp).First();
+            Character weakEnemy = Enemy.characters.Where( c => c.hp > 0 ).OrderBy( c => c.hp ).First();
 			Attack(weakEnemy);
 		}
 
