@@ -56,3 +56,10 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+
+# ========== #
+# c# folder  #
+# ========== #
+bin/
+obj/
