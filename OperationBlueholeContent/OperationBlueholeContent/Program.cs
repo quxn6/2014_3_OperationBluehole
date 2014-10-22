@@ -11,6 +11,7 @@ namespace OperationBlueholeContent
         static void Main(string[] args)
         {
 			// 전투 테스트--------
+			SkillManager.Init();
 			Player[] player = { new Player(), new Player(), new Player() };
 			Mob[] mob = { new Mob(), new Mob(), new Mob() };
             Party Users = new Party( PartyType.PLAYER );

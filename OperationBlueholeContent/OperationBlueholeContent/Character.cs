@@ -23,20 +23,20 @@ namespace OperationBlueholeContent
 
 	class Character : GameObject
 	{
-		public short statLev { get; private set; }
-		public short statStr { get; private set; }
-		public short statDex { get; private set; }
-		public short statInt { get; private set; }
-		public short statCon { get; private set; }
-		public short statAgi { get; private set; }
-		public short statWis { get; private set; }
-		public short statMov { get; private set; }
+		public ushort statLev { get; private set; }
+		public ushort statStr { get; private set; }
+		public ushort statDex { get; private set; }
+		public ushort statInt { get; private set; }
+		public ushort statCon { get; private set; }
+		public ushort statAgi { get; private set; }
+		public ushort statWis { get; private set; }
+		public ushort statMov { get; private set; }
 
-		public int statHp { get; private set; }
-		public int statMp { get; private set; }
-		public int hp { get; private set; }
-		public int mp { get; private set; }
-		public int sp { get; private set; }
+		public uint statHp { get; private set; }
+		public uint statMp { get; private set; }
+		public uint hp { get; private set; }
+		public uint mp { get; private set; }
+		public uint sp { get; private set; }
 
 
 		public Character()
@@ -57,28 +57,53 @@ namespace OperationBlueholeContent
 			if (sp > 100)
 				sp = 100;
 		}
+		public bool ReduceForAction(uint hpNeed, uint mpNeed, uint spNeed)
+		{
+			if (hpNeed > hp || mpNeed > mp || spNeed > sp)
+				return false;
+
+			hp -= hpNeed;
+			mp -= mpNeed;
+			sp -= spNeed;
+			return true;
+		}
 
 		// 차후 적과 아군의 파티 정보를 보고 행동을 결정하는 AI 추가 필요
 		// 현재는 그냥 가장 체력 낮은 적부터 다굴...
-		public void BattleTurnAction(Party Ally, Party Enemy)
+		public void BattleTurnAction(Party ally, Party enemy)
 		{
-            Character weakEnemy = Enemy.characters.Where( c => c.hp > 0 ).OrderBy( c => c.hp ).First();
-			Attack(weakEnemy);
+			if (ally == null || enemy == null)
+				return;
+			//while (true)
+			{
+				Character weakEnemy = enemy.characters.Where(c => c.hp > 0).OrderBy(c => c.hp).First();
+				SkillManager.skillList[SkillName.Slash].Act(this, weakEnemy);
+			}
 		}
 
-		// 공격시 스탯/장비에 의한 공격력 계산, 명중/회피, 
-		// 스킬 등의 공식 적용등이 필요하지만 일단은 그냥 단순 str타격
-		public void Attack(Character target)
-		{
-			sp -= 50;
-			target.Damage(statStr);
-		}
+// 		// 공격시 스탯/장비에 의한 공격력 계산, 명중/회피, 
+// 		// 스킬 등의 공식 적용등이 필요하지만 일단은 그냥 단순 str타격
+// 		public void Attack(Character target)
+// 		{
+// 			if (target == null)
+// 				return;
+// 
+// 			sp -= 50;
+// 			target.Damage(statStr);
+// 		}
 
-		public void Damage(int damage)
+		public void Damage(uint damage)
 		{
 			hp -= damage;
 			if (hp <= 0)
 				hp = 0;
+		}
+
+		public void Recover(uint heal)
+		{
+			hp += heal;
+			if (hp > statHp)
+				hp = statHp;
 		}
 	}
 
