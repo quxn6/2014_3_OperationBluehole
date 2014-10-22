@@ -15,6 +15,11 @@ namespace OperationBlueholeContent
 
     class DungeonTreeNode
     {
+        // 컨텐츠 관련 상수들 따로 뺄 것
+        const float MOB_DENSITY = 0.05f;
+        const float ITEM_DENSITY = 0.05f;
+        const int MAX_OFFSET = 2;
+
         const int MININUM_SPAN = 12;
         const int SLICE_WEIGHT_1 = 1;
         const int SLICE_WEIGHT_2 = 2;
@@ -27,11 +32,17 @@ namespace OperationBlueholeContent
 
         public Int2D lowerBoundary, upperBoundary;      
 
-        public Random random;
+        public static Random random;
+        public static MapObject[,] map;
+        public static List<Party> mobs;
+        public static List<Item> items;
 
-        public void SetRoot( int size, Random random )
+        public void SetRoot( int size, Random random, MapObject[,] map, List<Party> mobs, List<Item> items )
         {
-            this.random = random;
+            DungeonTreeNode.random = random;
+            DungeonTreeNode.map = map;
+            DungeonTreeNode.mobs = mobs;
+            DungeonTreeNode.items = items;
 
             this.upperBoundary.x = size - 1;
             this.upperBoundary.y = size - 1;
@@ -42,29 +53,50 @@ namespace OperationBlueholeContent
 
         public void GenerateRecursivly()
         {
-            if ( depth >= upperDepth )
-                return;
+            // Assert(depth <= upperDepth)
+            if ( depth == upperDepth )
+            {
+                // leafNode이므로 Bake하고
+                // 일정 거리를 offset
+                int shortSpan = Math.Min( upperBoundary.x - lowerBoundary.x, upperBoundary.y - lowerBoundary.y ) + 1;
+                int offset = Math.Min( random.Next( 0, MAX_OFFSET ), ( shortSpan - 3 ) / 2 );
 
-            leftChild = new DungeonTreeNode();
-            rightChild = new DungeonTreeNode();
+                Offset( offset );
 
-            // children 멤버 변수들 초기화
-            leftChild.parent = rightChild.parent = this;
+                // 실제 맵에다가 타일과 벽을 기록
+                BakeMap();
 
-            leftChild.siblingDirection = rightChild.siblingDirection = !siblingDirection;
-            leftChild.depth = rightChild.depth = depth + 1;
-            leftChild.upperDepth = rightChild.upperDepth = upperDepth;
-            leftChild.isLeft = true;
-            rightChild.isLeft = false;
+                // 플레이어, ring, 몹, 아이템들 생성 및 배치 
+                AllocateObjects();
+            }
+            else
+            {
+                // leafNode가 아니므로 분할한다
+                leftChild = new DungeonTreeNode();
+                rightChild = new DungeonTreeNode();
 
-            leftChild.random = rightChild.random = random;
+                // children 멤버 변수들 초기화
+                leftChild.parent = rightChild.parent = this;
 
-            // 실제로 영역 분할
-            SliceArea();
-            
-            // children 단계에서 다시 반복하도록 호출
-            leftChild.GenerateRecursivly();
-            rightChild.GenerateRecursivly();
+                leftChild.siblingDirection = rightChild.siblingDirection = !siblingDirection;
+                leftChild.depth = rightChild.depth = depth + 1;
+                leftChild.upperDepth = rightChild.upperDepth = upperDepth;
+                leftChild.isLeft = true;
+                rightChild.isLeft = false;
+
+                // leftChild.random = rightChild.random = random;
+                // leftChild.map = rightChild.map = map;
+
+                // 실제로 영역 분할
+                SliceArea();
+
+                // children 단계에서 다시 반복하도록 호출
+                leftChild.GenerateRecursivly();
+                rightChild.GenerateRecursivly();
+
+                // 자식 노드들을 연결한다!
+                LinkArea();
+            }
         }
 
         // 현재의 영역을 둘로 나눈다
@@ -108,6 +140,23 @@ namespace OperationBlueholeContent
             }
         }
 
+        // node에 할당된 영역을 실제 map에 기록 - 타일과 벽을 생성
+        private void BakeMap()
+        {
+            // 벽과 타일 생성
+            for ( int i = lowerBoundary.y; i <= upperBoundary.y; ++i )
+            {
+                for ( int j = lowerBoundary.x; j <= upperBoundary.x; ++j )
+                {
+                    if ( i == lowerBoundary.y || i == upperBoundary.y
+                        || j == lowerBoundary.x || j == upperBoundary.x )
+                        map[i, j] = new MapObject( MapObjectType.WALL, null );
+                    else
+                        map[i, j] = new MapObject( MapObjectType.TILE, null );
+                }
+            }
+        }
+
         // 현재 영역에서 외곽(wall)을 제외한 영역에서 임의의 위치 좌표 반환
         public Int2D GetRandomInternalPosition()
         {
@@ -127,29 +176,78 @@ namespace OperationBlueholeContent
             lowerBoundary.y += offsetValue;
             upperBoundary.y -= offsetValue;
         }
-    }
 
-    class Dungeon
-    {
-        // 컨텐츠 관련 상수들 따로 뺄 것
-        const int MAX_OFFSET = 2;
-        const float MOB_DENSITY = 0.05f;
-        const float ITEM_DENSITY = 0.05f;
-
-        private int size;
-        private MapObject[,] map;
-
-        private Random random;
-        private int leafNodeCount;
-        private bool isPlayerRegistered = false;
-        private bool isRingRegisteres = false;
-
-        public Dungeon( int size, List<Party> mobs, List<Item> items, Party users )
+        public Int2D RegisterParty( Party party )
         {
-            this.size = size;
-            map = new MapObject[size, size];
+            Int2D position = new Int2D( -1, -1 );
 
-            GenerateMap( mobs, items, users );
+            while ( true )
+            {
+                position = GetRandomInternalPosition();
+
+                if ( map[position.y, position.x] != null && map[position.y, position.x].objectType == MapObjectType.TILE
+                    && map[position.y, position.x].party == null )
+                {
+                    // 조심해!
+                    // party에 자신의 idx 기록은 안 해도 되려나...
+                    map[position.y, position.x].party = party;
+
+                    break;
+                }
+            }
+
+            return position;
+        }
+
+        public Int2D RegisterGameObject( GameObject obj )
+        {
+            Int2D position = new Int2D( -1, -1 );
+
+            while ( true )
+            {
+                position = GetRandomInternalPosition();
+
+                if ( map[position.y, position.x] != null && map[position.y, position.x].objectType == MapObjectType.TILE
+                    && map[position.y, position.x].gameObject == null )
+                {
+                    // 조심해!
+                    // item에 자신의 idx 기록은 안 해도 되려나...
+                    map[position.y, position.x].gameObject = obj;
+
+                    break;
+                }
+            }
+
+            return position;
+        }
+
+        private void AllocateObjects()
+        {
+            // 아이템과 몹 배치
+            int tileCount = ( upperBoundary.y - lowerBoundary.y - 1 )
+                * ( upperBoundary.x - lowerBoundary.x - 1 );
+
+            int mobCount = (int)( tileCount * MOB_DENSITY );
+            for ( int i = 0; i < mobCount; ++i )
+            {
+                // 몹 생성하고
+                mobs.Add( new Party( PartyType.MOB ) );
+                int idx = mobs.Count - 1;
+
+                // 등록
+                Int2D mobPosition = RegisterParty( mobs[idx] );
+            }
+
+            int itemCOunt = (int)( tileCount * ITEM_DENSITY );
+            for ( int i = 0; i < itemCOunt; ++i )
+            {
+                // 아이템 생성하고
+                items.Add( new Item() );
+                int idx = items.Count - 1;
+
+                // 등록
+                Int2D itemPosition = RegisterGameObject( items[idx] );
+            }
         }
 
         private void LinkHorizontalArea( int corridorIdx, int targetIdx, int step )
@@ -205,148 +303,47 @@ namespace OperationBlueholeContent
         }
 
         // LinkHorizontalArea, LinkVerticalArea를 호출해서 두 sibling 관계의 두 node의 영역을 통로로 잇는 함수
-        private void LinkArea( DungeonTreeNode currentNode )
+        private void LinkArea()
         {
             // stack 안에는 이미 depth가 높은 노드들이 위에 오도록 들어있으므로 그냥 차례대로 꺼내면서 연결하면 된다
             // 항상 sibling과 쌍으로 들어가고, 순서는 left - right 이므로 
             // 하나 꺼내서 부모를 통해서 sibling(right)를 찾고, 둘이 나누어진 방식(horizontal, vertical)에 따라서 
             // 겹쳐지는 영역을 설정하고, 그 범위 안에서 임의의 idx 선택
-
-            if ( currentNode.parent == null )
-                return;
-
-            DungeonTreeNode siblingNode = currentNode.parent.rightChild;
-
-            if ( currentNode.siblingDirection )
+            if ( leftChild.siblingDirection )
             {
                 // y축으로 겹치는 구간 탐색
                 int corridorIdx = random.Next(
-                    Math.Max( currentNode.lowerBoundary.y, siblingNode.lowerBoundary.y ) + 1,
-                    Math.Min( currentNode.upperBoundary.y, siblingNode.upperBoundary.y ) - 1 );
+                    Math.Max( leftChild.lowerBoundary.y, leftChild.lowerBoundary.y ) + 1,
+                    Math.Min( leftChild.upperBoundary.y, leftChild.upperBoundary.y ) - 1 );
 
-                LinkHorizontalArea( corridorIdx, currentNode.upperBoundary.x, -1 );
-                LinkHorizontalArea( corridorIdx, currentNode.upperBoundary.x + 1, 1 );
+                LinkHorizontalArea( corridorIdx, leftChild.upperBoundary.x, -1 );
+                LinkHorizontalArea( corridorIdx, leftChild.upperBoundary.x + 1, 1 );
             }
             else
             {
                 // x축으로 겹치는 구간 탐색
                 int corridorIdx = random.Next(
-                    Math.Max( currentNode.lowerBoundary.x, siblingNode.lowerBoundary.x ) + 1,
-                    Math.Min( currentNode.upperBoundary.x, siblingNode.upperBoundary.x ) - 1 );
+                    Math.Max( leftChild.lowerBoundary.x, leftChild.lowerBoundary.x ) + 1,
+                    Math.Min( leftChild.upperBoundary.x, leftChild.upperBoundary.x ) - 1 );
 
-                LinkVerticalArea( corridorIdx, currentNode.upperBoundary.y, -1 );
-                LinkVerticalArea( corridorIdx, currentNode.upperBoundary.y + 1, 1 );
+                LinkVerticalArea( corridorIdx, leftChild.upperBoundary.y, -1 );
+                LinkVerticalArea( corridorIdx, leftChild.upperBoundary.y + 1, 1 );
             }
         }
+    }
 
-        // currentNode의 영역을 실제 map에 기록 - 타일과 벽을 생성
-        private void BakeMap( DungeonTreeNode currentNode )
+    class Dungeon
+    {
+        private int size;
+        private MapObject[,] map;
+        private Random random;
+
+        public Dungeon( int size, List<Party> mobs, List<Item> items, Party users )
         {
-            // 벽과 타일 생성
-            for ( int i = currentNode.lowerBoundary.y; i <= currentNode.upperBoundary.y; ++i )
-            {
-                for ( int j = currentNode.lowerBoundary.x; j <= currentNode.upperBoundary.x; ++j )
-                {
-                    if ( i == currentNode.lowerBoundary.y || i == currentNode.upperBoundary.y
-                        || j == currentNode.lowerBoundary.x || j == currentNode.upperBoundary.x )
-                        map[i, j] = new MapObject( MapObjectType.WALL, null );
-                    else
-                        map[i, j] = new MapObject( MapObjectType.TILE, null );
-                }
-            }
-        }
+            this.size = size;
+            map = new MapObject[size, size];
 
-        private Int2D RegisterParty( DungeonTreeNode currentNode, Party party )
-        {
-            Int2D position = new Int2D( -1, -1 );
-
-            while ( true )
-            {
-                position = currentNode.GetRandomInternalPosition();
-
-                if ( map[position.y, position.x].party == null )
-                {
-                    // 조심해!
-                    // party에 자신의 idx 기록은 안 해도 되려나...
-                    map[position.y, position.x].party = party;
-
-                    break;
-                }
-            }
-
-            return position;
-        }
-
-        private Int2D RegisterGameObject( DungeonTreeNode currentNode, GameObject obj )
-        {
-            Int2D position = new Int2D( -1, -1 );
-
-            while ( true )
-            {
-                position = currentNode.GetRandomInternalPosition();
-
-                if ( map[position.y, position.x].gameObject == null )
-                {
-                    // 조심해!
-                    // item에 자신의 idx 기록은 안 해도 되려나...
-                    map[position.y, position.x].gameObject = obj;
-
-                    break;
-                }
-            }
-
-            return position;
-        }
-
-        private void AllocateObjects( DungeonTreeNode currentNode, int leafNodeIdx, Party users, List<Party> mobs, Item ring, List<Item> items )
-        {
-            // player와 ring 배치
-            if ( leafNodeIdx <= leafNodeCount / 2 )
-            {
-                if ( !isPlayerRegistered && random.Next( leafNodeIdx, leafNodeCount / 2 ) == leafNodeCount / 2 )
-                {
-                    isPlayerRegistered = true;
-
-                    // player 배치
-                    Int2D palyerPosition = RegisterParty( currentNode, users );
-                }
-            }
-            else
-            {
-                if ( !isRingRegisteres && random.Next( leafNodeIdx, leafNodeCount ) == leafNodeCount )
-                {
-                    isRingRegisteres = true;
-
-                    // ring 배치
-                    Int2D ringPosition = RegisterGameObject( currentNode, ring );
-                }
-            }
-
-            // 아이템과 몹 배치
-            int tileCount = ( currentNode.upperBoundary.y - currentNode.lowerBoundary.y - 1 )
-                * ( currentNode.upperBoundary.x - currentNode.lowerBoundary.x - 1 );
-
-            int mobCount = (int)( tileCount * MOB_DENSITY );
-            for ( int i = 0; i < mobCount; ++i )
-            {
-                // 몹 생성하고
-                mobs.Add( new Party( PartyType.MOB ) );
-                int idx = mobs.Count - 1;
-
-                // 등록
-                Int2D mobPosition = RegisterParty( currentNode, mobs[idx] );
-            }
-
-            int itemCOunt = (int)( tileCount * ITEM_DENSITY );
-            for ( int i = 0; i < itemCOunt; ++i )
-            {
-                // 아이템 생성하고
-                items.Add( new Item() );
-                int idx = items.Count - 1;
-
-                // 등록
-                Int2D itemPosition = RegisterGameObject( currentNode, items[idx] );
-            }
+            GenerateMap( mobs, items, users );
         }
 
         // 맵 생성!
@@ -360,69 +357,14 @@ namespace OperationBlueholeContent
             random = new Random();
 
             DungeonTreeNode root = new DungeonTreeNode();
-            root.SetRoot( size, random );
+            root.SetRoot( size, random, map, mobs, items );
             root.GenerateRecursivly();
 
-            // playerParty와 ringOfErr.. 배치용도로 사용
+            // player party와 ring 배치 - 맵 전체를 기반으로
             RingOfErrethAkbe ring = new RingOfErrethAkbe();
-            leafNodeCount = (int)Math.Pow( 2, root.upperDepth );
-            isPlayerRegistered = false;
-            isRingRegisteres = false;
 
-            // 완료 후에 root부터 depth가 작은 애들부터 스택에 집어 넣는다
-            // 스택에 있는 애들 꺼내면서 leaf인 경우에는 아이템이나 몬스터 배치를 하고
-            // sibling과 연결할 때 depth가 높은 노드부터 처리하기 위해서 queue 사용
-            Stack<DungeonTreeNode> nodes = new Stack<DungeonTreeNode>();
-            Queue<DungeonTreeNode> queue = new Queue<DungeonTreeNode>();
-
-            queue.Enqueue( root );
-
-            while ( queue.Count != 0 )
-            {
-                DungeonTreeNode tempNode = queue.Dequeue();
-
-                nodes.Push( tempNode );
-
-                // 반드시 left - right 순서로 넣을 것
-                // 나중에 두 영역을 복도로 연결할 때 영향을 준다!
-                // child가 하나인 경우에 대한 예외 처리 필요 - assert!
-                if ( tempNode.leftChild != null )
-                    queue.Enqueue( tempNode.leftChild );
-
-                if ( tempNode.rightChild != null )
-                    queue.Enqueue( tempNode.rightChild );
-            }
-
-            int leafNodeIdx = 0;    // 1부터 유효한 값
-            while( nodes.Count > 0 )
-            {
-                DungeonTreeNode current = nodes.Pop();
-
-                // leaf인 경우
-                if ( current.depth == current.upperDepth )
-                {
-                    ++leafNodeIdx; 
-
-                    // 일정 거리를 offset
-                    int shortSpan = Math.Min( current.upperBoundary.x - current.lowerBoundary.x, current.upperBoundary.y - current.lowerBoundary.y ) + 1;
-                    int offset = Math.Min( random.Next( 0, MAX_OFFSET ), (shortSpan - 3) / 2 );
-
-                    current.Offset( offset );
-
-                    // 실제 맵에다가 타일과 벽을 기록
-                    BakeMap( current );
-
-                    // 플레이어, ring, 몹, 아이템들 생성 및 배치 
-                    AllocateObjects( current, leafNodeIdx, users, mobs, ring, items );
-                }
-
-                if ( current.isLeft )
-                {
-                    // sibling과 연결하자
-                    LinkArea( current );
-                }
-            }
-
+            Int2D playerPosition = root.RegisterParty( users );
+            Int2D ringPosition = root.RegisterGameObject( ring );
 
             // for debug
             char[] visualizer = { ' ', ' ', 'X', 'I', 'M', 'P' };
@@ -431,12 +373,20 @@ namespace OperationBlueholeContent
             {
                 for ( int j = 0; j < size; ++j )
                 {
+                    if ( j == ringPosition.x && i == ringPosition.y )
+                    {
+                        Console.Write( 'O' );
+                        continue;
+                    }
+
                     if ( map[i,j] == null )
                         Console.Write( visualizer[0] );
                     else
                     {
                         if ( map[i, j].gameObject != null ) // 일단 무조건 아이템
+                        {
                             Console.Write( visualizer[3] );
+                        }
                         else if ( map[i, j].party != null )
                         {
                             if ( map[i, j].party.partyType == PartyType.MOB )
@@ -451,8 +401,9 @@ namespace OperationBlueholeContent
                 }
                 Console.WriteLine("");
             }
+
+            Console.WriteLine( "distance between player and ring" );
+            Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
         }
-
-
     }
 }
