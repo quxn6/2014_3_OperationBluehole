@@ -16,6 +16,7 @@ namespace OperationBlueholeContent
 
         private Dungeon dungeon;
         private Party users;
+        private Explorer explorer;
 
         public bool Init( Party users, int size )
         {
@@ -26,6 +27,9 @@ namespace OperationBlueholeContent
             List<Item> items = new List<Item>();
 
             dungeon = new Dungeon( size, mobs, items, users );
+            explorer = new Explorer( this );
+
+            explorer.Init( dungeon.GetPlayerPosition() );
 
             return true;
         }
@@ -34,8 +38,24 @@ namespace OperationBlueholeContent
         {
             while ( true )
             {
-                break;
+                MoveDiretion direction = explorer.Move();
+                explorer.Teleport( explorer.currentDestination );
+
+                if ( dungeon.FindRing( explorer.GetCurrentZoneId() ) )
+                    break;
             }
+        }
+
+        // 구현할 것
+        public Int2D GetZonePosition( int id )
+        {
+            return new Int2D( -1, -1 );
+        }
+
+        public IEnumerable<int> GetLinkedZoneList( int zoneId )
+        {
+            // temp
+            return Enumerable.Range( 0, 8 );
         }
     }
 }

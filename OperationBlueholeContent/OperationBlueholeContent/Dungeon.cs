@@ -405,5 +405,19 @@ namespace OperationBlueholeContent
             Console.WriteLine( "distance between player and ring" );
             Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
         }
+
+        public bool FindRing( int zoneId )
+        {
+            // 인자로 받은 존에 ring이 있는 지 확인
+
+            // temp
+            return false;
+        }
+
+        public Int2D GetPlayerPosition()
+        {
+            // temp
+            return new Int2D( -1, -1 );
+        }
     }
 }
