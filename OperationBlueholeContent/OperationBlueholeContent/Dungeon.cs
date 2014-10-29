@@ -11,7 +11,28 @@ namespace OperationBlueholeContent
         public int x, y;
 
         public Int2D( int x, int y ) { this.x = x; this.y = y; }
-    };
+        public Int2D( Int2D a ) { this.x = a.x; this.y = a.y; }
+    }
+
+    class DungeonZone
+    {
+        public int zoneId;
+        public readonly Int2D lowerBoundary, upperBoundary, centerPosition;
+
+        public List<Item> items = new List<Item>();
+        public List<Party> mobs = new List<Party>();
+        public List<DungeonZone> linkedZone = new List<DungeonZone>();
+
+        public DungeonZone( int zoneId, Int2D lowerBoundary, Int2D upperBoundary )
+        {
+            this.zoneId = zoneId;
+            this.lowerBoundary = lowerBoundary;
+            this.upperBoundary = upperBoundary;
+
+            centerPosition.x = ( lowerBoundary.x + upperBoundary.x ) / 2;
+            centerPosition.y = ( lowerBoundary.y + upperBoundary.y ) / 2;
+        }
+    }
 
     class DungeonTreeNode
     {
@@ -32,17 +53,19 @@ namespace OperationBlueholeContent
 
         public Int2D lowerBoundary, upperBoundary;      
 
-        public static Random random;
-        public static MapObject[,] map;
-        public static List<Party> mobs;
-        public static List<Item> items;
+        private Random random;
+        private MapObject[,] map;
+        private List<Party> mobs;
+        private List<Item> items;
+        private List<DungeonZone> zoneList;
 
-        public void SetRoot( int size, Random random, MapObject[,] map, List<Party> mobs, List<Item> items )
+        public void SetRoot( int size, Random random, MapObject[,] map, List<Party> mobs, List<Item> items, List<DungeonZone> zoneList )
         {
-            DungeonTreeNode.random = random;
-            DungeonTreeNode.map = map;
-            DungeonTreeNode.mobs = mobs;
-            DungeonTreeNode.items = items;
+            this.random = random;
+            this.map = map;
+            this.mobs = mobs;
+            this.items = items;
+            this.zoneList = zoneList;
 
             this.upperBoundary.x = size - 1;
             this.upperBoundary.y = size - 1;
@@ -56,6 +79,18 @@ namespace OperationBlueholeContent
             // Assert(depth <= upperDepth)
             if ( depth == upperDepth )
             {
+                // 여기서 DungeonZone을 생성하자
+                // offset을 진행하지만 나중에 통로 지역도 포함하기 위해서 zone의 범위는 offset하기 전으러 설정 = 맵 전체를 커버할 수 있어
+                DungeonZone newZone = new DungeonZone( zoneList.Count, lowerBoundary, upperBoundary );
+                zoneList.Add( newZone );
+
+                // 조심해!
+                // 맵 전체를 두번 순회하고 있음
+                // zone id 기록
+                for ( int i = lowerBoundary.y; i <= upperBoundary.y; ++i )
+                    for ( int j = lowerBoundary.x; j <= upperBoundary.x; ++j )
+                        map[i, j].zoneId = newZone.zoneId;
+
                 // leafNode이므로 Bake하고
                 // 일정 거리를 offset
                 int shortSpan = Math.Min( upperBoundary.x - lowerBoundary.x, upperBoundary.y - lowerBoundary.y ) + 1;
@@ -67,7 +102,7 @@ namespace OperationBlueholeContent
                 BakeMap();
 
                 // 플레이어, ring, 몹, 아이템들 생성 및 배치 
-                AllocateObjects();
+                AllocateObjects( newZone );
             }
             else
             {
@@ -84,13 +119,18 @@ namespace OperationBlueholeContent
                 leftChild.isLeft = true;
                 rightChild.isLeft = false;
 
-                // leftChild.random = rightChild.random = random;
-                // leftChild.map = rightChild.map = map;
+                leftChild.random = rightChild.random = random;
+                leftChild.map = rightChild.map = map;
+                leftChild.mobs = rightChild.mobs = mobs;
+                leftChild.items = rightChild.items = items;
+                leftChild.zoneList = rightChild.zoneList = zoneList;
 
                 // 실제로 영역 분할
                 SliceArea();
 
+                // 조심해!
                 // children 단계에서 다시 반복하도록 호출
+                // 나중에 task로 처리할까...
                 leftChild.GenerateRecursivly();
                 rightChild.GenerateRecursivly();
 
@@ -150,9 +190,9 @@ namespace OperationBlueholeContent
                 {
                     if ( i == lowerBoundary.y || i == upperBoundary.y
                         || j == lowerBoundary.x || j == upperBoundary.x )
-                        map[i, j] = new MapObject( MapObjectType.WALL, null );
+                        map[i, j].objectType = MapObjectType.WALL;
                     else
-                        map[i, j] = new MapObject( MapObjectType.TILE, null );
+                        map[i, j].objectType = MapObjectType.TILE;
                 }
             }
         }
@@ -221,7 +261,7 @@ namespace OperationBlueholeContent
             return position;
         }
 
-        private void AllocateObjects()
+        private void AllocateObjects( DungeonZone zone )
         {
             // 아이템과 몹 배치
             int tileCount = ( upperBoundary.y - lowerBoundary.y - 1 )
@@ -234,6 +274,8 @@ namespace OperationBlueholeContent
                 mobs.Add( new Party( PartyType.MOB ) );
                 int idx = mobs.Count - 1;
 
+                zone.mobs.Add( mobs[idx] );
+
                 // 등록
                 Int2D mobPosition = RegisterParty( mobs[idx] );
             }
@@ -245,6 +287,8 @@ namespace OperationBlueholeContent
                 items.Add( new Item() );
                 int idx = items.Count - 1;
 
+                zone.items.Add( items[idx] );
+
                 // 등록
                 Int2D itemPosition = RegisterGameObject( items[idx] );
             }
@@ -254,17 +298,17 @@ namespace OperationBlueholeContent
         {
             while ( map[corridorIdx, targetIdx] == null || map[corridorIdx, targetIdx].objectType != MapObjectType.TILE )
             {
-                map[corridorIdx, targetIdx] = new MapObject( MapObjectType.TILE, null );
+                map[corridorIdx, targetIdx].objectType = MapObjectType.TILE;
 
                 bool isLinked = false;
 
                 if ( map[corridorIdx - 1, targetIdx] == null || map[corridorIdx - 1, targetIdx].objectType != MapObjectType.TILE )
-                    map[corridorIdx - 1, targetIdx] = new MapObject( MapObjectType.WALL, null );
+                    map[corridorIdx - 1, targetIdx].objectType = MapObjectType.WALL;
                 else
                     isLinked = true;
 
                 if ( map[corridorIdx + 1, targetIdx] == null || map[corridorIdx + 1, targetIdx].objectType != MapObjectType.TILE )
-                    map[corridorIdx + 1, targetIdx] = new MapObject( MapObjectType.WALL, null );
+                    map[corridorIdx + 1, targetIdx].objectType = MapObjectType.WALL;
                 else
                     isLinked = true;
 
@@ -280,17 +324,17 @@ namespace OperationBlueholeContent
         {
             while ( map[targetIdx, corridorIdx] == null || map[targetIdx, corridorIdx].objectType != MapObjectType.TILE )
             {
-                map[targetIdx, corridorIdx] = new MapObject( MapObjectType.TILE, null );
+                map[targetIdx, corridorIdx].objectType = MapObjectType.TILE;
 
                 bool isLinked = false;
 
                 if ( map[targetIdx, corridorIdx - 1] == null || map[targetIdx, corridorIdx - 1].objectType != MapObjectType.TILE )
-                    map[targetIdx, corridorIdx - 1] = new MapObject( MapObjectType.WALL, null );
+                    map[targetIdx, corridorIdx - 1].objectType = MapObjectType.WALL;
                 else
                     isLinked = true;
 
                 if ( map[targetIdx, corridorIdx + 1] == null || map[targetIdx, corridorIdx + 1].objectType != MapObjectType.TILE )
-                    map[targetIdx, corridorIdx + 1] = new MapObject( MapObjectType.WALL, null );
+                    map[targetIdx, corridorIdx + 1].objectType = MapObjectType.WALL;
                 else
                     isLinked = true;
 
@@ -338,12 +382,19 @@ namespace OperationBlueholeContent
         private MapObject[,] map;
         private Random random;
 
+        public List<DungeonZone> zoneList = new List<DungeonZone>();
+
         public Dungeon( int size, List<Party> mobs, List<Item> items, Party users )
         {
             this.size = size;
             map = new MapObject[size, size];
 
-            GenerateMap( mobs, items, users );
+            // 나중에는 object pool 만들 것
+            for ( int i = 0; i < size; ++i )
+                for ( int j = 0; j < size; ++j )
+                    map[i, j] = new MapObject();
+
+                GenerateMap( mobs, items, users );
         }
 
         // 맵 생성!
@@ -357,7 +408,7 @@ namespace OperationBlueholeContent
             random = new Random();
 
             DungeonTreeNode root = new DungeonTreeNode();
-            root.SetRoot( size, random, map, mobs, items );
+            root.SetRoot( size, random, map, mobs, items, zoneList );
             root.GenerateRecursivly();
 
             // player party와 ring 배치 - 맵 전체를 기반으로
@@ -366,8 +417,9 @@ namespace OperationBlueholeContent
             Int2D playerPosition = root.RegisterParty( users );
             Int2D ringPosition = root.RegisterGameObject( ring );
 
-            // for debug
-            char[] visualizer = { ' ', ' ', 'X', 'I', 'M', 'P' };
+            // FOR DEBUG
+            #region PRINT MAP
+            char[] visualizer = { '#', ' ', 'X', 'I', 'M', 'P' };
 
             for ( int i = 0; i < size; ++i )
             {
@@ -379,28 +431,32 @@ namespace OperationBlueholeContent
                         continue;
                     }
 
-                    if ( map[i,j] == null )
-                        Console.Write( visualizer[0] );
-                    else
+                    switch ( map[i,j].objectType )
                     {
-                        if ( map[i, j].gameObject != null ) // 일단 무조건 아이템
-                        {
-                            Console.Write( visualizer[3] );
-                        }
-                        else if ( map[i, j].party != null )
-                        {
-                            if ( map[i, j].party.partyType == PartyType.MOB )
-                                Console.Write( visualizer[4] );
+                        case MapObjectType.VOID:
+                            Console.Write( visualizer[0] );
+                            break;
+                        case MapObjectType.WALL:
+                            Console.Write( visualizer[2] );
+                            break;
+                        default:
+                            if ( map[i, j].party != null )
+                            {
+                                if ( map[i, j].party.partyType == PartyType.MOB )
+                                    Console.Write( visualizer[4] );
+                                else
+                                    Console.Write( visualizer[5] );
+                            }
+                            else if ( map[i, j].gameObject != null )
+                                Console.Write( visualizer[3] );
                             else
-                                Console.Write( visualizer[5] );
-                        }
-                        else
-                            Console.Write( visualizer[(int)map[i, j].objectType] );
+                                Console.Write( visualizer[1] );
+                            break;
                     }
-                        
                 }
                 Console.WriteLine("");
             }
+            #endregion
 
             Console.WriteLine( "distance between player and ring" );
             Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
@@ -415,6 +471,18 @@ namespace OperationBlueholeContent
         }
 
         public Int2D GetPlayerPosition()
+        {
+            // temp
+            return new Int2D( -1, -1 );
+        }
+
+        public int GetZoneId( Int2D position )
+        {
+            // temp
+            return -1;
+        }
+
+        public Int2D GetZonePosition( int id )
         {
             // temp
             return new Int2D( -1, -1 );

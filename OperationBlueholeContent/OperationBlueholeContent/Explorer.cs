@@ -23,11 +23,12 @@ namespace OperationBlueholeContent
         public Int2D position { get; set; }
         public Int2D currentDestination { get; private set; }
         public int currentDestinationId { get; private set; }
+        public int GetCurrentZoneId() { return dungeonZoneHistory.Peek(); }
 
-        private Queue<Int2D> currentMovePath;
+        private Queue<Int2D> currentMovePath = new Queue<Int2D>();
 
-        Stack<int>      dungeonZoneHistory;
-        HashSet<int>    exploredZone;
+        Stack<int>      dungeonZoneHistory = new Stack<int>();
+        HashSet<int>    exploredZone = new HashSet<int>();
 
         DungeonMaster dungeonMaster;
 
@@ -41,21 +42,25 @@ namespace OperationBlueholeContent
             this.position = position;
 
             // 존 방문 기록도 업데이트하고, 첫 movePath 계산도 해둔다
+            dungeonZoneHistory.Push( dungeonMaster.GetZoneId( position ) );
+            exploredZone.Add( dungeonZoneHistory.Peek() );
 
+            UpdateDestination();
         }
 
-        // watch out!
+        // 조심해!
         // FOR DEBUG!!!!
         public void Teleport( Int2D destination )
         {
             position = destination;
+
+            // 현재 존 정보 업데이트 할 것
+            int currentZoneId = dungeonMaster.GetZoneId( position );
+            if ( currentZoneId != dungeonZoneHistory.Peek() )
+                dungeonZoneHistory.Push( currentZoneId );
         }
 
-        public int GetCurrentZoneId() { return dungeonZoneHistory.Peek(); }
-
-
-
-        public MoveDiretion Move()
+        public MoveDiretion GetMoveDirection()
         {
             if ( position.Equals( currentMovePath.Peek() ) )
                 currentMovePath.Dequeue();
@@ -80,6 +85,19 @@ namespace OperationBlueholeContent
             return MoveDiretion.STAY;
         }
 
+        private void UpdateDestination()
+        {
+            currentMovePath.Clear();
+
+            // 조심해!
+            // 아이템이 있는 경우 거쳐서 갈 지 결정해야 함
+            // 특히 ring
+            // 현재 속한 존의 오브젝트 정보를 받아둬야 할 듯
+
+            currentDestinationId = SelectNextZone();
+            currentDestination = dungeonMaster.GetZonePosition( currentDestinationId );
+        }
+
         // 다음 존 선택
         private int SelectNextZone()
         {
@@ -95,16 +113,6 @@ namespace OperationBlueholeContent
             dungeonZoneHistory.Pop();
 
             return dungeonZoneHistory.Peek();
-        }
-
-        private void UpdateDestination()
-        {
-            currentMovePath.Clear();
-
-            // 아이템이 있는 경우 거쳐서 갈 지 결정해야 함
-
-            currentDestinationId = SelectNextZone();
-            currentDestination = dungeonMaster.GetZonePosition( currentDestinationId );
         }
 
         private void MakePath( Int2D destination )

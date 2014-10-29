@@ -38,19 +38,25 @@ namespace OperationBlueholeContent
         {
             while ( true )
             {
-                MoveDiretion direction = explorer.Move();
+                MoveDiretion direction = explorer.GetMoveDirection();
+
+                // FOR DEBUG
+                // direction 방향으로 움직이지 않고
+                // currentDestination 얻어와서 바로 이동
                 explorer.Teleport( explorer.currentDestination );
 
+                // 비밀의 방에 도착
                 if ( dungeon.FindRing( explorer.GetCurrentZoneId() ) )
                     break;
+                
             }
         }
 
         // 구현할 것
-        public Int2D GetZonePosition( int id )
-        {
-            return new Int2D( -1, -1 );
-        }
+        // wrappers
+        public Int2D GetZonePosition( int id ) { return dungeon.GetZonePosition( id ); }
+
+        public int GetZoneId( Int2D position ) { return dungeon.GetZoneId( position ); }
 
         public IEnumerable<int> GetLinkedZoneList( int zoneId )
         {

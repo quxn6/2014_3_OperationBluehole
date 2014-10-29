@@ -17,14 +17,23 @@ namespace OperationBlueholeContent
     // TILE인 경우에는 gameObject가 null인지 보고, 아니면 해당 오브젝트를 렌더?
     class MapObject
     {
-        public MapObjectType objectType;
-        public GameObject gameObject;
+        public MapObjectType objectType { get; set; }
+        public GameObject gameObject { get; set; }
         public Party party { get; set; }
+        public int zoneId { get; set; }
 
-        public MapObject( MapObjectType id, GameObject obj )
+        public MapObject() 
         {
-            this.objectType = id;
-            this.gameObject = obj;
+            objectType = MapObjectType.VOID;
+            zoneId = -1;
+        }
+
+        public void Reset()
+        {
+            objectType = MapObjectType.VOID;
+            gameObject = null;
+            party = null;
+            zoneId = -1;
         }
     }
 }
