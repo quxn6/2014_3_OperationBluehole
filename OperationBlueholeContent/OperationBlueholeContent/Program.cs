@@ -28,6 +28,7 @@ namespace OperationBlueholeContent
             // 던전 테스트--------
             DungeonMaster newMaster = new DungeonMaster();
             newMaster.Init( Users, 60 );
+            newMaster.Start();
             // ------------------
 
 			Console.ReadKey();

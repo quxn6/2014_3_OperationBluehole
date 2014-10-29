@@ -228,9 +228,8 @@ namespace OperationBlueholeContent
                 if ( map[position.y, position.x] != null && map[position.y, position.x].objectType == MapObjectType.TILE
                     && map[position.y, position.x].party == null )
                 {
-                    // 조심해!
-                    // party에 자신의 idx 기록은 안 해도 되려나...
                     map[position.y, position.x].party = party;
+                    party.position = position;
 
                     break;
                 }
@@ -294,20 +293,21 @@ namespace OperationBlueholeContent
             }
         }
 
-        private void LinkHorizontalArea( int corridorIdx, int targetIdx, int step )
+        private int LinkHorizontalArea( int corridorIdx, int targetIdx, int step )
         {
-            while ( map[corridorIdx, targetIdx] == null || map[corridorIdx, targetIdx].objectType != MapObjectType.TILE )
+            while ( map[corridorIdx, targetIdx].objectType != MapObjectType.TILE )
             {
                 map[corridorIdx, targetIdx].objectType = MapObjectType.TILE;
 
                 bool isLinked = false;
 
-                if ( map[corridorIdx - 1, targetIdx] == null || map[corridorIdx - 1, targetIdx].objectType != MapObjectType.TILE )
+                if ( map[corridorIdx - 1, targetIdx].objectType != MapObjectType.TILE )
                     map[corridorIdx - 1, targetIdx].objectType = MapObjectType.WALL;
                 else
                     isLinked = true;
+                    
 
-                if ( map[corridorIdx + 1, targetIdx] == null || map[corridorIdx + 1, targetIdx].objectType != MapObjectType.TILE )
+                if ( map[corridorIdx + 1, targetIdx].objectType != MapObjectType.TILE )
                     map[corridorIdx + 1, targetIdx].objectType = MapObjectType.WALL;
                 else
                     isLinked = true;
@@ -318,22 +318,24 @@ namespace OperationBlueholeContent
 
                 targetIdx += step;
             }
+
+            return map[corridorIdx, targetIdx].zoneId;
         }
 
-        private void LinkVerticalArea( int corridorIdx, int targetIdx, int step )
+        private int LinkVerticalArea( int corridorIdx, int targetIdx, int step )
         {
-            while ( map[targetIdx, corridorIdx] == null || map[targetIdx, corridorIdx].objectType != MapObjectType.TILE )
+            while ( map[targetIdx, corridorIdx].objectType != MapObjectType.TILE )
             {
                 map[targetIdx, corridorIdx].objectType = MapObjectType.TILE;
 
                 bool isLinked = false;
 
-                if ( map[targetIdx, corridorIdx - 1] == null || map[targetIdx, corridorIdx - 1].objectType != MapObjectType.TILE )
+                if ( map[targetIdx, corridorIdx - 1].objectType != MapObjectType.TILE )
                     map[targetIdx, corridorIdx - 1].objectType = MapObjectType.WALL;
                 else
                     isLinked = true;
 
-                if ( map[targetIdx, corridorIdx + 1] == null || map[targetIdx, corridorIdx + 1].objectType != MapObjectType.TILE )
+                if ( map[targetIdx, corridorIdx + 1].objectType != MapObjectType.TILE )
                     map[targetIdx, corridorIdx + 1].objectType = MapObjectType.WALL;
                 else
                     isLinked = true;
@@ -344,6 +346,8 @@ namespace OperationBlueholeContent
 
                 targetIdx += step;
             }
+
+            return map[targetIdx, corridorIdx].zoneId;
         }
 
         // LinkHorizontalArea, LinkVerticalArea를 호출해서 두 sibling 관계의 두 node의 영역을 통로로 잇는 함수
@@ -353,6 +357,12 @@ namespace OperationBlueholeContent
             // 항상 sibling과 쌍으로 들어가고, 순서는 left - right 이므로 
             // 하나 꺼내서 부모를 통해서 sibling(right)를 찾고, 둘이 나누어진 방식(horizontal, vertical)에 따라서 
             // 겹쳐지는 영역을 설정하고, 그 범위 안에서 임의의 idx 선택
+
+            // 연결할 두 영역 사이의 임의의 점에서 시작해서 각각의 영역이 있는 방향으로 한칸씩 이동하면서 타일을 만날 때까지 통로 생성
+            // 이렇게 도달한 타일의 zoneId를 기준으로 각각의 영역은 자신과 연결된 영역의 id를 알 수 있게 된다
+
+            int zoneId1, zoneId2;
+
             if ( leftChild.siblingDirection )
             {
                 // y축으로 겹치는 구간 탐색
@@ -360,8 +370,8 @@ namespace OperationBlueholeContent
                     Math.Max( leftChild.lowerBoundary.y, leftChild.lowerBoundary.y ) + 1,
                     Math.Min( leftChild.upperBoundary.y, leftChild.upperBoundary.y ) - 1 );
 
-                LinkHorizontalArea( corridorIdx, leftChild.upperBoundary.x, -1 );
-                LinkHorizontalArea( corridorIdx, leftChild.upperBoundary.x + 1, 1 );
+                zoneId1 = LinkHorizontalArea( corridorIdx, leftChild.upperBoundary.x, -1 );
+                zoneId2 = LinkHorizontalArea( corridorIdx, leftChild.upperBoundary.x + 1, 1 );
             }
             else
             {
@@ -370,9 +380,12 @@ namespace OperationBlueholeContent
                     Math.Max( leftChild.lowerBoundary.x, leftChild.lowerBoundary.x ) + 1,
                     Math.Min( leftChild.upperBoundary.x, leftChild.upperBoundary.x ) - 1 );
 
-                LinkVerticalArea( corridorIdx, leftChild.upperBoundary.y, -1 );
-                LinkVerticalArea( corridorIdx, leftChild.upperBoundary.y + 1, 1 );
+                zoneId1 = LinkVerticalArea( corridorIdx, leftChild.upperBoundary.y, -1 );
+                zoneId2 = LinkVerticalArea( corridorIdx, leftChild.upperBoundary.y + 1, 1 );
             }
+
+            zoneList[zoneId1].linkedZone.Add( zoneList[zoneId2] );
+            zoneList[zoneId2].linkedZone.Add( zoneList[zoneId1] );
         }
     }
 
@@ -381,6 +394,8 @@ namespace OperationBlueholeContent
         private int size;
         private MapObject[,] map;
         private Random random;
+
+        private Int2D playerPosition, ringPosition;
 
         public List<DungeonZone> zoneList = new List<DungeonZone>();
 
@@ -414,12 +429,39 @@ namespace OperationBlueholeContent
             // player party와 ring 배치 - 맵 전체를 기반으로
             RingOfErrethAkbe ring = new RingOfErrethAkbe();
 
-            Int2D playerPosition = root.RegisterParty( users );
-            Int2D ringPosition = root.RegisterGameObject( ring );
+            playerPosition = root.RegisterParty( users );
+            ringPosition = root.RegisterGameObject( ring );
 
-            // FOR DEBUG
-            #region PRINT MAP
+            zoneList[map[ringPosition.y, ringPosition.x].zoneId].items.Add( ring );
+
+            // PrintOutMAP();
+
+            Console.WriteLine( "distance between player and ring" );
+            Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
+        }
+
+        public bool FindRing( int zoneId )
+        {
+            // 인자로 받은 존에 ring이 있는 지 확인
+            return zoneList[zoneId].items.Where( i => i.code == ItemCode.RING ).Count() > 0;
+        }
+
+        public int GetZoneId( Int2D position )
+        {
+            return zoneList
+                .Where( z => z.lowerBoundary.x <= position.x && position.x <= z.upperBoundary.x && z.lowerBoundary.y <= position.y && position.y <= z.upperBoundary.y )
+                .Select( z => z.zoneId )
+                .First();
+        }
+
+        public Int2D GetZonePosition( int id ) { return zoneList[id].centerPosition; }
+
+        #region FOR DEBUG
+        public void PrintOutMAP()
+        {
             char[] visualizer = { '#', ' ', 'X', 'I', 'M', 'P' };
+
+            Console.Clear();
 
             for ( int i = 0; i < size; ++i )
             {
@@ -431,7 +473,7 @@ namespace OperationBlueholeContent
                         continue;
                     }
 
-                    switch ( map[i,j].objectType )
+                    switch ( map[i, j].objectType )
                     {
                         case MapObjectType.VOID:
                             Console.Write( visualizer[0] );
@@ -454,38 +496,31 @@ namespace OperationBlueholeContent
                             break;
                     }
                 }
-                Console.WriteLine("");
+                Console.WriteLine( "" );
             }
-            #endregion
-
-            Console.WriteLine( "distance between player and ring" );
-            Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
         }
 
-        public bool FindRing( int zoneId )
+        public bool MovePlayer( Int2D position )
         {
-            // 인자로 받은 존에 ring이 있는 지 확인
+            Int2D newPosition = position;
 
-            // temp
-            return false;
-        }
+            while ( map[position.y, position.x].party != null )
+            {
+                Int2D tempPosition;
+                tempPosition.x = newPosition.x + random.Next(-3, 3);
+                tempPosition.y = newPosition.y + random.Next(-3, 3);
 
-        public Int2D GetPlayerPosition()
-        {
-            // temp
-            return new Int2D( -1, -1 );
-        }
+                if ( map[position.y, position.x].objectType != MapObjectType.TILE || map[position.y, position.x].party != null )
+                    continue;
 
-        public int GetZoneId( Int2D position )
-        {
-            // temp
-            return -1;
-        }
+                newPosition = tempPosition;
+            }
 
-        public Int2D GetZonePosition( int id )
-        {
-            // temp
-            return new Int2D( -1, -1 );
+            map[newPosition.y, newPosition.x].party = map[playerPosition.y, playerPosition.x].party;
+            map[playerPosition.y, playerPosition.x].party = null;
+
+            return true;
         }
+        #endregion
     }
 }

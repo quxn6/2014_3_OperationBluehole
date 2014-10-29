@@ -57,7 +57,17 @@ namespace OperationBlueholeContent
             // 현재 존 정보 업데이트 할 것
             int currentZoneId = dungeonMaster.GetZoneId( position );
             if ( currentZoneId != dungeonZoneHistory.Peek() )
+            {
                 dungeonZoneHistory.Push( currentZoneId );
+                exploredZone.Add( currentZoneId );
+            }
+        }
+
+        // 조심해!
+        // FOR DEBUG!!!!
+        public void GetNextZone()
+        {
+            UpdateDestination();
         }
 
         public MoveDiretion GetMoveDirection()

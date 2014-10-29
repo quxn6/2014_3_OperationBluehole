@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
@@ -29,7 +30,7 @@ namespace OperationBlueholeContent
             dungeon = new Dungeon( size, mobs, items, users );
             explorer = new Explorer( this );
 
-            explorer.Init( dungeon.GetPlayerPosition() );
+            explorer.Init( users.position );
 
             return true;
         }
@@ -38,18 +39,25 @@ namespace OperationBlueholeContent
         {
             while ( true )
             {
-                MoveDiretion direction = explorer.GetMoveDirection();
+                // MoveDiretion direction = explorer.GetMoveDirection();
 
                 // FOR DEBUG
                 // direction 방향으로 움직이지 않고
                 // currentDestination 얻어와서 바로 이동
-                explorer.Teleport( explorer.currentDestination );
 
                 // 비밀의 방에 도착
                 if ( dungeon.FindRing( explorer.GetCurrentZoneId() ) )
                     break;
-                
+
+                explorer.GetNextZone();
+                explorer.Teleport( explorer.currentDestination );
+                Console.WriteLine( "zone : " + explorer.GetCurrentZoneId() );
+
+                dungeon.PrintOutMAP();
+                Thread.Sleep( 500 );
             }
+
+            Console.WriteLine( "THE END" );
         }
 
         // 구현할 것
@@ -60,8 +68,7 @@ namespace OperationBlueholeContent
 
         public IEnumerable<int> GetLinkedZoneList( int zoneId )
         {
-            // temp
-            return Enumerable.Range( 0, 8 );
+            return dungeon.zoneList[zoneId].linkedZone.Select( z => z.zoneId );
         }
     }
 }
