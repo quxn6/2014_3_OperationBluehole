@@ -12,13 +12,13 @@ public class ObjectManager : MonoBehaviour
 	public GameObject macaronObject;
 	public GameObject passiveObject;
 	public Sprite[] passiveObjectSprites;
-	private HYObjectPool activeObjectPool;
-	public HYObjectPool ActiveObjectPool
+	private LgsObjectPool activeObjectPool;
+	public LgsObjectPool ActiveObjectPool
 	{
 		get { return activeObjectPool; }
 	}
-	private HYObjectPool passiveObjectPool;
-	public HYObjectPool PassiveObjectPool
+	private LgsObjectPool passiveObjectPool;
+	public LgsObjectPool PassiveObjectPool
 	{
 		get { return passiveObjectPool; }
 	}
@@ -26,10 +26,10 @@ public class ObjectManager : MonoBehaviour
 	void Awake()
 	{
 		instance = this;
-		activeObjectPool = ScriptableObject.CreateInstance<HYObjectPool>();
-		passiveObjectPool = ScriptableObject.CreateInstance<HYObjectPool>();
-		activeObjectPool.InitPool( macaronObject , GameConfig.NUMBER_OF_ACTIVE_OBJECT );
-		passiveObjectPool.InitPool( passiveObject , GameConfig.NUMBER_OF_PASSIVE_OBJECT );
+		activeObjectPool = ScriptableObject.CreateInstance<LgsObjectPool>();
+		passiveObjectPool = ScriptableObject.CreateInstance<LgsObjectPool>();
+// 		activeObjectPool.InitPool( macaronObject , GameConfig.NUMBER_OF_ACTIVE_OBJECT, TODO );
+// 		passiveObjectPool.InitPool( passiveObject , GameConfig.NUMBER_OF_PASSIVE_OBJECT, TODO );
 	}
 
 	void OnEnable()

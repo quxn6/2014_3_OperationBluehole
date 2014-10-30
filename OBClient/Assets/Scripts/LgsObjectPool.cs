@@ -1,34 +1,46 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class HYObjectPool : ScriptableObject
+public class LgsObjectPool : ScriptableObject
 {
+	private GameObject objectPoolRoot;
 	private GameObject[] objectPool;
-	private GameObject root;
-	private int currentPoolSize;
-	private int currentIndex;
-	private int instanciatedObjectIndex;
+	private GameObject objectList;
+	private int currentPoolSize = 0;
+	private int currentIndex = 0;
+	private int instanciatedObjectIndex = 0;
 	private string objectName;
 	private bool isInitialized = false;
 
-	public void InitPool( GameObject prefabObject , int defaultPoolSize )
-	{
+	public void InitPool( GameObject prefabObject , int defaultPoolSize, GameObject root )
+	{		
 		if ( isInitialized )
 		{
 			Debug.LogError( "It's already initialized" );
 			return;
 		}
+
+		// Manage ObjectPools
+		objectPoolRoot = root;	
+				
+
+		// init current pool variables
 		currentIndex = 0;
 		instanciatedObjectIndex = 0;
 		currentPoolSize = defaultPoolSize;
 		objectName = prefabObject.name;
-		objectPool = new GameObject[currentPoolSize];
-		root = new GameObject( objectName + "_Root" );
 
+		// Create empty object for hierarchy
+		objectList = new GameObject( objectName + "_list" );
+		objectList.transform.parent = objectPoolRoot.transform;
+
+		// Create Pool
+		objectPool = new GameObject[currentPoolSize];
 		InstanceObjects( objectPool, prefabObject , currentPoolSize );
 
+		// Initializing Complete
 		isInitialized = true;
-	}
+	}	
 
 	private void InstanceObjects( GameObject[] objectPool, GameObject prefabObject , int poolsize )
 	{
@@ -38,7 +50,7 @@ public class HYObjectPool : ScriptableObject
 			objectPool[instanciatedObjectIndex] = Instantiate( prefabObject ) as GameObject;
 			objectPool[instanciatedObjectIndex].name = objectName + "_" + instanciatedObjectIndex;
 			objectPool[instanciatedObjectIndex].SetActive( false );
-			objectPool[instanciatedObjectIndex].transform.parent = root.transform;
+			objectPool[instanciatedObjectIndex].transform.parent = objectList.transform;
 			++instanciatedObjectIndex;
 		}
 	}
@@ -138,6 +150,10 @@ public class HYObjectPool : ScriptableObject
 		{
 			Destroy( objectPool[i] );
 		}
+
+		Destroy( objectList );
+		
+		// Clear Complete
 		isInitialized = false;
 	}
 
