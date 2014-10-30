@@ -28,7 +28,7 @@ namespace OperationBlueholeContent
             List<Item> items = new List<Item>();
 
             dungeon = new Dungeon( size, mobs, items, users );
-            explorer = new Explorer( this );
+            explorer = new Explorer( this, size );
 
             explorer.Init( users.position );
 
@@ -39,8 +39,6 @@ namespace OperationBlueholeContent
         {
             while ( true )
             {
-                // MoveDiretion direction = explorer.GetMoveDirection();
-
                 // FOR DEBUG
                 // direction 방향으로 움직이지 않고
                 // currentDestination 얻어와서 바로 이동
@@ -49,11 +47,17 @@ namespace OperationBlueholeContent
                 if ( dungeon.FindRing( explorer.GetCurrentZoneId() ) )
                     break;
 
-                explorer.GetNextZone();
-                explorer.Teleport( explorer.currentDestination );
-                Console.WriteLine( "zone : " + explorer.GetCurrentZoneId() );
+                MoveDiretion direction = explorer.GetMoveDirection();
+                explorer.Move( direction );
+                dungeon.MovePlayer( explorer.position );
+                
+                // explorer.GetNextZone();
+                // explorer.Teleport( explorer.currentDestination );
+                // Console.WriteLine( "zone : " + explorer.GetCurrentZoneId() );
 
                 dungeon.PrintOutMAP();
+                Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
+
                 Thread.Sleep( 500 );
             }
 
@@ -70,5 +74,7 @@ namespace OperationBlueholeContent
         {
             return dungeon.zoneList[zoneId].linkedZone.Select( z => z.zoneId );
         }
+
+        public bool IsTile( int x, int y ) { return MapObjectType.TILE == dungeon.GetMapObjectType( x, y ); }
     }
 }

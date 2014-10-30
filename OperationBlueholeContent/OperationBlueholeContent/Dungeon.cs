@@ -12,6 +12,16 @@ namespace OperationBlueholeContent
 
         public Int2D( int x, int y ) { this.x = x; this.y = y; }
         public Int2D( Int2D a ) { this.x = a.x; this.y = a.y; }
+
+        public static bool operator ==( Int2D lhs, Int2D rhs )
+        {
+            return ( lhs.x == rhs.x && lhs.y == rhs.y );
+        }
+
+        public static bool operator !=( Int2D lhs, Int2D rhs )
+        {
+            return ( lhs.x != rhs.x || lhs.y != rhs.y );
+        }
     }
 
     class DungeonZone
@@ -434,7 +444,7 @@ namespace OperationBlueholeContent
 
             zoneList[map[ringPosition.y, ringPosition.x].zoneId].items.Add( ring );
 
-            // PrintOutMAP();
+            PrintOutMAP();
 
             Console.WriteLine( "distance between player and ring" );
             Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
@@ -455,6 +465,8 @@ namespace OperationBlueholeContent
         }
 
         public Int2D GetZonePosition( int id ) { return zoneList[id].centerPosition; }
+
+        public MapObjectType GetMapObjectType( int x, int y ) { return map[y, x].objectType; }
 
         #region FOR DEBUG
         public void PrintOutMAP()
@@ -504,6 +516,10 @@ namespace OperationBlueholeContent
         {
             Int2D newPosition = position;
 
+            // 임시 사용 중
+            // 해당 영역에 몬스터 있으면 덮어 쓰지 말고 다르게 처리할 것
+            // 전투를 하든가...뭐 그런 식으로
+            /*
             while ( map[position.y, position.x].party != null )
             {
                 Int2D tempPosition;
@@ -515,10 +531,11 @@ namespace OperationBlueholeContent
 
                 newPosition = tempPosition;
             }
-
+            */
             map[newPosition.y, newPosition.x].party = map[playerPosition.y, playerPosition.x].party;
             map[playerPosition.y, playerPosition.x].party = null;
-
+            playerPosition = newPosition;
+            
             return true;
         }
         #endregion

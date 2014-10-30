@@ -16,6 +16,57 @@ namespace OperationBlueholeContent
         RIGHT,
     }
 
+    class ExploerNode :IComparable<ExploerNode>
+    {
+        public bool isClosed;
+        public bool isOpened;
+        public ExploerNode cameFrom;
+        public float fScore;
+        public float gScore;
+
+        public readonly bool isTile;
+        public readonly Int2D position;
+
+        public ExploerNode( bool isTile, int x, int y )
+        {
+            this.isTile = isTile;
+            this.position.x = x;
+            this.position.y = y;
+
+            isClosed = !isTile;
+            isOpened = false;
+            cameFrom = null;
+            fScore = 0.0f;
+            gScore = 0.0f;
+        }
+
+        public void Reset()
+        {
+            if ( isTile )
+            {
+                isClosed = false;
+                isOpened = false;
+                cameFrom = null;
+                fScore = 0.0f;
+                gScore = 0.0f;
+            }
+        }
+
+        public int CompareTo( ExploerNode obj )
+        {
+            return this.fScore.CompareTo( obj.fScore );
+        }
+    }
+
+    class NodeComp : Comparer<ExploerNode>
+    {
+        public override int Compare( ExploerNode lhs, ExploerNode rhs )
+        {
+            if ( object.Equals( lhs, rhs ) ) return 0;
+            return lhs.fScore.CompareTo( rhs.fScore );
+        }
+    }
+
     // 시야 개념은 던전 내부 zone으로 구분
     // zone 정보는 DM를 통해서 얻음
     class Explorer
@@ -25,16 +76,24 @@ namespace OperationBlueholeContent
         public int currentDestinationId { get; private set; }
         public int GetCurrentZoneId() { return dungeonZoneHistory.Peek(); }
 
-        private Queue<Int2D> currentMovePath = new Queue<Int2D>();
+        private Stack<Int2D> currentMovePath = new Stack<Int2D>();
 
         Stack<int>      dungeonZoneHistory = new Stack<int>();
         HashSet<int>    exploredZone = new HashSet<int>();
+        ExploerNode[,]  map;
+        private int mapSize;
 
         DungeonMaster dungeonMaster;
 
-        public Explorer( DungeonMaster master )
+        public Explorer( DungeonMaster master, int size )
         {
             this.dungeonMaster = master;
+            map = new ExploerNode[size, size];
+            mapSize = size;
+
+            for ( int i = 0; i < size; ++i )
+                for ( int j = 0; j < size; ++j )
+                    map[i, j] = new ExploerNode( dungeonMaster.IsTile( j, i ), j, i );
         }
 
         public void Init( Int2D position )
@@ -73,7 +132,7 @@ namespace OperationBlueholeContent
         public MoveDiretion GetMoveDirection()
         {
             if ( position.Equals( currentMovePath.Peek() ) )
-                currentMovePath.Dequeue();
+                currentMovePath.Pop();
 
             // 도착했거나 작성된 경로가 없는 경우 새로 생성
             if ( position.Equals( currentDestination ) || currentMovePath.Count == 0 )
@@ -95,6 +154,35 @@ namespace OperationBlueholeContent
             return MoveDiretion.STAY;
         }
 
+        public void Move( MoveDiretion direction )
+        {
+            switch ( direction )
+            {
+                case MoveDiretion.DOWN:
+                    position = new Int2D(position.x, position.y + 1);
+                    break;
+                case MoveDiretion.LEFT:
+                    position = new Int2D( position.x - 1, position.y );
+                    break;
+                case MoveDiretion.RIGHT:
+                    position = new Int2D( position.x + 1, position.y );
+                    break;
+                case MoveDiretion.UP:
+                    position = new Int2D( position.x, position.y - 1 );
+                    break;
+                default:
+                    break;
+            }
+
+            // 현재 존 정보 업데이트 할 것
+            int currentZoneId = dungeonMaster.GetZoneId( position );
+            if ( currentZoneId != dungeonZoneHistory.Peek() )
+            {
+                dungeonZoneHistory.Push( currentZoneId );
+                exploredZone.Add( currentZoneId );
+            }
+        }
+
         private void UpdateDestination()
         {
             currentMovePath.Clear();
@@ -106,6 +194,8 @@ namespace OperationBlueholeContent
 
             currentDestinationId = SelectNextZone();
             currentDestination = dungeonMaster.GetZonePosition( currentDestinationId );
+
+            MakePath( currentDestination );
         }
 
         // 다음 존 선택
@@ -125,12 +215,87 @@ namespace OperationBlueholeContent
             return dungeonZoneHistory.Peek();
         }
 
+        private float GetHeuristicScore( Int2D target, Int2D goal )
+        {
+            return Math.Abs( goal.x - target.x ) + Math.Abs( goal.y - target.y );
+        }
+
         private void MakePath( Int2D destination )
         {
-            currentDestination = destination;
+            Console.WriteLine( "start to make the path" );
+            Console.WriteLine( "start : " + position.x + " / " + position.y );
+            Console.WriteLine( "dest : " + destination.x + " / " + destination.y );
 
-            // 주어진 좌표로의 최단 경로를 생성
-            // 이건 A* algorithm 사용하면 될 듯
+            // 조심해!!!
+            // priority_queue가 없어서 일단 red_black_tree로 구현
+            List<ExploerNode> openSet = new List<ExploerNode>();
+
+            for ( int i = 0; i < mapSize; ++i )
+                for ( int j = 0; j < mapSize; ++j )
+                    map[i, j].Reset();
+
+            map[position.y, position.x].gScore = 0;
+            map[position.y, position.x].fScore = map[position.y, position.x].gScore + GetHeuristicScore( position, destination );
+            map[position.y, position.x].isOpened = true;
+            openSet.Add( map[position.y, position.x] );
+
+            while( openSet.Count > 0 )
+            {
+                ExploerNode current = openSet.Min();
+                // Console.WriteLine( "current : " + current.position.x + " / " + current.position.y );
+
+                if ( current.position == destination )
+                {
+                    ReconstructPath( current );
+                    currentMovePath.Pop();      // 현재 위치는 빼자
+                    break;
+                }
+
+                openSet.Remove( openSet.Min() );
+                current.isClosed = true;
+
+                // 조심해!
+                // 배열을 하나 새로 만드는 것이 어색하다
+                List<ExploerNode> neigborNodes = new List<ExploerNode>{
+                                                     map[current.position.y - 1, current.position.x],
+                                                     map[current.position.y + 1, current.position.x],
+                                                     map[current.position.y, current.position.x - 1],
+                                                     map[current.position.y, current.position.x + 1]
+                                                 };
+
+                for ( int i = 0; i < neigborNodes.Count; ++i )
+                {
+                    ExploerNode neighbor = neigborNodes[i];
+
+                    if ( neighbor.isClosed )
+                        continue;
+
+                    float gScoreTentative = current.gScore + Math.Abs( destination.x - current.position.x ) + Math.Abs( destination.y - current.position.y );
+
+                    if ( !neighbor.isOpened || gScoreTentative < neighbor.gScore )
+                    {
+                        neighbor.cameFrom = current;
+                        neighbor.gScore = gScoreTentative;
+                        neighbor.fScore = neighbor.gScore + GetHeuristicScore( neighbor.position, destination );
+
+                        if ( !neighbor.isOpened )
+                            openSet.Add( neighbor );
+
+                        openSet.Sort( new NodeComp() );
+                    }
+                }
+            }
+            
+            Console.WriteLine( "end!!!!" );
+        }
+
+        private void ReconstructPath( ExploerNode currentNode )
+        {
+            if ( currentNode.cameFrom != null )
+            {
+                currentMovePath.Push( currentNode.cameFrom.position );
+                ReconstructPath( currentNode.cameFrom );
+            }
         }
     }
 }
