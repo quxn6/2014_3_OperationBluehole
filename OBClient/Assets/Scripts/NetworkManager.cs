@@ -18,6 +18,21 @@ public class NetworkManager : MonoBehaviour
 		instance = this;
 	}
 
+	public void SendLoadmapRequest()
+	{
+		StartCoroutine(DummyLoadmapResponse());
+	}
+	
+	IEnumerator DummyLoadmapResponse()
+	{
+		yield return new WaitForSeconds( 0.5f );
+	}
+
+	public void RecvLoadmapResponse()
+	{
+
+	}
+
 	// load map data from server
 	public Dungeon LoadMap()
 	{

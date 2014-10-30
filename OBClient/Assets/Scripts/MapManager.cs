@@ -32,11 +32,11 @@ public class MapManager : MonoBehaviour
 
 	private Dungeon instanceDungeon;
 	private GameObject playerInstance;
-
-	void OnEnable()
+	
+	public void SetMapObjects(Dungeon dungeonMap)
 	{
 		// Load map data from server
-		instanceDungeon = NetworkManager.Instance.LoadMap();
+		instanceDungeon = dungeonMap;
 
 		// Put Game object on compatible coordinate of the map 
 		GameObject floor = Instantiate( floorPrefab , new Vector3( instanceDungeon.size / 2.0f , 0.0f , instanceDungeon.size / 2.0f ) , Quaternion.Euler( 90.0f , 0.0f , 0.0f ) ) as GameObject;
@@ -50,7 +50,7 @@ public class MapManager : MonoBehaviour
 					InstancingObject( emptySpacePrefab , emptySpaceRoot , i );
 					break;
 				case 'X':
-					InstancingObject( wallPrefab , wallRoot, i );
+					InstancingObject( wallPrefab , wallRoot , i );
 					break;
 				case 'P':
 					playerInstance = InstancingObject( playerPrefab , mapRoot , i );
@@ -60,7 +60,7 @@ public class MapManager : MonoBehaviour
 					InstancingObject( itemBoxPrefab , itemBoxRoot , i );
 					break;
 				case 'M':
-					InstancingObject( mobPrefab , mobRoot, i );
+					InstancingObject( mobPrefab , mobRoot , i );
 					break;
 			}
 		}
