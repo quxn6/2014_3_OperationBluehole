@@ -453,7 +453,7 @@ namespace OperationBlueholeContent
         public bool FindRing( int zoneId )
         {
             // 인자로 받은 존에 ring이 있는 지 확인
-            return zoneList[zoneId].items.Where( i => i.code == ItemCode.RING ).Count() > 0;
+            return zoneList[zoneId].items.Where( i => i.code == ItemCode.Ring ).Count() > 0;
         }
 
         public int GetZoneId( Int2D position )
