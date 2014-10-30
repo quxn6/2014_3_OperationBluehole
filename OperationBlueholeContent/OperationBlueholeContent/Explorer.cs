@@ -290,7 +290,10 @@ namespace OperationBlueholeContent
                         neighbor.fScore = neighbor.gScore + GetHeuristicScore( neighbor.position, destination );
 
                         if ( !neighbor.isOpened )
+                        {
+                            neighbor.isOpened = true;
                             openSet.Add( neighbor );
+                        }
 
                         openSet.Sort( new NodeComp() );
                     }
