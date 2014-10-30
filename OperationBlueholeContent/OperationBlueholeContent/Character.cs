@@ -50,14 +50,7 @@ namespace OperationBlueholeContent
 
 	class Character : GameObject
 	{
-		public ushort statLev { get; protected set; }
-		public ushort statStr { get; protected set; }
-		public ushort statDex { get; protected set; }
-		public ushort statInt { get; protected set; }
-		public ushort statCon { get; protected set; }
-		public ushort statAgi { get; protected set; }
-		public ushort statWis { get; protected set; }
-		public ushort statMov { get; protected set; }
+		public ushort[] stats { get; protected set; }
 
 		public uint statHp { get; protected set; }
 		public uint statMp { get; protected set; }
@@ -85,9 +78,7 @@ namespace OperationBlueholeContent
 
 		public void Reset()
 		{
-			statLev = 1;
-			statStr = statDex = statInt = statCon = statAgi = statWis = 10;
-			statMov = 5;
+			stats = new ushort[8] { 1, 5, 5, 5, 5, 5, 5, 5 };
 
 			hp = statHp = 100;
 			mp = statMp = 100;
@@ -102,6 +93,7 @@ namespace OperationBlueholeContent
 
 		public void CalcStat()
 		{
+			phyAtk = phyDef = magAtk = magDef = 0;
 			foreach (var iid in equipments)
 			{
 				var item = (Equipment)ItemManager.table[iid];
@@ -238,71 +230,15 @@ namespace OperationBlueholeContent
 			
 			foreach (var stat in item.reqStat)
 			{
-				// 어떻게 고칠 수 없을까?
-				switch (stat.Item1)
-				{
-					case StatType.Lev:
-						if (statLev < stat.Item2)
-							return false;
-						break;
-					case StatType.Str:
-						if (statStr < stat.Item2)
-							return false;
-						break;
-					case StatType.Dex:
-						if (statDex < stat.Item2)
-							return false;
-						break;
-					case StatType.Int:
-						if (statInt < stat.Item2)
-							return false;
-						break;
-					case StatType.Con:
-						if (statCon < stat.Item2)
-							return false;
-						break;
-					case StatType.Agi:
-						if (statAgi < stat.Item2)
-							return false;
-						break;
-					case StatType.Wis:
-						if (statWis < stat.Item2)
-							return false;
-						break;
-				}
+				if (stats[(int)stat.Item1] < stat.Item2)
+					return false;
 			}
 
 			equipStatus |= item.equipType;
 			equipments.Add(id);
 			
 			foreach (var stat in item.plusStat)
-			{
-				// 어떻게 고칠 수 없을까?
-				switch (stat.Item1)
-				{
-					case StatType.Lev:
-						statLev += stat.Item2;
-						break;
-					case StatType.Str:
-						statStr += stat.Item2;
-						break;
-					case StatType.Dex:
-						statDex += stat.Item2;
-						break;
-					case StatType.Int:
-						statInt += stat.Item2;
-						break;
-					case StatType.Con:
-						statCon += stat.Item2;
-						break;
-					case StatType.Agi:
-						statAgi += stat.Item2;
-						break;
-					case StatType.Wis:
-						statWis += stat.Item2;
-						break;
-				}
-			}
+				stats[(int)stat.Item1] += stat.Item2;
 
 			if (item.action != null)
 				item.action(this, this);
@@ -320,14 +256,7 @@ namespace OperationBlueholeContent
 	struct PlayerData
 	{
 		public uint exp;
-		public ushort statLev;
-		public ushort statStr;
-		public ushort statDex;
-		public ushort statInt;
-		public ushort statCon;
-		public ushort statAgi;
-		public ushort statWis;
-		public ushort statMov;
+		public ushort[] stats;
 
 		public uint statHp;
 		public uint statMp;
@@ -354,14 +283,15 @@ namespace OperationBlueholeContent
 			)
 		{
 			this.exp = exp;
-			this.statLev = statLev;
-			this.statStr = statStr;
-			this.statDex = statDex;
-			this.statInt = statInt;
-			this.statCon = statCon;
-			this.statAgi = statAgi;
-			this.statWis = statWis;
-			this.statMov = statMov;
+			this.stats = new ushort[8];
+			this.stats[(int)StatType.Lev] = statLev;
+			this.stats[(int)StatType.Str] = statStr;
+			this.stats[(int)StatType.Dex] = statDex;
+			this.stats[(int)StatType.Int] = statInt;
+			this.stats[(int)StatType.Con] = statCon;
+			this.stats[(int)StatType.Agi] = statAgi;
+			this.stats[(int)StatType.Wis] = statWis;
+			this.stats[(int)StatType.Mov] = statMov;
 			this.statHp = statHp;
 			this.statMp = statMp;
 			this.skills = skills;
@@ -388,14 +318,14 @@ namespace OperationBlueholeContent
 				return false;
 
 			this.exp = data.exp;
-			this.statLev = data.statLev;
-			this.statStr = data.statStr;
-			this.statDex = data.statDex;
-			this.statInt = data.statInt;
-			this.statCon = data.statCon;
-			this.statAgi = data.statAgi;
-			this.statWis = data.statWis;
-			this.statMov = data.statMov;
+			this.stats[(int)StatType.Lev] = data.stats[(int)StatType.Lev];
+			this.stats[(int)StatType.Str] = data.stats[(int)StatType.Str];
+			this.stats[(int)StatType.Dex] = data.stats[(int)StatType.Dex];
+			this.stats[(int)StatType.Int] = data.stats[(int)StatType.Int];
+			this.stats[(int)StatType.Con] = data.stats[(int)StatType.Con];
+			this.stats[(int)StatType.Agi] = data.stats[(int)StatType.Agi];
+			this.stats[(int)StatType.Wis] = data.stats[(int)StatType.Wis];
+			this.stats[(int)StatType.Mov] = data.stats[(int)StatType.Mov];
 
 			this.statHp = data.statHp;
 			this.statMp = data.statMp;
