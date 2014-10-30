@@ -74,14 +74,15 @@ namespace OperationBlueholeContent
         public Int2D position { get; set; }
         public Int2D currentDestination { get; private set; }
         public int currentDestinationId { get; private set; }
-        public int GetCurrentZoneId() { return dungeonZoneHistory.Peek(); }
 
         private Stack<Int2D> currentMovePath = new Stack<Int2D>();
 
-        Stack<int>      dungeonZoneHistory = new Stack<int>();
+        Stack<int>      dungeonZoneHistory = new Stack<int>();  // zone 단위의 기록 - 현재 위치와는 다름
         HashSet<int>    exploredZone = new HashSet<int>();
         ExploerNode[,]  map;
         private int mapSize;
+
+        public int currentZoneId { get; private set; }
 
         DungeonMaster dungeonMaster;
 
@@ -101,8 +102,9 @@ namespace OperationBlueholeContent
             this.position = position;
 
             // 존 방문 기록도 업데이트하고, 첫 movePath 계산도 해둔다
-            dungeonZoneHistory.Push( dungeonMaster.GetZoneId( position ) );
-            exploredZone.Add( dungeonZoneHistory.Peek() );
+            currentZoneId = dungeonMaster.GetZoneId( position );
+            dungeonZoneHistory.Push( currentZoneId );
+            exploredZone.Add( currentZoneId );
 
             UpdateDestination();
         }
@@ -175,11 +177,19 @@ namespace OperationBlueholeContent
             }
 
             // 현재 존 정보 업데이트 할 것
-            int currentZoneId = dungeonMaster.GetZoneId( position );
-            if ( currentZoneId != dungeonZoneHistory.Peek() )
+            int newZoneId = dungeonMaster.GetZoneId( position );
+
+            if ( currentZoneId != newZoneId )
             {
-                dungeonZoneHistory.Push( currentZoneId );
-                exploredZone.Add( currentZoneId );
+                // 영역이 바뀌었다!
+                currentZoneId = newZoneId;
+
+                // 처음 가보는 곳이면 일단 스택에도 넣고, 가봤다고 기록도 하자
+                if ( !exploredZone.Contains( currentZoneId ) )
+                {
+                    dungeonZoneHistory.Push( currentZoneId );
+                    exploredZone.Add( currentZoneId );
+                }
             }
         }
 
@@ -217,6 +227,7 @@ namespace OperationBlueholeContent
 
         private float GetHeuristicScore( Int2D target, Int2D goal )
         {
+            // return (float)Math.Sqrt( Math.Pow( goal.x - target.x, 2 ) + Math.Pow( goal.y - target.y, 2 ) );
             return Math.Abs( goal.x - target.x ) + Math.Abs( goal.y - target.y );
         }
 

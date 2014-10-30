@@ -44,7 +44,7 @@ namespace OperationBlueholeContent
                 // currentDestination 얻어와서 바로 이동
 
                 // 비밀의 방에 도착
-                if ( dungeon.FindRing( explorer.GetCurrentZoneId() ) )
+                if ( dungeon.FindRing( explorer.currentZoneId ) )
                     break;
 
                 MoveDiretion direction = explorer.GetMoveDirection();
@@ -58,7 +58,7 @@ namespace OperationBlueholeContent
                 dungeon.PrintOutMAP();
                 Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
 
-                Thread.Sleep( 500 );
+                Thread.Sleep( 100 );
             }
 
             Console.WriteLine( "THE END" );
