@@ -12,24 +12,30 @@ namespace OperationBlueholeContent
         {
 			// 전투 테스트--------
 			SkillManager.Init();
+			ItemManager.Init();
+			TestData.InitPlayer();
 			Player[] player = { new Player(), new Player(), new Player() };
 			Mob[] mob = { new Mob(), new Mob(), new Mob() };
-            Party Users = new Party( PartyType.PLAYER );
-            Party Mobs = new Party( PartyType.MOB );
-			foreach( Player p in player )
+			player[0].LoadPlayer(102);
+			player[1].LoadPlayer(103);
+			player[2].LoadPlayer(104);
+			Party Users = new Party(PartyType.PLAYER);
+			Party Mobs = new Party(PartyType.MOB);
+			foreach (Player p in player)
 				Users.AddCharacter(p);
-			foreach ( Mob p in mob )
+			foreach (Mob p in mob)
 				Mobs.AddCharacter(p);
 			Battle newBattle = new Battle(Users, Mobs);
 			newBattle.StartBattle();
-			Console.WriteLine("Test: {0} Win.", newBattle.battleResult);
 			// -----------------
 
             // 던전 테스트--------
             DungeonMaster newMaster = new DungeonMaster();
             newMaster.Init( Users, 60 );
+            newMaster.Start();
             // ------------------
 
+			Console.WriteLine("Test: {0} Win.", newBattle.battleResult);
 			Console.ReadKey();
         }
     }

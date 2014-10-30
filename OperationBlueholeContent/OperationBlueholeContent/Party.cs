@@ -17,6 +17,7 @@ namespace OperationBlueholeContent
     {
         public List<Character> characters = new List<Character>();
         public PartyType partyType;
+        public Int2D position { get; set; }
 
         public Party( PartyType type )
         {

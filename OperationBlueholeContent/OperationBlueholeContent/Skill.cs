@@ -21,12 +21,13 @@ namespace OperationBlueholeContent
 		Multiple,	// 여러명 지정 스킬
 		All,		// 전체 스킬
 	}
-	enum SkillName : ushort
+	enum SkillId : ushort
 	{
-		None,
+		None = 0,
 		Slash,
 		Punch,
 		Heal,
+		MagicArrow,
 	}
 	
 	class Skill
@@ -39,9 +40,8 @@ namespace OperationBlueholeContent
 		public uint spNeed { get; private set; }
 		private Func<Character, Character, bool> action;
 
-		public Skill(string name, SkillType type, SkillTargetType targetType, uint hpNeed, uint mpNeed, uint spNeed, Func<Character, Character, bool> action)
+		public Skill(SkillType type, SkillTargetType targetType, uint hpNeed, uint mpNeed, uint spNeed, Func<Character, Character, bool> action)
 		{
-			this.name = name;
 			this.type = type;
 			this.targetType = targetType;
 			this.hpNeed = hpNeed;
@@ -92,8 +92,8 @@ namespace OperationBlueholeContent
 	static class SkillManager
 	{
 		//public static List<Skill> skillList { get; private set; }
-		public static Dictionary<SkillName, Skill> skillList { get; private set; }
 
+		public static Dictionary<SkillId, Skill> table { get; private set; }
 		public static void Init()
 		{
 // 			SkillManager.skillList = new List<Skill>();
@@ -126,11 +126,10 @@ namespace OperationBlueholeContent
 // 				}
 // 				);
 
-			SkillManager.skillList = new Dictionary<SkillName, Skill>();
+			SkillManager.table = new Dictionary<SkillId, Skill>();
 
-			SkillManager.skillList.Add(SkillName.Slash,
+			SkillManager.table.Add(SkillId.Slash,
 				new Skill(
-					"Slash",
 					SkillType.Attack,
 					SkillTargetType.Single,
 					0,
@@ -138,15 +137,59 @@ namespace OperationBlueholeContent
 					50,
 					delegate(Character src, Character target)
 					{
-						target.Damage(src.statStr);
+						uint accuracy = (uint)(src.stats[(int)StatType.Dex]);
+						if (target.HitCheck(HitType.Melee, accuracy))
+						{
+							uint damage = src.stats[(int)StatType.Str];
+							target.Hit(HitType.Melee, damage);
+						}
 						return true;
 					}
 					)
 				);
 
-			SkillManager.skillList.Add(SkillName.Heal,
+			SkillManager.table.Add(SkillId.Punch,
 				new Skill(
-					"Heal",
+					SkillType.Attack,
+					SkillTargetType.Single,
+					0,
+					0,
+					50,
+					delegate(Character src, Character target)
+					{
+						uint accuracy = (uint)(src.stats[(int)StatType.Dex]*0.9);
+						if (target.HitCheck(HitType.Melee, accuracy))
+						{
+							uint damage = src.stats[(int)StatType.Str];
+							target.Hit(HitType.Melee, damage);
+						}
+						return true;
+					}
+					)
+				);
+
+			SkillManager.table.Add(SkillId.MagicArrow,
+				new Skill(
+					SkillType.Attack,
+					SkillTargetType.Single,
+					0,
+					10,
+					50,
+					delegate(Character src, Character target)
+					{
+						uint accuracy = (uint)(src.stats[(int)StatType.Wis] * 0.4 + src.stats[(int)StatType.Int] * 0.6);
+						if (target.HitCheck(HitType.Magical, accuracy))
+						{
+							uint damage = src.stats[(int)StatType.Int];
+							target.Hit(HitType.Magical, src.stats[(int)StatType.Int]);
+						}
+						return true;
+					}
+					)
+				);
+
+			SkillManager.table.Add(SkillId.Heal,
+				new Skill(
 					SkillType.Heal,
 					SkillTargetType.Single,
 					0,
@@ -154,7 +197,8 @@ namespace OperationBlueholeContent
 					50,
 					delegate(Character src, Character target)
 					{
-						target.Recover(src.statInt);
+						uint damage = src.stats[(int)StatType.Int];
+						target.Recover(GaugeType.Hp, damage);
 						return true;
 					}
 					)

@@ -51,7 +51,7 @@ namespace OperationBlueholeContent
 		{
 			if (turnCharacter.sp < 100)
 			{
-				turnCharacter.Rest();
+				turnCharacter.Recover(GaugeType.Sp, 1);
 				return;
 			}
 
