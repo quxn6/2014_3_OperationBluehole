@@ -37,8 +37,11 @@ namespace OperationBlueholeContent
 
         public void Start()
         {
+            int turn = 0;
+
             while ( true )
             {
+                ++turn;
                 // FOR DEBUG
                 // direction 방향으로 움직이지 않고
                 // currentDestination 얻어와서 바로 이동
@@ -55,13 +58,13 @@ namespace OperationBlueholeContent
                 // explorer.Teleport( explorer.currentDestination );
                 // Console.WriteLine( "zone : " + explorer.GetCurrentZoneId() );
 
-                dungeon.PrintOutMAP();
+                // dungeon.PrintOutMAP();
                 Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
 
-                Thread.Sleep( 100 );
+                // Thread.Sleep( 100 );
             }
 
-            Console.WriteLine( "THE END" );
+            Console.WriteLine( "THE END ( turn : " + turn + " )" );
         }
 
         // 구현할 것
