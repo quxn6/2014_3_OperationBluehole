@@ -33,7 +33,7 @@ namespace OperationBlueholeContent
 	{
 		public ItemCode code { get; private set; }
 		public ItemType type { get; private set; }
-		public Func<Character, Character, bool> action { get; protected set; }
+		public Func<Random, Character, Character, bool> action { get; protected set; }
 
 		public Item()
 		{
@@ -42,7 +42,7 @@ namespace OperationBlueholeContent
 			action = null;
 		}
 		public Item(ItemCode code, ItemType type,
-			Func<Character, Character, bool> action)
+			Func<Random, Character, Character, bool> action)
 		{
 			this.code = code;
 			this.type = type;
@@ -53,33 +53,24 @@ namespace OperationBlueholeContent
 
 	class Equipment : Item
 	{
-		public uint phyAtk { get; private set; }
-		public uint phyDef { get; private set; }
-		public uint magAtk { get; private set; }
-		public uint magDef { get; private set; }
-
 		public EquipType equipType { get; private set; }
 		public List<Tuple<StatType, ushort>> reqStat { get; private set; }
-		public List<Tuple<StatType, ushort>> plusStat { get; private set; }
+        public List<Tuple<StatType, ushort>> plusStat { get; private set; }
+        public List<Tuple<StatType, uint>> plusParam { get; private set; }
 		// 		private Func<Character, Character, bool> action;
 
 		public Equipment(ItemCode id, ItemType type,
-			uint phyAtk, uint phyDef,
-			uint magAtk, uint magDef,
 			EquipType equipType,
 			List<Tuple<StatType, ushort>> reqStat,
-			List<Tuple<StatType, ushort>> plusStat,
-			Func<Character, Character, bool> action)
+            List<Tuple<StatType, ushort>> plusStat,
+            List<Tuple<StatType, uint>> plusParam,
+			Func<Random, Character, Character, bool> action)
 			: base(id, type, action)
 		{
-			this.phyAtk = phyAtk;
-			this.phyDef = phyDef;
-			this.magAtk = magAtk;
-			this.magDef = magDef;
-
 			this.equipType = equipType;
 			this.reqStat = reqStat;
 			this.plusStat = plusStat;
+            this.plusParam = plusParam;
 		}
 	}
 
@@ -90,13 +81,13 @@ namespace OperationBlueholeContent
 
 		public Consumable(ItemCode id, ItemType type,
 			uint spNeed,
-			Func<Character, Character, bool> action)
+			Func<Random, Character, Character, bool> action)
 			: base(id, type, action)
 		{
 			this.spNeed = spNeed;
 		}
 
-		public bool UseItem(Character src)
+		public bool UseItem(Random random, Character src)
 		{
 			if (action == null)
 				return false;
@@ -104,12 +95,12 @@ namespace OperationBlueholeContent
 			if (src.items.Contains(this.code) &&
 				src.ReduceForAction(0, 0, spNeed) &&
 				src.ReduceItem(this.code))
-				return action(src, null);
+				return action(random, src, null);
 
 			return false;
 		}
 
-		public bool UseItem(Character src, Character target)
+		public bool UseItem(Random random, Character src, Character target)
 		{
 			if (action == null)
 				return false;
@@ -117,12 +108,12 @@ namespace OperationBlueholeContent
 			if (src.items.Contains(this.code) &&
 				src.ReduceForAction(0, 0, spNeed) &&
 				src.ReduceItem(this.code))
-				return action(src, target);
+				return action(random, src, target);
 
 			return false;
 		}
 
-		public bool UseItem(Character src, Character[] targets)
+		public bool UseItem(Random random, Character src, Character[] targets)
 		{
 			if (action == null)
 				return false;
@@ -132,7 +123,7 @@ namespace OperationBlueholeContent
 				src.ReduceItem(this.code))
 			{
 				foreach (Character target in targets)
-					action(src, target);
+					action(random, src, target);
 				return true;
 			}
 
@@ -159,7 +150,7 @@ namespace OperationBlueholeContent
 			ItemManager.table.Add(ItemCode.HpPotionS,
 				new Consumable(ItemCode.HpPotionS, ItemType.Consume,
 					50,
-					delegate(Character src, Character target)
+					delegate(Random random, Character src, Character target)
 					{
 						target.Recover(GaugeType.Hp, 50);
 						return true;
@@ -169,7 +160,7 @@ namespace OperationBlueholeContent
 			ItemManager.table.Add(ItemCode.MpPotionS,
 				new Consumable(ItemCode.MpPotionS, ItemType.Consume,
 					50,
-					delegate(Character src, Character target)
+					delegate(Random random, Character src, Character target)
 					{
 						target.Recover(GaugeType.Mp, 20);
 						return true;

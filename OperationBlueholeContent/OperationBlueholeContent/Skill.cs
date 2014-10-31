@@ -38,9 +38,9 @@ namespace OperationBlueholeContent
 		public uint hpNeed { get; private set; }
 		public uint mpNeed { get; private set; }
 		public uint spNeed { get; private set; }
-		private Func<Character, Character, bool> action;
+		private Func<Random, Character, Character, bool> action;
 
-		public Skill(SkillType type, SkillTargetType targetType, uint hpNeed, uint mpNeed, uint spNeed, Func<Character, Character, bool> action)
+		public Skill(SkillType type, SkillTargetType targetType, uint hpNeed, uint mpNeed, uint spNeed, Func<Random, Character, Character, bool> action)
 		{
 			this.type = type;
 			this.targetType = targetType;
@@ -50,29 +50,29 @@ namespace OperationBlueholeContent
 			this.action = action;
 		}
 
-		public bool Act(Character src)
+		public bool Act(Random random, Character src)
 		{
 			if (targetType != SkillTargetType.None)
 				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
-				return action(src, null);
+				return action(random, src, null);
 
 			return false;
 		}
 
-		public bool Act(Character src, Character target)
+		public bool Act(Random random, Character src, Character target)
 		{
 			if (targetType != SkillTargetType.Single)
 				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
-				return action(src, target);
+				return action(random, src, target);
 
 			return false;
 		}
 
-		public bool Act(Character src, Character[] targets)
+		public bool Act(Random random, Character src, Character[] targets)
 		{
 			if (targetType != SkillTargetType.Multiple)
 				return false;
@@ -80,7 +80,7 @@ namespace OperationBlueholeContent
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
 			{
 				foreach (Character target in targets)
-					action(src, target);
+					action(random, src, target);
 				return true;
 			}
 
@@ -135,13 +135,16 @@ namespace OperationBlueholeContent
 					0,
 					0,
 					50,
-					delegate(Character src, Character target)
+					delegate(Random random, Character src, Character target)
 					{
-						uint accuracy = (uint)(src.stats[(int)StatType.Dex]);
+						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]);
 						if (target.HitCheck(HitType.Melee, accuracy))
 						{
-							uint damage = src.stats[(int)StatType.Str];
-							target.Hit(HitType.Melee, damage);
+							int damage = src.baseStats[(int)StatType.Str];
+							int maxDamage = (int)(damage * 1.2f);
+							damage = (int)(damage * 0.8f);
+							damage = random.Next(damage, maxDamage);
+							target.Hit(HitType.Melee, (uint)damage);
 						}
 						return true;
 					}
@@ -155,13 +158,16 @@ namespace OperationBlueholeContent
 					0,
 					0,
 					50,
-					delegate(Character src, Character target)
+					delegate(Random random, Character src, Character target)
 					{
-						uint accuracy = (uint)(src.stats[(int)StatType.Dex]*0.9);
+						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]*0.9);
 						if (target.HitCheck(HitType.Melee, accuracy))
 						{
-							uint damage = src.stats[(int)StatType.Str];
-							target.Hit(HitType.Melee, damage);
+							int damage = src.baseStats[(int)StatType.Str];
+							int maxDamage = (int)(damage * 1.2f);
+							damage = (int)(damage * 0.8f);
+							damage = random.Next(damage, maxDamage);
+							target.Hit(HitType.Melee, (uint)damage);
 						}
 						return true;
 					}
@@ -175,13 +181,16 @@ namespace OperationBlueholeContent
 					0,
 					10,
 					50,
-					delegate(Character src, Character target)
+					delegate(Random random, Character src, Character target)
 					{
-						uint accuracy = (uint)(src.stats[(int)StatType.Wis] * 0.4 + src.stats[(int)StatType.Int] * 0.6);
+						uint accuracy = (uint)(src.baseStats[(int)StatType.Wis] * 0.4 + src.baseStats[(int)StatType.Int] * 0.6);
 						if (target.HitCheck(HitType.Magical, accuracy))
 						{
-							uint damage = src.stats[(int)StatType.Int];
-							target.Hit(HitType.Magical, src.stats[(int)StatType.Int]);
+							int damage = src.baseStats[(int)StatType.Int];
+							int maxDamage = (int)(damage * 1.2f);
+							damage = (int)(damage * 0.8f);
+							damage = random.Next(damage, maxDamage);
+							target.Hit(HitType.Magical, (uint)damage);
 						}
 						return true;
 					}
@@ -195,10 +204,13 @@ namespace OperationBlueholeContent
 					0,
 					10,
 					50,
-					delegate(Character src, Character target)
+					delegate(Random random, Character src, Character target)
 					{
-						uint damage = src.stats[(int)StatType.Int];
-						target.Recover(GaugeType.Hp, damage);
+						int damage = src.baseStats[(int)StatType.Int];
+						int maxDamage = (int)(damage * 1.2f);
+						damage = (int)(damage * 0.8f);
+						damage = random.Next(damage, maxDamage);
+						target.Recover(GaugeType.Hp, (uint)damage);
 						return true;
 					}
 					)

@@ -25,8 +25,6 @@ namespace OperationBlueholeContent
 				5,
 				5,
 				5,
-				100,
-				100,
 				new List<SkillId>{
 					SkillId.Punch
 				},
@@ -51,8 +49,6 @@ namespace OperationBlueholeContent
 				5,
 				5,
 				5,
-				200,
-				200,
 				new List<SkillId>{
 					SkillId.Punch,
 					SkillId.MagicArrow,
@@ -79,8 +75,6 @@ namespace OperationBlueholeContent
 				5,
 				5,
 				5,
-				200,
-				200,
 				new List<SkillId>{
 					SkillId.Slash,
 				},
@@ -106,8 +100,6 @@ namespace OperationBlueholeContent
 				5,
 				5,
 				5,
-				200,
-				200,
 				new List<SkillId>{
 					SkillId.Punch,
 					SkillId.Heal,
