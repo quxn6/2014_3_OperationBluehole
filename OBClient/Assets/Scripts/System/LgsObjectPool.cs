@@ -6,10 +6,10 @@ public class LgsObjectPool : ScriptableObject
 	private GameObject objectPoolRoot;
 	private GameObject[] objectPool;
 	private GameObject objectList;
+	private GameObject originalObject;
 	private int currentPoolSize = 0;
 	private int currentIndex = 0;
 	private int instanciatedObjectIndex = 0;
-	private string objectName;
 	private bool isInitialized = false;
 
 	public void InitPool( GameObject prefabObject , int defaultPoolSize, GameObject root )
@@ -28,10 +28,10 @@ public class LgsObjectPool : ScriptableObject
 		currentIndex = 0;
 		instanciatedObjectIndex = 0;
 		currentPoolSize = defaultPoolSize;
-		objectName = prefabObject.name;
+		originalObject = prefabObject;
 
 		// Create empty object for hierarchy
-		objectList = new GameObject( objectName + "_list" );
+		objectList = new GameObject( originalObject.name + "_list" );
 		objectList.transform.parent = objectPoolRoot.transform;
 
 		// Create Pool
@@ -48,7 +48,7 @@ public class LgsObjectPool : ScriptableObject
 		while ( instanciatedObjectIndex  < poolsize )
 		{
 			objectPool[instanciatedObjectIndex] = Instantiate( prefabObject ) as GameObject;
-			objectPool[instanciatedObjectIndex].name = objectName + "_" + instanciatedObjectIndex;
+			objectPool[instanciatedObjectIndex].name = originalObject.name + "_" + instanciatedObjectIndex;
 			objectPool[instanciatedObjectIndex].SetActive( false );
 			objectPool[instanciatedObjectIndex].transform.parent = objectList.transform;
 			++instanciatedObjectIndex;
@@ -108,7 +108,7 @@ public class LgsObjectPool : ScriptableObject
 		}
 
 		// Create expands capacity;
-		InstanceObjects( newPool, objectPool[0] , newPoolSize );
+		InstanceObjects( newPool, originalObject , newPoolSize );
 
 		// replace pool
 		objectPool = newPool;
@@ -124,7 +124,7 @@ public class LgsObjectPool : ScriptableObject
 			return;
 		}
 
-		string[] nameParse = System.Text.RegularExpressions.Regex.Split( instanceObject.name , objectName + "_" );
+		string[] nameParse = System.Text.RegularExpressions.Regex.Split( instanceObject.name , originalObject.name + "_" );
 		if ( nameParse.Length != 2 )
 		{
 			Debug.Log( "This object is not a member of Object Pool" );

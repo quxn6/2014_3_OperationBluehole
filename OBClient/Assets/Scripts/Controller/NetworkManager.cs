@@ -18,25 +18,20 @@ public class NetworkManager : MonoBehaviour
 		instance = this;
 	}
 
-	public void SendLoadmapRequest()
+	public void RequestMapInfo()
 	{
-		StartCoroutine(DummyLoadmapResponse());
+		StartCoroutine(DummyMapInfoResponse());
 	}
 	
-	IEnumerator DummyLoadmapResponse()
+	IEnumerator DummyMapInfoResponse()
 	{
-		yield return new WaitForSeconds( 0.5f );
+		yield return new WaitForSeconds( 0.1f );
+		HandleMapInfo();
 	}
 
-	public void RecvLoadmapResponse()
+	public void HandleMapInfo()
 	{
-
+		MapManager.Instance.InitMapObjects();
+		MapManager.Instance.PutMapObjects( new Dungeon( dungeonMap , size ) );
 	}
-
-	// load map data from server
-	public Dungeon LoadMap()
-	{
-		return new Dungeon( dungeonMap , size );
-	}
-
 }
