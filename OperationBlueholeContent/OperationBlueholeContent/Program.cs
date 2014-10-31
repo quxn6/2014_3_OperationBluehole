@@ -25,7 +25,8 @@ namespace OperationBlueholeContent
 				Users.AddCharacter(p);
 			foreach (Mob p in mob)
 				Mobs.AddCharacter(p);
-			Battle newBattle = new Battle(Users, Mobs);
+			Random rnd = new Random();
+			Battle newBattle = new Battle(rnd, Users, Mobs);
 			newBattle.StartBattle();
 			// -----------------
 
