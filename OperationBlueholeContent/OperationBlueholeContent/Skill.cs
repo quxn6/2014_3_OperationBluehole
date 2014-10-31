@@ -137,10 +137,10 @@ namespace OperationBlueholeContent
 					50,
 					delegate(Character src, Character target)
 					{
-						uint accuracy = (uint)(src.stats[(int)StatType.Dex]);
+						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]);
 						if (target.HitCheck(HitType.Melee, accuracy))
 						{
-							uint damage = src.stats[(int)StatType.Str];
+							uint damage = src.baseStats[(int)StatType.Str];
 							target.Hit(HitType.Melee, damage);
 						}
 						return true;
@@ -157,10 +157,10 @@ namespace OperationBlueholeContent
 					50,
 					delegate(Character src, Character target)
 					{
-						uint accuracy = (uint)(src.stats[(int)StatType.Dex]*0.9);
+						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]*0.9);
 						if (target.HitCheck(HitType.Melee, accuracy))
 						{
-							uint damage = src.stats[(int)StatType.Str];
+							uint damage = src.baseStats[(int)StatType.Str];
 							target.Hit(HitType.Melee, damage);
 						}
 						return true;
@@ -177,11 +177,11 @@ namespace OperationBlueholeContent
 					50,
 					delegate(Character src, Character target)
 					{
-						uint accuracy = (uint)(src.stats[(int)StatType.Wis] * 0.4 + src.stats[(int)StatType.Int] * 0.6);
+						uint accuracy = (uint)(src.baseStats[(int)StatType.Wis] * 0.4 + src.baseStats[(int)StatType.Int] * 0.6);
 						if (target.HitCheck(HitType.Magical, accuracy))
 						{
-							uint damage = src.stats[(int)StatType.Int];
-							target.Hit(HitType.Magical, src.stats[(int)StatType.Int]);
+							uint damage = src.baseStats[(int)StatType.Int];
+							target.Hit(HitType.Magical, src.baseStats[(int)StatType.Int]);
 						}
 						return true;
 					}
@@ -197,7 +197,7 @@ namespace OperationBlueholeContent
 					50,
 					delegate(Character src, Character target)
 					{
-						uint damage = src.stats[(int)StatType.Int];
+						uint damage = src.baseStats[(int)StatType.Int];
 						target.Recover(GaugeType.Hp, damage);
 						return true;
 					}

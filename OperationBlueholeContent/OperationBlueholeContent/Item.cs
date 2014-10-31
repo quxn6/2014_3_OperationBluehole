@@ -53,33 +53,24 @@ namespace OperationBlueholeContent
 
 	class Equipment : Item
 	{
-		public uint phyAtk { get; private set; }
-		public uint phyDef { get; private set; }
-		public uint magAtk { get; private set; }
-		public uint magDef { get; private set; }
-
 		public EquipType equipType { get; private set; }
 		public List<Tuple<StatType, ushort>> reqStat { get; private set; }
-		public List<Tuple<StatType, ushort>> plusStat { get; private set; }
+        public List<Tuple<StatType, ushort>> plusStat { get; private set; }
+        public List<Tuple<StatType, uint>> plusParam { get; private set; }
 		// 		private Func<Character, Character, bool> action;
 
 		public Equipment(ItemCode id, ItemType type,
-			uint phyAtk, uint phyDef,
-			uint magAtk, uint magDef,
 			EquipType equipType,
 			List<Tuple<StatType, ushort>> reqStat,
-			List<Tuple<StatType, ushort>> plusStat,
+            List<Tuple<StatType, ushort>> plusStat,
+            List<Tuple<StatType, uint>> plusParam,
 			Func<Character, Character, bool> action)
 			: base(id, type, action)
 		{
-			this.phyAtk = phyAtk;
-			this.phyDef = phyDef;
-			this.magAtk = magAtk;
-			this.magDef = magDef;
-
 			this.equipType = equipType;
 			this.reqStat = reqStat;
 			this.plusStat = plusStat;
+            this.plusParam = plusParam;
 		}
 	}
 

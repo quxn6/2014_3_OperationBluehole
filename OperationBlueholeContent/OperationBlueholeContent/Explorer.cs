@@ -270,6 +270,7 @@ namespace OperationBlueholeContent
 
                 // 조심해!
                 // 배열을 하나 새로 만드는 것이 어색하다
+                // 맨 끝 지점들에는 안 가니까 예외 처리는 생략
                 List<ExploerNode> neigborNodes = new List<ExploerNode>{
                                                      map[current.position.y - 1, current.position.x],
                                                      map[current.position.y + 1, current.position.x],
