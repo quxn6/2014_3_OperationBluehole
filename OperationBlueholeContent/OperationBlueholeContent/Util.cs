@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
 {
-    class MinHeap<T>
+    class MinHeap<T> : IEnumerable<T>
     {
         private int size;
         private List<T> elements;
@@ -17,6 +18,17 @@ namespace OperationBlueholeContent
             elements = new List<T>();
             this.comparer = comparer;
             size = 0;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            for ( int i = 0; i < size; ++i )
+                yield return elements[i];
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() 
+        {
+            return GetEnumerator();
         }
 
         private void Heapify( int idx )

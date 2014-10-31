@@ -48,7 +48,7 @@ namespace OperationBlueholeContent
         phyDef,
         magAtk,
         magDef,
-        spRegen,
+        spRegn, // 하나만 튀어 나와 있어서 spRegen에서 바꿈 ㅋㅋ
         maxHp,
         maxMp,
         pramCount,  // 전체 paramType 수
@@ -60,6 +60,32 @@ namespace OperationBlueholeContent
 		Mp,
 		Sp,
 	}
+
+    class BuffPiece : IComparable<BuffPiece>
+    {
+        public BuffCode id;
+        public uint expireTime;
+
+        public BuffPiece( BuffCode id, uint expireTime )
+        {
+            this.id = id;
+            this.expireTime = expireTime;
+        }
+
+        public int CompareTo( BuffPiece obj )
+        {
+            return this.expireTime.CompareTo( obj.expireTime );
+        }
+    }
+
+    class BuffComp : Comparer<BuffPiece>
+    {
+        public override int Compare( BuffPiece lhs, BuffPiece rhs )
+        {
+            if ( object.Equals( lhs, rhs ) ) return 0;
+            return lhs.expireTime.CompareTo( rhs.expireTime );
+        }
+    }
 
 	class Character : GameObject
 	{
@@ -78,7 +104,8 @@ namespace OperationBlueholeContent
 
 		public List<SkillId> skills { get; protected set; }
 		public List<ItemCode> items { get; protected set; }
-		public List<ItemCode> equipments { get; protected set; }
+        public List<ItemCode> equipments { get; protected set; }
+        public MinHeap<BuffPiece> buffs { get; protected set; }
 		public EquipType equipStatus { get; private set; }
 		//TODO: 버프리스트
 
@@ -97,7 +124,8 @@ namespace OperationBlueholeContent
 
 			skills = new List<SkillId>();
 			items = new List<ItemCode>();
-			equipments = new List<ItemCode>();
+            equipments = new List<ItemCode>();
+            buffs = new MinHeap<BuffPiece>( new BuffComp() );
 		}
 
 		public void CalcStat()
@@ -131,7 +159,16 @@ namespace OperationBlueholeContent
             }
 
             // 5. 버프 리스트 로드
+                // 이것도 됐다 치고...
+
             // 6. 버프마다의 효과를 base stat과 extra param에 적용
+            foreach ( var buffPiece in buffs )
+            {
+                var buff = (Buff)BuffManager.table[buffPiece.id];
+
+                buff.plusStat.ForEach( stat => extraStats[(int)stat.Item1] += stat.Item2 );
+                buff.plusParam.ForEach( param => effectParams[(int)param.Item1] += param.Item2 );
+            }
 
             // 조심해!
             // 7. Base stat과 extra stat의 합으로 1차 actual param 계산
@@ -141,7 +178,7 @@ namespace OperationBlueholeContent
             actualParams[(int)ParamType.phyDef] = (uint)( baseStats[(int)StatType.Agi] + extraStats[(int)StatType.Agi] );
             actualParams[(int)ParamType.magAtk] = (uint)( baseStats[(int)StatType.Dex] + extraStats[(int)StatType.Dex] );
             actualParams[(int)ParamType.magDef] = (uint)( baseStats[(int)StatType.Int] + extraStats[(int)StatType.Int] );
-            actualParams[(int)ParamType.spRegen] = (uint)( baseStats[(int)StatType.Mov] + extraStats[(int)StatType.Mov] );
+            actualParams[(int)ParamType.spRegn] = (uint)( baseStats[(int)StatType.Mov] + extraStats[(int)StatType.Mov] );
             actualParams[(int)ParamType.maxHp] = (uint)( baseStats[(int)StatType.Con] + extraStats[(int)StatType.Con] ) * 20;
             actualParams[(int)ParamType.maxMp] = (uint)( baseStats[(int)StatType.Wis] + extraStats[(int)StatType.Wis] );
 
@@ -314,6 +351,47 @@ namespace OperationBlueholeContent
 
 			return true;
 		}
+
+        public void CheckBuff( uint currentTick )
+        {
+            while ( buffs.Peek().expireTime < currentTick )
+            {
+                DeregisterBuff();
+            }
+        }
+
+        public bool RegisterBuff( uint currentTick, BuffCode id )
+        {
+            var buff = (Buff)BuffManager.table[id];
+
+            if ( buff == null )
+                return false;
+
+            buffs.Push( new BuffPiece( id, buff.duration + currentTick ) );
+
+            buff.plusStat.ForEach( stat => extraStats[(int)stat.Item1] += stat.Item2 );
+            buff.plusParam.ForEach( param => effectParams[(int)param.Item1] += param.Item2 );
+
+            // 바뀌었으니 다시 계산
+            CalcStat();
+
+            return true;
+        }
+
+        public bool DeregisterBuff()
+        {
+            var buff = (Buff)BuffManager.table[buffs.Peek().id];
+
+            buff.plusStat.ForEach( stat => extraStats[(int)stat.Item1] -= stat.Item2 );
+            buff.plusParam.ForEach( param => effectParams[(int)param.Item1] -= param.Item2 );
+
+            // 바뀌었으니 다시 계산
+            CalcStat();
+
+            buffs.Pop();
+
+            return true;
+        }
 	}
 
 	struct PlayerData

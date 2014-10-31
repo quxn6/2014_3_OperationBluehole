@@ -59,9 +59,9 @@ namespace OperationBlueholeContent
 			}
 
 			if (isUserParty)
-				turnCharacter.BattleTurnAction(random, party[0], party[1]);
+                turnCharacter.BattleTurnAction( random, party[0], party[1] );
 			else
-				turnCharacter.BattleTurnAction(random, party[1], party[0]);
+                turnCharacter.BattleTurnAction( random, party[1], party[0] );
 		}
 
 		// 전투 종료 조건 체크( 상대 파티의 전멸 )
