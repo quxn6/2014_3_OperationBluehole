@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 // raw data for map
 public struct Dungeon
@@ -26,7 +27,11 @@ public class MapManager : MonoBehaviour
 
 	private Dungeon instanceDungeon;
 	private GameObject playerInstance;
-
+	private List<GameObject> mobList;
+	public List<GameObject> MobList
+	{
+		get { return mobList; }
+	}
 	static private MapManager instance;
 	static public MapManager Instance
 	{
@@ -42,6 +47,7 @@ public class MapManager : MonoBehaviour
 		}
 
 		instance = this;
+		mobList = new List<GameObject>();
 	}
 
 	public void InitMapObjects()
@@ -83,10 +89,17 @@ public class MapManager : MonoBehaviour
 					InstancingObject( itemBoxPrefab , i );
 					break;
 				case 'M':
-					InstancingObject( mobPrefab , i );
+					GameObject mobInstance = InstancingObject( mobPrefab , i );
+					mobList.Add(mobInstance);
 					break;
 			}
 		}
+	}
+
+	public void ClearAllMapObjects()
+	{
+		LgsObjectPoolManager.Instance.ResetAllObjectPools();
+		mobList.Clear();
 	}
 
 	private GameObject InstancingObject( GameObject prefabObject, int instanceOrder )
