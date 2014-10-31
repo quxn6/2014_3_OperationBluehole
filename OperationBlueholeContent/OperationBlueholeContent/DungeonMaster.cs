@@ -58,10 +58,10 @@ namespace OperationBlueholeContent
                 // explorer.Teleport( explorer.currentDestination );
                 // Console.WriteLine( "zone : " + explorer.GetCurrentZoneId() );
 
-                // dungeon.PrintOutMAP();
+                dungeon.PrintOutMAP();
                 Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
 
-                // Thread.Sleep( 100 );
+                Thread.Sleep( 100 );
             }
 
             Console.WriteLine( "THE END ( turn : " + turn + " )" );

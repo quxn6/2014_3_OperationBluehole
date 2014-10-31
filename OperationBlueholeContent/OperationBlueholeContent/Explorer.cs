@@ -16,7 +16,7 @@ namespace OperationBlueholeContent
         RIGHT,
     }
 
-    class ExploerNode :IComparable<ExploerNode>
+    internal class ExploerNode : IComparable<ExploerNode>
     {
         public bool isClosed;
         public bool isOpened;
@@ -58,7 +58,7 @@ namespace OperationBlueholeContent
         }
     }
 
-    class NodeComp : Comparer<ExploerNode>
+    internal class NodeComp : Comparer<ExploerNode>
     {
         public override int Compare( ExploerNode lhs, ExploerNode rhs )
         {
@@ -74,17 +74,16 @@ namespace OperationBlueholeContent
         public Int2D position { get; set; }
         public Int2D currentDestination { get; private set; }
         public int currentDestinationId { get; private set; }
+        public int currentZoneId { get; private set; }
 
         private Stack<Int2D> currentMovePath = new Stack<Int2D>();
 
-        Stack<int>      dungeonZoneHistory = new Stack<int>();  // zone 단위의 기록 - 현재 위치와는 다름
-        HashSet<int>    exploredZone = new HashSet<int>();
-        ExploerNode[,]  map;
+        private Stack<int>      dungeonZoneHistory = new Stack<int>();  // zone 단위의 기록 - 현재 위치와는 다름
+        private HashSet<int> exploredZone = new HashSet<int>();
+        private ExploerNode[,] map;
         private int mapSize;
 
-        public int currentZoneId { get; private set; }
-
-        DungeonMaster dungeonMaster;
+        private DungeonMaster dungeonMaster;
 
         public Explorer( DungeonMaster master, int size )
         {
@@ -227,8 +226,8 @@ namespace OperationBlueholeContent
 
         private float GetHeuristicScore( Int2D target, Int2D goal )
         {
-            // return (float)Math.Sqrt( Math.Pow( goal.x - target.x, 2 ) + Math.Pow( goal.y - target.y, 2 ) );
-            return Math.Abs( goal.x - target.x ) + Math.Abs( goal.y - target.y );
+            return (float)Math.Sqrt( Math.Pow( goal.x - target.x, 2 ) + Math.Pow( goal.y - target.y, 2 ) );
+            // return Math.Abs( goal.x - target.x ) + Math.Abs( goal.y - target.y );
         }
 
         private void MakePath( Int2D destination )
@@ -238,8 +237,9 @@ namespace OperationBlueholeContent
             Console.WriteLine( "dest : " + destination.x + " / " + destination.y );
 
             // 조심해!!!
-            // priority_queue가 없어서 일단 red_black_tree로 구현
-            List<ExploerNode> openSet = new List<ExploerNode>();
+            // priority_queue가 없어서 일단 list로 구현
+            // List<ExploerNode> openSet = new List<ExploerNode>();
+            MinHeap<ExploerNode> openSet = new MinHeap<ExploerNode>( new NodeComp() );
 
             for ( int i = 0; i < mapSize; ++i )
                 for ( int j = 0; j < mapSize; ++j )
@@ -248,11 +248,13 @@ namespace OperationBlueholeContent
             map[position.y, position.x].gScore = 0;
             map[position.y, position.x].fScore = map[position.y, position.x].gScore + GetHeuristicScore( position, destination );
             map[position.y, position.x].isOpened = true;
-            openSet.Add( map[position.y, position.x] );
+            // openSet.Add( map[position.y, position.x] );
+            openSet.Push( map[position.y, position.x] );
 
             while( openSet.Count > 0 )
             {
-                ExploerNode current = openSet.Min();
+                // ExploerNode current = openSet.Min();
+                ExploerNode current = openSet.Peek();
                 // Console.WriteLine( "current : " + current.position.x + " / " + current.position.y );
 
                 if ( current.position == destination )
@@ -262,7 +264,8 @@ namespace OperationBlueholeContent
                     break;
                 }
 
-                openSet.Remove( openSet.Min() );
+                // openSet.Remove( openSet.Min() );
+                openSet.Pop();
                 current.isClosed = true;
 
                 // 조심해!
@@ -292,10 +295,13 @@ namespace OperationBlueholeContent
                         if ( !neighbor.isOpened )
                         {
                             neighbor.isOpened = true;
-                            openSet.Add( neighbor );
+                            // openSet.Add( neighbor );
+                            openSet.Push( neighbor );
                         }
+                        else
+                            openSet.DecreaseKeyValue( neighbor );
 
-                        openSet.Sort( new NodeComp() );
+                        // openSet.Sort( new NodeComp() );
                     }
                 }
             }

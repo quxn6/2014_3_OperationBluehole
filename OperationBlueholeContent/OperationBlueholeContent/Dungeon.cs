@@ -11,7 +11,7 @@ namespace OperationBlueholeContent
         public int x, y;
 
         public Int2D( int x, int y ) { this.x = x; this.y = y; }
-        public Int2D( Int2D a ) { this.x = a.x; this.y = a.y; }
+        public Int2D( Int2D rhs ) { this.x = rhs.x; this.y = rhs.y; }
 
         public static bool operator ==( Int2D lhs, Int2D rhs )
         {
@@ -24,9 +24,9 @@ namespace OperationBlueholeContent
         }
     }
 
-    class DungeonZone
+    internal class DungeonZone
     {
-        public int zoneId;
+        public readonly int zoneId;
         public readonly Int2D lowerBoundary, upperBoundary, centerPosition;
 
         public List<Item> items = new List<Item>();
@@ -44,7 +44,7 @@ namespace OperationBlueholeContent
         }
     }
 
-    class DungeonTreeNode
+    internal class DungeonTreeNode
     {
         // 컨텐츠 관련 상수들 따로 뺄 것
         const float MOB_DENSITY = 0.05f;

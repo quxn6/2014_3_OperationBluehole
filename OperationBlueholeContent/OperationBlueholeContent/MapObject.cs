@@ -13,8 +13,6 @@ namespace OperationBlueholeContent
         WALL,
     }
 
-    // 기본적으로 그냥 바닥, 벽, 아무것도 아닌 것이 있는데, ID 보고 판단
-    // TILE인 경우에는 gameObject가 null인지 보고, 아니면 해당 오브젝트를 렌더?
     class MapObject
     {
         public MapObjectType objectType { get; set; }
