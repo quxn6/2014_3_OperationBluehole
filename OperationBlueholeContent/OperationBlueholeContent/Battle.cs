@@ -11,9 +11,12 @@ namespace OperationBlueholeContent
 		public Party[] party { get; private set; }
 		public int curTurn { get; private set; }
 		public int battleResult { get; private set; }
+		private Random random;
 
-		public Battle(Party party1, Party party2)
+		public Battle(Random random, Party party1, Party party2)
 		{
+			this.random = random;
+
 			party = new Party[2];
 			party[0] = party1;
 			party[1] = party2;
@@ -56,9 +59,9 @@ namespace OperationBlueholeContent
 			}
 
 			if (isUserParty)
-				turnCharacter.BattleTurnAction(party[0], party[1]);
+				turnCharacter.BattleTurnAction(random, party[0], party[1]);
 			else
-				turnCharacter.BattleTurnAction(party[1], party[0]);
+				turnCharacter.BattleTurnAction(random, party[1], party[0]);
 		}
 
 		// 전투 종료 조건 체크( 상대 파티의 전멸 )

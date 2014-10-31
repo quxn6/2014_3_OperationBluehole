@@ -107,7 +107,7 @@ namespace OperationBlueholeContent
 				phyDef += item.phyDef;
 				magAtk += item.magAtk;
 				magDef += item.magDef;
-				item.action(this, this);
+// 				item.action(this, this);
 			}
 		}
 
@@ -129,7 +129,7 @@ namespace OperationBlueholeContent
 
 		// 차후 적과 아군의 파티 정보를 보고 행동을 결정하는 AI 추가 필요
 		// 현재는 그냥 가장 체력 낮은 적부터 다굴...
-		public void BattleTurnAction(Party ally, Party enemy)
+		public void BattleTurnAction(Random random, Party ally, Party enemy)
 		{
 			if (ally == null || enemy == null)
 				return;
@@ -148,11 +148,11 @@ namespace OperationBlueholeContent
 					if (iid != ItemCode.None)
 					{
 						Consumable item = (Consumable)ItemManager.table[iid];
-						item.UseItem(this, weakAlly);
+						item.UseItem(random, this, weakAlly);
 					}
 				}
 				else if (SkillManager.table[sid].spNeed <= sp && SkillManager.table[sid].mpNeed <= mp)
-					SkillManager.table[sid].Act(this, weakAlly);
+					SkillManager.table[sid].Act(random, this, weakAlly);
 			}
 
 			Character weakEnemy = enemy.characters.Where(c => c.hp > 0).OrderBy(c => c.hp).FirstOrDefault();
@@ -161,7 +161,7 @@ namespace OperationBlueholeContent
 				.Where(id => SkillManager.table[id].type == SkillType.Attack)
 				.OrderByDescending(id => SkillManager.table[id].mpNeed).FirstOrDefault();
 			if (sid != SkillId.None && SkillManager.table[sid].spNeed <= sp && SkillManager.table[sid].mpNeed <= mp)
-				SkillManager.table[sid].Act(this, weakEnemy);
+				SkillManager.table[sid].Act(random, this, weakEnemy);
 		}
 
 		public bool HitCheck(HitType type, uint accuracy)
@@ -228,27 +228,45 @@ namespace OperationBlueholeContent
 			if ((equipStatus & item.equipType) > 0)
 				return false;
 			
+			// 장비 요구 스탯 확인
 			foreach (var stat in item.reqStat)
 			{
 				if (stats[(int)stat.Item1] < stat.Item2)
 					return false;
 			}
 
+			// 착용 상태에 추가
 			equipStatus |= item.equipType;
 			equipments.Add(id);
-			
+
+			// 추가 스탯 적용
 			foreach (var stat in item.plusStat)
 				stats[(int)stat.Item1] += stat.Item2;
 
-			if (item.action != null)
-				item.action(this, this);
+			// TODO: 장비의 추가 효과 적용. 버프로 처리 예정
+// 			if (item.action != null)
+// 				item.action(this, this);
 
 			return true;
 		}
 
 		public bool UnEquipItem(ItemCode id)
 		{
-			//TODO: 템 벗기
+			if (!this.equipments.Contains(id))
+				return false;
+
+			Equipment item = (Equipment)ItemManager.table[id];
+
+			// 착용 상태에서 제거
+			equipStatus -= item.equipType;
+			equipments.Remove(id);
+
+			// 추가 스탯 제거
+			foreach (var stat in item.plusStat)
+				stats[(int)stat.Item1] -= stat.Item2;
+
+			// TODO: 장비의 추가 효과 제거. 버프로 처리 예정
+
 			return true;
 		}
 	}
