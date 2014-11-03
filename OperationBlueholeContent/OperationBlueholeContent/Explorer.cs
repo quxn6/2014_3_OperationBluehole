@@ -214,18 +214,15 @@ namespace OperationBlueholeContent
 
             // 남은 아이템이 있는지 확인하고
             // 남은 아이템 중에 제일 가까운 곳으로 방향을 정한다
-            IEnumerable<Item> items =
+            IEnumerable<Int2D> items =
                 from item in dungeonMaster.GetItems( currentZoneId )
-                let distance = item.position.x + item.position.y - position.x - position.y
+                let distance = Math.Abs( item.position.x - position.x ) + Math.Abs( item.position.y  - position.y )
                 orderby distance
-                select item;
+                select item.position;
 
+            // 아이템이 있는 경우 줍고 간다
             if ( items.Count() > 0 )
-            {
-                // 아이템이 있는 경우 줍고 간다
-                Item targetItem = items.First();
-                currentDestination = targetItem.position;
-            }
+                currentDestination = items.First();
             else
             {
                 // 아이템이 없으면 다음 존으로 이동
