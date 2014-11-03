@@ -32,7 +32,7 @@ namespace OperationBlueholeContent
 	class Item : GameObject
 	{
 		public ItemCode code { get; private set; }
-		public ItemType type { get; private set; }
+        public ItemType type { get; private set; }
 		public Func<Random, Character, Character, bool> action { get; protected set; }
 
 		public Item()
@@ -41,6 +41,7 @@ namespace OperationBlueholeContent
 			type = ItemType.None;
 			action = null;
 		}
+
 		public Item(ItemCode code, ItemType type,
 			Func<Random, Character, Character, bool> action)
 		{
@@ -65,7 +66,7 @@ namespace OperationBlueholeContent
             List<Tuple<StatType, ushort>> plusStat,
             List<Tuple<StatType, uint>> plusParam,
 			Func<Random, Character, Character, bool> action)
-			: base(id, type, action)
+			: base( id, type, action )
 		{
 			this.equipType = equipType;
 			this.reqStat = reqStat;
@@ -77,7 +78,7 @@ namespace OperationBlueholeContent
 	class Consumable : Item
 	{
 		public uint spNeed { get; private set; }
-		// 		private Func<Character, Character, bool> action;
+		// private Func<Character, Character, bool> action;
 
 		public Consumable(ItemCode id, ItemType type,
 			uint spNeed,

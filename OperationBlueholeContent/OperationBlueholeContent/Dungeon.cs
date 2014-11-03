@@ -262,6 +262,7 @@ namespace OperationBlueholeContent
                     // 조심해!
                     // item에 자신의 idx 기록은 안 해도 되려나...
                     map[position.y, position.x].gameObject = obj;
+                    obj.position = position;
 
                     break;
                 }
@@ -466,7 +467,7 @@ namespace OperationBlueholeContent
 
         public Int2D GetZonePosition( int id ) { return zoneList[id].centerPosition; }
 
-        public MapObjectType GetMapObjectType( int x, int y ) { return map[y, x].objectType; }
+        public MapObject GetMapObject( int x, int y ) { return map[y, x]; }
 
         #region FOR DEBUG
         public void PrintOutMAP()

@@ -385,10 +385,10 @@ namespace OperationBlueholeContent
             buff.plusStat.ForEach( stat => extraStats[(int)stat.Item1] -= stat.Item2 );
             buff.plusParam.ForEach( param => effectParams[(int)param.Item1] -= param.Item2 );
 
+            buffs.Pop();
+
             // 바뀌었으니 다시 계산
             CalcStat();
-
-            buffs.Pop();
 
             return true;
         }

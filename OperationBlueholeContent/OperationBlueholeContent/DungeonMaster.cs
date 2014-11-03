@@ -18,14 +18,18 @@ namespace OperationBlueholeContent
         private Dungeon dungeon;
         private Party users;
         private Explorer explorer;
+        private List<Item> lootedItems;
+        private List<Party> mobs;
+        private List<Item> items;
 
         public bool Init( Party users, int size )
         {
             this.users = users;
 
             // 일단은 빈 리스트들이지만 던전이 생성되고 나면 내부에서 배치된 것들이 안에 등록된다.
-            List<Party> mobs = new List<Party>();
-            List<Item> items = new List<Item>();
+            mobs = new List<Party>();
+            items = new List<Item>();
+            lootedItems = new List<Item>();
 
             dungeon = new Dungeon( size, mobs, items, users );
             explorer = new Explorer( this, size );
@@ -52,6 +56,8 @@ namespace OperationBlueholeContent
 
                 MoveDiretion direction = explorer.GetMoveDirection();
                 explorer.Move( direction );
+
+                // 위에서 아이템도 먹고 몹도 처리했으면 실제로 맵에서의 좌표도 이동시킨다
                 dungeon.MovePlayer( explorer.position );
                 
                 // explorer.GetNextZone();
@@ -78,6 +84,35 @@ namespace OperationBlueholeContent
             return dungeon.zoneList[zoneId].linkedZone.Select( z => z.zoneId );
         }
 
-        public bool IsTile( int x, int y ) { return MapObjectType.TILE == dungeon.GetMapObjectType( x, y ); }
+        public bool IsTile( int x, int y ) { return MapObjectType.TILE == dungeon.GetMapObject( x, y ).objectType; }
+        public MapObject GetMapObject( int x, int y ) { return dungeon.GetMapObject( x, y ); }
+
+        public IEnumerable<Item> GetItems( int zoneId )
+        {
+            return dungeon.zoneList[zoneId].items;
+        }
+
+        public void StartBattle( Party mob )
+        {
+            // explorer 좌표에 있는 몹을 읽어와서 전투 시작
+            if ( mob.partyType != PartyType.MOB )
+                Console.WriteLine( "NOOOOOOOOOOOOOOOO!!" );
+
+            Console.WriteLine( "Battle : " );
+            Console.ReadLine();
+        }
+
+        public void LootItem( Item item, int zoneId )
+        {
+            // 아이템 줍기!
+            // 맵에서도 지우고, 해당 존에서도 지운다
+            dungeon.GetMapObject( item.position.x, item.position.y ).gameObject = null;
+            dungeon.zoneList[zoneId].items.Remove( item );
+
+            lootedItems.Add( item );
+
+            Console.WriteLine( "looting : " );
+            Console.ReadLine();
+        }
     }
 }
