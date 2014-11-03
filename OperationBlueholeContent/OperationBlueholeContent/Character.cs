@@ -109,6 +109,9 @@ namespace OperationBlueholeContent
 		public EquipType equipStatus { get; private set; }
 		//TODO: 버프리스트
 
+		public BattleStyle battleStyle { get; private set; }
+// 		public PlayStyle playStyle { get; private set; }
+
 		public Character()
 		{
 			Reset();
@@ -213,37 +216,40 @@ namespace OperationBlueholeContent
 		// 현재는 그냥 가장 체력 낮은 적부터 다굴...
 		public void BattleTurnAction(Random random, Party ally, Party enemy)
 		{
-			if (ally == null || enemy == null)
+			if (random == null || ally == null || enemy == null)
 				return;
 
-			SkillId sid;
-			Character weakAlly = ally.characters
-				.Where(c => c.hp > 0 && c.hp < 50)
-				.OrderBy(c => c.hp)
-				.FirstOrDefault();
-			if (weakAlly != null)
-			{
-				sid = skills.Where(id => SkillManager.table[id].type == SkillType.Heal).FirstOrDefault();
-				if (sid == SkillId.None)
-				{
-					ItemCode iid = items.Where(code => code == ItemCode.HpPotionS).FirstOrDefault();
-					if (iid != ItemCode.None)
-					{
-						Consumable item = (Consumable)ItemManager.table[iid];
-						item.UseItem(random, this, weakAlly);
-					}
-				}
-				else if (SkillManager.table[sid].spNeed <= sp && SkillManager.table[sid].mpNeed <= mp)
-					SkillManager.table[sid].Act(random, this, weakAlly);
-			}
+// 			SkillId sid;
+// 			Character weakAlly = ally.characters
+// 				.Where(c => c.hp > 0 && c.hp < 50)
+// 				.OrderBy(c => c.hp)
+// 				.FirstOrDefault();
+// 			if (weakAlly != null)
+// 			{
+// 				sid = skills.Where(id => SkillManager.table[id].type == ActionType.RecoverHp).FirstOrDefault();
+// 				if (sid == SkillId.None)
+// 				{
+// 					ItemCode iid = items.Where(code => code == ItemCode.HpPotionS).FirstOrDefault();
+// 					if (iid != ItemCode.None)
+// 					{
+// 						Consumable item = (Consumable)ItemManager.table[iid];
+// 						item.UseItem(random, this, weakAlly);
+// 					}
+// 				}
+// 				else if (SkillManager.table[sid].spNeed <= sp && SkillManager.table[sid].mpNeed <= mp)
+// 					SkillManager.table[sid].Act(random, this, weakAlly);
+// 			}
+// 
+// 			Character weakEnemy = enemy.characters.Where(c => c.hp > 0).OrderBy(c => c.hp).FirstOrDefault();
+// 			sid = 0;
+// 			sid = skills
+// 				.Where(id => SkillManager.table[id].type == ActionType.PhyAttack)
+// 				.OrderByDescending(id => SkillManager.table[id].mpNeed).FirstOrDefault();
+// 			if (sid != SkillId.None && SkillManager.table[sid].spNeed <= sp && SkillManager.table[sid].mpNeed <= mp)
+// 				SkillManager.table[sid].Act(random, this, weakEnemy);
 
-			Character weakEnemy = enemy.characters.Where(c => c.hp > 0).OrderBy(c => c.hp).FirstOrDefault();
-			sid = 0;
-			sid = skills
-				.Where(id => SkillManager.table[id].type == SkillType.Attack)
-				.OrderByDescending(id => SkillManager.table[id].mpNeed).FirstOrDefault();
-			if (sid != SkillId.None && SkillManager.table[sid].spNeed <= sp && SkillManager.table[sid].mpNeed <= mp)
-				SkillManager.table[sid].Act(random, this, weakEnemy);
+			BattleAI oneCycle = new BattleAI(random, 20, this, ally, enemy);
+			while (oneCycle.Act());
 		}
 
 		public bool HitCheck(HitType type, uint accuracy)
@@ -303,7 +309,7 @@ namespace OperationBlueholeContent
 
 		public bool EquipItem(ItemCode id)
 		{
-			if (ItemManager.table[id].type != ItemType.Equip)
+			if (ItemManager.table[id].catagory != ItemCatag.Equip)
 				return false;
 
 			Equipment item = (Equipment)ItemManager.table[id];
@@ -402,6 +408,7 @@ namespace OperationBlueholeContent
 		public List<SkillId> skills;
 		public List<ItemCode> items;
 		public List<ItemCode> equipments;
+		public BattleStyle battleStyle;
 
 		public PlayerData(
 			uint exp,
@@ -415,7 +422,8 @@ namespace OperationBlueholeContent
 			ushort statMov,
 			List<SkillId> skills,
 			List<ItemCode> items,
-			List<ItemCode> equipments
+			List<ItemCode> equipments,
+			BattleStyle battleStyle
 			)
 		{
 			this.exp = exp;
@@ -431,6 +439,7 @@ namespace OperationBlueholeContent
 			this.skills = skills;
 			this.items = items;
 			this.equipments = equipments;
+			this.battleStyle = battleStyle;
 		}
 	}
 

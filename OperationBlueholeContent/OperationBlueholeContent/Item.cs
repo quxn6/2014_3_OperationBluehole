@@ -13,7 +13,7 @@ namespace OperationBlueholeContent
 		HpPotionS,
 		MpPotionS,
 	}
-	enum ItemType : ushort
+	enum ItemCatag : ushort
 	{
 		None = 0x0,
 		Equip = 0x1,	// 장비 가능
@@ -29,30 +29,30 @@ namespace OperationBlueholeContent
 		Feet = 0x20,
 	}
 
-	class Item : GameObject
+	internal class Item : GameObject
 	{
 		public ItemCode code { get; private set; }
-        public ItemType type { get; private set; }
+		public ItemCatag catagory { get; private set; }
 		public Func<Random, Character, Character, bool> action { get; protected set; }
 
 		public Item()
 		{
 			code = ItemCode.None;
-			type = ItemType.None;
+			catagory = ItemCatag.None;
 			action = null;
 		}
 
-		public Item(ItemCode code, ItemType type,
+		public Item(ItemCode code, ItemCatag type,
 			Func<Random, Character, Character, bool> action)
 		{
 			this.code = code;
-			this.type = type;
+			this.catagory = type;
 
 			this.action = action;
 		}
 	}
 
-	class Equipment : Item
+	internal class Equipment : Item
 	{
 		public EquipType equipType { get; private set; }
 		public List<Tuple<StatType, ushort>> reqStat { get; private set; }
@@ -60,7 +60,7 @@ namespace OperationBlueholeContent
         public List<Tuple<StatType, uint>> plusParam { get; private set; }
 		// 		private Func<Character, Character, bool> action;
 
-		public Equipment(ItemCode id, ItemType type,
+		public Equipment(ItemCode id, ItemCatag type,
 			EquipType equipType,
 			List<Tuple<StatType, ushort>> reqStat,
             List<Tuple<StatType, ushort>> plusStat,
@@ -75,22 +75,29 @@ namespace OperationBlueholeContent
 		}
 	}
 
-	class Consumable : Item
+	internal class Consumable : Item
 	{
 		public uint spNeed { get; private set; }
-		// private Func<Character, Character, bool> action;
+		public ActionType type { get; private set; }
+		public TargetType targetType { get; private set; }
+		// 		private Func<Character, Character, bool> action;
 
-		public Consumable(ItemCode id, ItemType type,
+		public Consumable(ItemCode id, ItemCatag type,
+			TargetType targetType,
 			uint spNeed,
+			ActionType actType,
 			Func<Random, Character, Character, bool> action)
 			: base(id, type, action)
 		{
 			this.spNeed = spNeed;
+			this.type = actType;
 		}
 
 		public bool UseItem(Random random, Character src)
 		{
 			if (action == null)
+				return false;
+			if (targetType != TargetType.None && targetType != TargetType.All)
 				return false;
 
 			if (src.items.Contains(this.code) &&
@@ -104,6 +111,10 @@ namespace OperationBlueholeContent
 		public bool UseItem(Random random, Character src, Character target)
 		{
 			if (action == null)
+				return false;
+			if (target == null)
+				return UseItem(random, src);
+			if (targetType != TargetType.Single)
 				return false;
 
 			if (src.items.Contains(this.code) &&
@@ -136,7 +147,7 @@ namespace OperationBlueholeContent
 	class RingOfErrethAkbe : Item
 	{
 		public RingOfErrethAkbe()
-			: base(ItemCode.Ring, ItemType.None, null)
+			: base(ItemCode.Ring, ItemCatag.None, null)
 		{ }
 	}
 
@@ -149,8 +160,9 @@ namespace OperationBlueholeContent
 			ItemManager.table = new Dictionary<ItemCode, Item>();
 
 			ItemManager.table.Add(ItemCode.HpPotionS,
-				new Consumable(ItemCode.HpPotionS, ItemType.Consume,
+				new Consumable(ItemCode.HpPotionS, ItemCatag.Consume, TargetType.Single,
 					50,
+					ActionType.RecoverHp,
 					delegate(Random random, Character src, Character target)
 					{
 						target.Recover(GaugeType.Hp, 50);
@@ -159,8 +171,9 @@ namespace OperationBlueholeContent
 				));
 
 			ItemManager.table.Add(ItemCode.MpPotionS,
-				new Consumable(ItemCode.MpPotionS, ItemType.Consume,
+				new Consumable(ItemCode.MpPotionS, ItemCatag.Consume, TargetType.Single,
 					50,
+					ActionType.RecoverMp,
 					delegate(Random random, Character src, Character target)
 					{
 						target.Recover(GaugeType.Mp, 20);

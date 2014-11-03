@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Battle.cs" />
     <Compile Include="Buff.cs" />
+    <Compile Include="BattleAI.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="Dungeon.cs" />
     <Compile Include="DungeonMaster.cs" />

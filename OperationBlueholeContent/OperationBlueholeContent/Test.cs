@@ -35,7 +35,8 @@ namespace OperationBlueholeContent
 				new List<ItemCode>
 				{
 
-				}
+				},
+				BattleStyle.AGGRESSIVE
 			));
 
 			TestData.playerList.Add(102, new PlayerData
@@ -61,7 +62,8 @@ namespace OperationBlueholeContent
 				new List<ItemCode>
 				{
 
-				}
+				},
+				BattleStyle.DEFENSIVE
 			));
 
 			TestData.playerList.Add(103, new PlayerData
@@ -86,7 +88,8 @@ namespace OperationBlueholeContent
 				new List<ItemCode>
 				{
 
-				}
+				},
+				BattleStyle.AGGRESSIVE
 			));
 
 			TestData.playerList.Add(104, new PlayerData
@@ -111,7 +114,8 @@ namespace OperationBlueholeContent
 				new List<ItemCode>
 				{
 
-				}
+				},
+				BattleStyle.AGGRESSIVE
 			));
 		}
 	}

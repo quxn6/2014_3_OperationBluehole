@@ -6,19 +6,11 @@ using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
 {
-	enum SkillType : byte
-	{
-		None,
-		Attack,
-		Heal,
-		Buff,
-		Debuff,
-	}
-	enum SkillTargetType : byte
+	enum TargetType : byte
 	{
 		None,		// 타겟 지정 없음
 		Single,		// 1명 지정 스킬
-		Multiple,	// 여러명 지정 스킬
+// 		Multiple,	// 여러명 지정 스킬
 		All,		// 전체 스킬
 	}
 	enum SkillId : ushort
@@ -30,17 +22,17 @@ namespace OperationBlueholeContent
 		MagicArrow,
 	}
 	
-	class Skill
+	internal class Skill
 	{
-		public SkillType type { get; private set; }
-		public SkillTargetType targetType { get; private set; }
+		public ActionType type { get; private set; }
+		public TargetType targetType { get; private set; }
 		public string name { get; private set; }
 		public uint hpNeed { get; private set; }
 		public uint mpNeed { get; private set; }
 		public uint spNeed { get; private set; }
 		private Func<Random, Character, Character, bool> action;
 
-		public Skill(SkillType type, SkillTargetType targetType, uint hpNeed, uint mpNeed, uint spNeed, Func<Random, Character, Character, bool> action)
+		public Skill(ActionType type, TargetType targetType, uint hpNeed, uint mpNeed, uint spNeed, Func<Random, Character, Character, bool> action)
 		{
 			this.type = type;
 			this.targetType = targetType;
@@ -52,7 +44,7 @@ namespace OperationBlueholeContent
 
 		public bool Act(Random random, Character src)
 		{
-			if (targetType != SkillTargetType.None)
+			if (targetType != TargetType.None && targetType != TargetType.All)
 				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
@@ -63,7 +55,10 @@ namespace OperationBlueholeContent
 
 		public bool Act(Random random, Character src, Character target)
 		{
-			if (targetType != SkillTargetType.Single)
+			if (target == null)
+				return Act(random, src);
+
+			if (targetType != TargetType.Single)
 				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
@@ -72,20 +67,20 @@ namespace OperationBlueholeContent
 			return false;
 		}
 
-		public bool Act(Random random, Character src, Character[] targets)
-		{
-			if (targetType != SkillTargetType.Multiple)
-				return false;
-
-			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
-			{
-				foreach (Character target in targets)
-					action(random, src, target);
-				return true;
-			}
-
-			return false;
-		}
+// 		public bool Act(Random random, Character src, Character[] targets)
+// 		{
+// 			if (targetType != SkillTargetType.Multiple)
+// 				return false;
+// 
+// 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
+// 			{
+// 				foreach (Character target in targets)
+// 					action(random, src, target);
+// 				return true;
+// 			}
+// 
+// 			return false;
+// 		}
 	}
 
 	// 이거 뭔가 찝찝한데...
@@ -130,8 +125,8 @@ namespace OperationBlueholeContent
 
 			SkillManager.table.Add(SkillId.Slash,
 				new Skill(
-					SkillType.Attack,
-					SkillTargetType.Single,
+					ActionType.PhyAttack,
+					TargetType.Single,
 					0,
 					0,
 					50,
@@ -153,8 +148,8 @@ namespace OperationBlueholeContent
 
 			SkillManager.table.Add(SkillId.Punch,
 				new Skill(
-					SkillType.Attack,
-					SkillTargetType.Single,
+					ActionType.PhyAttack,
+					TargetType.Single,
 					0,
 					0,
 					50,
@@ -176,8 +171,8 @@ namespace OperationBlueholeContent
 
 			SkillManager.table.Add(SkillId.MagicArrow,
 				new Skill(
-					SkillType.Attack,
-					SkillTargetType.Single,
+					ActionType.MagAttack,
+					TargetType.Single,
 					0,
 					10,
 					50,
@@ -199,8 +194,8 @@ namespace OperationBlueholeContent
 
 			SkillManager.table.Add(SkillId.Heal,
 				new Skill(
-					SkillType.Heal,
-					SkillTargetType.Single,
+					ActionType.RecoverHp,
+					TargetType.Single,
 					0,
 					10,
 					50,
