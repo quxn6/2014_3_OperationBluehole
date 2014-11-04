@@ -78,15 +78,6 @@ namespace OperationBlueholeContent
         }
     }
 
-    class BuffComp : Comparer<BuffPiece>
-    {
-        public override int Compare( BuffPiece lhs, BuffPiece rhs )
-        {
-            if ( object.Equals( lhs, rhs ) ) return 0;
-            return lhs.expireTime.CompareTo( rhs.expireTime );
-        }
-    }
-
 	class Character : GameObject
 	{
         // stat = 캐릭터의 능력치
@@ -128,7 +119,7 @@ namespace OperationBlueholeContent
 			skills = new List<SkillId>();
 			items = new List<ItemCode>();
             equipments = new List<ItemCode>();
-            buffs = new MinHeap<BuffPiece>( new BuffComp() );
+            buffs = new MinHeap<BuffPiece>();
 		}
 
 		public void CalcStat()

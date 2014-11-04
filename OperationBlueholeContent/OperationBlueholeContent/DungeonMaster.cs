@@ -59,7 +59,7 @@ namespace OperationBlueholeContent
         {
             // user 생성
             this.users = LoadPlayers();
-
+            
             // 임시 몹 사용
             tempMob = TempMobGenerator();
 

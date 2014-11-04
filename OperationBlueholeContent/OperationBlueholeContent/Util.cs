@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
 {
-    class MinHeap<T> : IEnumerable<T>
+    class MinHeap<T> : IEnumerable<T> where T : IComparable<T>
     {
         private int size;
         private List<T> elements;
-        private Comparer<T> comparer;
 
-        public MinHeap( Comparer<T> comparer )
+        public MinHeap()
         {
             elements = new List<T>();
-            this.comparer = comparer;
             size = 0;
         }
 
@@ -37,12 +35,12 @@ namespace OperationBlueholeContent
                 return;
 
             int largeIdx = 2 * idx;
-            if ( 2 * idx + 1 <= size && comparer.Compare( elements[largeIdx], elements[2 * idx + 1] ) > 0 )
+            if ( 2 * idx + 1 <= size && elements[largeIdx].CompareTo( elements[2 * idx + 1] ) > 0 )
                 largeIdx = 2 * idx + 1;
 
             T tempElement;
 
-            if ( comparer.Compare( elements[idx], elements[largeIdx] ) > 0 ) 
+            if ( elements[idx].CompareTo( elements[largeIdx] ) > 0 ) 
             {
                 tempElement = elements[largeIdx];
                 elements[largeIdx] = elements[idx];
@@ -66,7 +64,7 @@ namespace OperationBlueholeContent
             ++size;
             T tempElement;
 
-            while ( currentIdx > 0 && comparer.Compare( elements[currentIdx], elements[currentIdx / 2] ) < 0 )
+            while ( currentIdx > 0 && elements[currentIdx].CompareTo( elements[currentIdx / 2] ) < 0 )
             {
                 tempElement = elements[currentIdx];
                 elements[currentIdx] = elements[currentIdx / 2];
@@ -106,7 +104,7 @@ namespace OperationBlueholeContent
 
             T tempElement;
 
-            while ( currentIdx > 0 && comparer.Compare( elements[currentIdx], elements[currentIdx / 2] ) < 0 )
+            while ( currentIdx > 0 && elements[currentIdx].CompareTo( elements[currentIdx / 2] ) < 0 )
             {
                 tempElement = elements[currentIdx];
                 elements[currentIdx] = elements[currentIdx / 2];

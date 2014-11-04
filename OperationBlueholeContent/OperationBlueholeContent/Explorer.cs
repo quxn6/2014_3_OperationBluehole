@@ -58,15 +58,6 @@ namespace OperationBlueholeContent
         }
     }
 
-    internal class NodeComp : Comparer<ExploerNode>
-    {
-        public override int Compare( ExploerNode lhs, ExploerNode rhs )
-        {
-            if ( object.Equals( lhs, rhs ) ) return 0;
-            return lhs.fScore.CompareTo( rhs.fScore );
-        }
-    }
-
     // 시야 개념은 던전 내부 zone으로 구분
     // zone 정보는 DM를 통해서 얻음
     class Explorer
@@ -271,7 +262,7 @@ namespace OperationBlueholeContent
             // 조심해!!!
             // priority_queue가 없어서 일단 list로 구현
             // List<ExploerNode> openSet = new List<ExploerNode>();
-            MinHeap<ExploerNode> openSet = new MinHeap<ExploerNode>( new NodeComp() );
+            MinHeap<ExploerNode> openSet = new MinHeap<ExploerNode>();
 
             for ( int i = 0; i < mapSize; ++i )
                 for ( int j = 0; j < mapSize; ++j )
