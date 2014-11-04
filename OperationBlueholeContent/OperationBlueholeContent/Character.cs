@@ -212,8 +212,6 @@ namespace OperationBlueholeContent
 			return items.Remove(usedItem);
 		}
 
-		// 차후 적과 아군의 파티 정보를 보고 행동을 결정하는 AI 추가 필요
-		// 현재는 그냥 가장 체력 낮은 적부터 다굴...
 		public void BattleTurnAction(Random random, Party ally, Party enemy)
 		{
 			if (random == null || ally == null || enemy == null)
@@ -285,6 +283,10 @@ namespace OperationBlueholeContent
 			}
 		}
 
+		public void Rest()
+		{
+			Recover(GaugeType.Sp, actualParams[(int)ParamType.spRegn]);
+		}
 		public void Recover(GaugeType type, uint value)
 		{
 			switch(type)
