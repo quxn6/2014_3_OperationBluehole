@@ -203,7 +203,7 @@ namespace OperationBlueholeContent
 			return items.Remove(usedItem);
 		}
 
-		public void BattleTurnAction(Random random, Party ally, Party enemy)
+        public void BattleTurnAction( RandomGenerator random, Party ally, Party enemy )
 		{
 			if (random == null || ally == null || enemy == null)
 				return;
@@ -479,7 +479,8 @@ namespace OperationBlueholeContent
 		public Mob()
 		{
 			//for test
-			skills.Add(SkillId.Punch);
+            skills.Add( SkillId.Punch );
+            CalcStat();
 		}
 	}
 }

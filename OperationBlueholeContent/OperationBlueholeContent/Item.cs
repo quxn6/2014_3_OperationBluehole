@@ -33,7 +33,7 @@ namespace OperationBlueholeContent
 	{
 		public ItemCode code { get; private set; }
 		public ItemCatag catagory { get; private set; }
-		public Func<Random, Character, Character, bool> action { get; protected set; }
+        public Func<RandomGenerator, Character, Character, bool> action { get; protected set; }
 
 		public Item()
 		{
@@ -43,7 +43,7 @@ namespace OperationBlueholeContent
 		}
 
 		public Item(ItemCode code, ItemCatag type,
-			Func<Random, Character, Character, bool> action)
+            Func<RandomGenerator, Character, Character, bool> action )
 		{
 			this.code = code;
 			this.catagory = type;
@@ -65,7 +65,7 @@ namespace OperationBlueholeContent
 			List<Tuple<StatType, ushort>> reqStat,
             List<Tuple<StatType, ushort>> plusStat,
             List<Tuple<StatType, uint>> plusParam,
-			Func<Random, Character, Character, bool> action)
+            Func<RandomGenerator, Character, Character, bool> action )
 			: base( id, type, action )
 		{
 			this.equipType = equipType;
@@ -86,14 +86,14 @@ namespace OperationBlueholeContent
 			TargetType targetType,
 			uint spNeed,
 			ActionType actType,
-			Func<Random, Character, Character, bool> action)
+            Func<RandomGenerator, Character, Character, bool> action )
 			: base(id, type, action)
 		{
 			this.spNeed = spNeed;
 			this.type = actType;
 		}
 
-		public bool UseItem(Random random, Character src)
+        public bool UseItem( RandomGenerator random, Character src )
 		{
 			if (action == null)
 				return false;
@@ -108,7 +108,7 @@ namespace OperationBlueholeContent
 			return false;
 		}
 
-		public bool UseItem(Random random, Character src, Character target)
+        public bool UseItem( RandomGenerator random, Character src, Character target )
 		{
 			if (action == null)
 				return false;
@@ -125,7 +125,7 @@ namespace OperationBlueholeContent
 			return false;
 		}
 
-		public bool UseItem(Random random, Character src, Character[] targets)
+        public bool UseItem( RandomGenerator random, Character src, Character[] targets )
 		{
 			if (action == null)
 				return false;
@@ -163,7 +163,7 @@ namespace OperationBlueholeContent
 				new Consumable(ItemCode.HpPotionS, ItemCatag.Consume, TargetType.Single,
 					50,
 					ActionType.RecoverHp,
-					delegate(Random random, Character src, Character target)
+                    delegate( RandomGenerator random, Character src, Character target )
 					{
 						target.Recover(GaugeType.Hp, 50);
 						return true;
@@ -174,7 +174,7 @@ namespace OperationBlueholeContent
 				new Consumable(ItemCode.MpPotionS, ItemCatag.Consume, TargetType.Single,
 					50,
 					ActionType.RecoverMp,
-					delegate(Random random, Character src, Character target)
+                    delegate( RandomGenerator random, Character src, Character target )
 					{
 						target.Recover(GaugeType.Mp, 20);
 						return true;

@@ -61,9 +61,9 @@ namespace OperationBlueholeContent
 		private List<AIDecision> decisions;
 		private Character player;
 		private Party ally, enemy;
-		private Random random;
+        private RandomGenerator random;
 
-		public BattleAI(Random random, short randomLevel, Character player, Party ally, Party enemy)
+        public BattleAI( RandomGenerator random, short randomLevel, Character player, Party ally, Party enemy )
 		{
 // 			decisions = new short[(int)ActionType.ActionTypeCount];
 			decisions = new List<AIDecision>();

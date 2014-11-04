@@ -13,6 +13,7 @@ namespace OperationBlueholeContent
         public Int2D( int x, int y ) { this.x = x; this.y = y; }
         public Int2D( Int2D rhs ) { this.x = rhs.x; this.y = rhs.y; }
 
+        /*
         public static bool operator ==( Int2D lhs, Int2D rhs )
         {
             return ( lhs.x == rhs.x && lhs.y == rhs.y );
@@ -22,6 +23,7 @@ namespace OperationBlueholeContent
         {
             return ( lhs.x != rhs.x || lhs.y != rhs.y );
         }
+         * */
     }
 
     internal class DungeonZone
@@ -61,15 +63,15 @@ namespace OperationBlueholeContent
         public bool siblingDirection;   // 자신의 sibling zone이 있는 방향 - true이면 수평 방향
         public bool isLeft;             // leftChild인가
 
-        public Int2D lowerBoundary, upperBoundary;      
+        public Int2D lowerBoundary, upperBoundary;
 
-        private Random random;
+        private RandomGenerator random;
         private MapObject[,] map;
         private List<Party> mobs;
         private List<Item> items;
         private List<DungeonZone> zoneList;
 
-        public void SetRoot( int size, Random random, MapObject[,] map, List<Party> mobs, List<Item> items, List<DungeonZone> zoneList )
+        public void SetRoot( int size, RandomGenerator random, MapObject[,] map, List<Party> mobs, List<Item> items, List<DungeonZone> zoneList )
         {
             this.random = random;
             this.map = map;
@@ -404,13 +406,13 @@ namespace OperationBlueholeContent
     {
         private int size;
         private MapObject[,] map;
-        private Random random;
+        private RandomGenerator random;
 
         private Int2D playerPosition, ringPosition;
 
         public List<DungeonZone> zoneList = new List<DungeonZone>();
 
-        public Dungeon( int size, List<Party> mobs, List<Item> items, Party users, Random random )
+        public Dungeon( int size, List<Party> mobs, List<Item> items, Party users, RandomGenerator random )
         {
             this.size = size;
             map = new MapObject[size, size];
