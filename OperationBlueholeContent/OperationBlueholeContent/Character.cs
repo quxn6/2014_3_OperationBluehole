@@ -283,19 +283,19 @@ namespace OperationBlueholeContent
 			switch(type)
 			{
 				case GaugeType.Hp:
+					if (value > actualParams[(int)ParamType.maxHp] - hp)
+						value = actualParams[(int)ParamType.maxHp] - hp;
 					hp += value;
-                    if ( hp > actualParams[(int)ParamType.maxHp] )
-                        hp = actualParams[(int)ParamType.maxHp];
 					break;
 				case GaugeType.Mp:
+					if (value > actualParams[(int)ParamType.maxMp] - mp)
+						value = actualParams[(int)ParamType.maxMp] - mp;
 					mp += value;
-                    if ( mp > actualParams[(int)ParamType.maxMp] )
-                        mp = actualParams[(int)ParamType.maxMp];
 					break;
 				case GaugeType.Sp:
+					if (value > 100 - sp)
+						value = 100 - sp;
 					sp += value;
-					if (sp > 100)
-						sp = 100;
 					break;
 			}
 		}
