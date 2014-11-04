@@ -58,15 +58,6 @@ namespace OperationBlueholeContent
         }
     }
 
-    internal class NodeComp : Comparer<ExploerNode>
-    {
-        public override int Compare( ExploerNode lhs, ExploerNode rhs )
-        {
-            if ( object.Equals( lhs, rhs ) ) return 0;
-            return lhs.fScore.CompareTo( rhs.fScore );
-        }
-    }
-
     // 시야 개념은 던전 내부 zone으로 구분
     // zone 정보는 DM를 통해서 얻음
     class Explorer
@@ -82,6 +73,7 @@ namespace OperationBlueholeContent
         private HashSet<int> exploredZone = new HashSet<int>();
         private ExploerNode[,] map;
         private int mapSize;
+        public bool isRingDiscovered { get; private set; }
 
         private DungeonMaster dungeonMaster;
 
@@ -98,6 +90,7 @@ namespace OperationBlueholeContent
 
         public void Init( Int2D position )
         {
+            isRingDiscovered = false;
             this.position = position;
 
             // 존 방문 기록도 업데이트하고, 첫 movePath 계산도 해둔다
@@ -132,12 +125,8 @@ namespace OperationBlueholeContent
 
         public MoveDiretion GetMoveDirection()
         {
-            if ( position.Equals( currentMovePath.Peek() ) )
-                currentMovePath.Pop();
-
-            // 도착했거나 작성된 경로가 없는 경우 새로 생성
-            if ( position.Equals( currentDestination ) || currentMovePath.Count == 0 )
-                UpdateDestination();
+            if ( currentMovePath.Count == 0 )
+                UpdateDestination(); 
 
             // 비교문 없애려면 2차원 테이블 하나 만들 것
             // move horizontally first.
@@ -175,6 +164,28 @@ namespace OperationBlueholeContent
                     break;
             }
 
+            // 일단 도착했으니까 제거
+            if ( position.Equals( currentMovePath.Peek() ) )
+                currentMovePath.Pop();
+
+            // 몹이 있는지 확인한다
+            // 있으면 일단 전투부터 요청
+            Party target = dungeonMaster.GetMapObject( position.x, position.y ).party;
+            if ( target != null && target.partyType == PartyType.MOB )
+                dungeonMaster.StartBattle( target );
+
+            // 아이템 있는지 확인한다
+            Item item = (Item)dungeonMaster.GetMapObject( position.x, position.y ).gameObject;
+            if ( item != null )
+            {
+                dungeonMaster.LootItem( item, currentZoneId );
+
+                if ( item.code == ItemCode.Ring )
+                    isRingDiscovered = true;
+
+                UpdateDestination();
+            }
+
             // 현재 존 정보 업데이트 할 것
             int newZoneId = dungeonMaster.GetZoneId( position );
 
@@ -182,6 +193,8 @@ namespace OperationBlueholeContent
             {
                 // 영역이 바뀌었다!
                 currentZoneId = newZoneId;
+
+                UpdateDestination();
 
                 // 처음 가보는 곳이면 일단 스택에도 넣고, 가봤다고 기록도 하자
                 if ( !exploredZone.Contains( currentZoneId ) )
@@ -196,13 +209,23 @@ namespace OperationBlueholeContent
         {
             currentMovePath.Clear();
 
-            // 조심해!
-            // 아이템이 있는 경우 거쳐서 갈 지 결정해야 함
-            // 특히 ring
-            // 현재 속한 존의 오브젝트 정보를 받아둬야 할 듯
+            // 남은 아이템이 있는지 확인하고
+            // 남은 아이템 중에 제일 가까운 곳으로 방향을 정한다
+            IEnumerable<Int2D> items =
+                from item in dungeonMaster.GetItems( currentZoneId )
+                let distance = Math.Abs( item.position.x - position.x ) + Math.Abs( item.position.y  - position.y )
+                orderby distance
+                select item.position;
 
-            currentDestinationId = SelectNextZone();
-            currentDestination = dungeonMaster.GetZonePosition( currentDestinationId );
+            // 아이템이 있는 경우 줍고 간다
+            if ( items.Count() > 0 )
+                currentDestination = items.First();
+            else
+            {
+                // 아이템이 없으면 다음 존으로 이동
+                currentDestinationId = SelectNextZone();
+                currentDestination = dungeonMaster.GetZonePosition( currentDestinationId );
+            }
 
             MakePath( currentDestination );
         }
@@ -239,7 +262,7 @@ namespace OperationBlueholeContent
             // 조심해!!!
             // priority_queue가 없어서 일단 list로 구현
             // List<ExploerNode> openSet = new List<ExploerNode>();
-            MinHeap<ExploerNode> openSet = new MinHeap<ExploerNode>( new NodeComp() );
+            MinHeap<ExploerNode> openSet = new MinHeap<ExploerNode>();
 
             for ( int i = 0; i < mapSize; ++i )
                 for ( int j = 0; j < mapSize; ++j )
@@ -259,6 +282,8 @@ namespace OperationBlueholeContent
 
                 if ( current.position == destination )
                 {
+                    currentMovePath.Push( currentDestination ); // 최종 목적지를 일단 넣고 그 사이를 채움
+
                     ReconstructPath( current );
                     currentMovePath.Pop();      // 현재 위치는 빼자
                     break;

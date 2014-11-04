@@ -18,16 +18,63 @@ namespace OperationBlueholeContent
         private Dungeon dungeon;
         private Party users;
         private Explorer explorer;
+        private List<Item> lootedItems;
+        private List<Party> mobs;
+        private List<Item> items;
+        private Random random;
 
-        public bool Init( Party users, int size )
+        private Party tempMob;
+
+        // HARD CODED
+        private Party LoadPlayers()
         {
-            this.users = users;
+            TestData.InitPlayer();
 
+            Player[] player = { new Player(), new Player(), new Player() };
+            player[0].LoadPlayer( 102 );
+            player[1].LoadPlayer( 103 );
+            player[2].LoadPlayer( 104 );
+
+            Party users = new Party( PartyType.PLAYER );
+            foreach ( Player p in player )
+                users.AddCharacter( p );
+
+            return users;
+        }
+
+        // FOR DEBUG
+        private Party TempMobGenerator()
+        {
+
+            Mob[] mob = { new Mob(), new Mob(), new Mob() };
+            Party mobs = new Party( PartyType.MOB );
+
+            foreach ( Mob p in mob )
+                mobs.AddCharacter( p );
+
+            return mobs;
+        }
+
+        public bool Init( int size )
+        {
+            // user 생성
+            this.users = LoadPlayers();
+            
+            // 임시 몹 사용
+            tempMob = TempMobGenerator();
+
+            // 전투 로직 초기화
+            SkillManager.Init();
+            ItemManager.Init();
+
+            // 던전 생성
             // 일단은 빈 리스트들이지만 던전이 생성되고 나면 내부에서 배치된 것들이 안에 등록된다.
-            List<Party> mobs = new List<Party>();
-            List<Item> items = new List<Item>();
+            mobs = new List<Party>();
+            items = new List<Item>();
+            lootedItems = new List<Item>();
+            random = new Random();
 
-            dungeon = new Dungeon( size, mobs, items, users );
+            dungeon = new Dungeon( size, mobs, items, users, random );
             explorer = new Explorer( this, size );
 
             explorer.Init( users.position );
@@ -42,16 +89,15 @@ namespace OperationBlueholeContent
             while ( true )
             {
                 ++turn;
-                // FOR DEBUG
-                // direction 방향으로 움직이지 않고
-                // currentDestination 얻어와서 바로 이동
 
                 // 비밀의 방에 도착
-                if ( dungeon.FindRing( explorer.currentZoneId ) )
+                if ( explorer.isRingDiscovered )
                     break;
 
                 MoveDiretion direction = explorer.GetMoveDirection();
                 explorer.Move( direction );
+
+                // 위에서 아이템도 먹고 몹도 처리했으면 실제로 맵에서의 좌표도 이동시킨다
                 dungeon.MovePlayer( explorer.position );
                 
                 // explorer.GetNextZone();
@@ -78,6 +124,41 @@ namespace OperationBlueholeContent
             return dungeon.zoneList[zoneId].linkedZone.Select( z => z.zoneId );
         }
 
-        public bool IsTile( int x, int y ) { return MapObjectType.TILE == dungeon.GetMapObjectType( x, y ); }
+        public bool IsTile( int x, int y ) { return MapObjectType.TILE == dungeon.GetMapObject( x, y ).objectType; }
+        public MapObject GetMapObject( int x, int y ) { return dungeon.GetMapObject( x, y ); }
+
+        public IEnumerable<Item> GetItems( int zoneId )
+        {
+            return dungeon.zoneList[zoneId].items;
+        }
+
+        public void StartBattle( Party mob )
+        {
+            // explorer 좌표에 있는 몹을 읽어와서 전투 시작
+            if ( mob.partyType != PartyType.MOB )
+                Console.WriteLine( "NOOOOOOOOOOOOOOOO!!" );
+
+            Console.WriteLine( "Battle : " );
+            Console.ReadLine();
+
+            Battle newBattle = new Battle( random, users, tempMob );
+            newBattle.StartBattle();
+
+            Console.WriteLine( "Test: {0} Win.", newBattle.battleResult );
+            Console.ReadLine();
+        }
+
+        public void LootItem( Item item, int zoneId )
+        {
+            // 아이템 줍기!
+            // 맵에서도 지우고, 해당 존에서도 지운다
+            dungeon.GetMapObject( item.position.x, item.position.y ).gameObject = null;
+            dungeon.zoneList[zoneId].items.Remove( item );
+
+            lootedItems.Add( item );
+
+            Console.WriteLine( "looting : " );
+            Console.ReadLine();
+        }
     }
 }

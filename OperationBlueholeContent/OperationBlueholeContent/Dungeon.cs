@@ -262,6 +262,7 @@ namespace OperationBlueholeContent
                     // 조심해!
                     // item에 자신의 idx 기록은 안 해도 되려나...
                     map[position.y, position.x].gameObject = obj;
+                    obj.position = position;
 
                     break;
                 }
@@ -409,10 +410,11 @@ namespace OperationBlueholeContent
 
         public List<DungeonZone> zoneList = new List<DungeonZone>();
 
-        public Dungeon( int size, List<Party> mobs, List<Item> items, Party users )
+        public Dungeon( int size, List<Party> mobs, List<Item> items, Party users, Random random )
         {
             this.size = size;
             map = new MapObject[size, size];
+            this.random = random;
 
             // 나중에는 object pool 만들 것
             for ( int i = 0; i < size; ++i )
@@ -430,8 +432,6 @@ namespace OperationBlueholeContent
             // 부모 영역에 대한 참조와 트리에서의 depth정보도 가진다.
             // 만약 자신의 depth가 upper bound보다 작으면 아래의 작업을 수행한다
             // 자신의 반대 방향으로 임의의 위치에서 다시 잘라서 해당 영역을 자식으로 추가
-            random = new Random();
-
             DungeonTreeNode root = new DungeonTreeNode();
             root.SetRoot( size, random, map, mobs, items, zoneList );
             root.GenerateRecursivly();
@@ -466,7 +466,7 @@ namespace OperationBlueholeContent
 
         public Int2D GetZonePosition( int id ) { return zoneList[id].centerPosition; }
 
-        public MapObjectType GetMapObjectType( int x, int y ) { return map[y, x].objectType; }
+        public MapObject GetMapObject( int x, int y ) { return map[y, x]; }
 
         #region FOR DEBUG
         public void PrintOutMAP()
