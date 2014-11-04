@@ -25,33 +25,54 @@ namespace OperationBlueholeContent
 
         private Party tempMob;
 
-        public bool Init( int size )
+        // HARD CODED
+        private Party LoadPlayers()
         {
-            SkillManager.Init();
-            ItemManager.Init();
             TestData.InitPlayer();
+
             Player[] player = { new Player(), new Player(), new Player() };
-            Mob[] mob = { new Mob(), new Mob(), new Mob() };
             player[0].LoadPlayer( 102 );
             player[1].LoadPlayer( 103 );
             player[2].LoadPlayer( 104 );
-            Party Users = new Party( PartyType.PLAYER );
-            Party Mobs = new Party( PartyType.MOB );
+
+            Party users = new Party( PartyType.PLAYER );
             foreach ( Player p in player )
-                Users.AddCharacter( p );
+                users.AddCharacter( p );
+
+            return users;
+        }
+
+        // FOR DEBUG
+        private Party TempMobGenerator()
+        {
+
+            Mob[] mob = { new Mob(), new Mob(), new Mob() };
+            Party mobs = new Party( PartyType.MOB );
+
             foreach ( Mob p in mob )
-                Mobs.AddCharacter( p );
-            random = new Random();
+                mobs.AddCharacter( p );
 
-            // 임시 사용
-            tempMob = Mobs;
+            return mobs;
+        }
 
+        public bool Init( int size )
+        {
+            // user 생성
+            this.users = LoadPlayers();
+
+            // 임시 몹 사용
+            tempMob = TempMobGenerator();
+
+            // 전투 로직 초기화
+            SkillManager.Init();
+            ItemManager.Init();
+
+            // 던전 생성
             // 일단은 빈 리스트들이지만 던전이 생성되고 나면 내부에서 배치된 것들이 안에 등록된다.
-            this.users = Users;
-
             mobs = new List<Party>();
             items = new List<Item>();
             lootedItems = new List<Item>();
+            random = new Random();
 
             dungeon = new Dungeon( size, mobs, items, users, random );
             explorer = new Explorer( this, size );
@@ -68,12 +89,9 @@ namespace OperationBlueholeContent
             while ( true )
             {
                 ++turn;
-                // FOR DEBUG
-                // direction 방향으로 움직이지 않고
-                // currentDestination 얻어와서 바로 이동
 
                 // 비밀의 방에 도착
-                if ( dungeon.FindRing( explorer.currentZoneId ) )
+                if ( explorer.isRingDiscovered )
                     break;
 
                 MoveDiretion direction = explorer.GetMoveDirection();

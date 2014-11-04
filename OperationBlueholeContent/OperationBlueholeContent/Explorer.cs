@@ -82,6 +82,7 @@ namespace OperationBlueholeContent
         private HashSet<int> exploredZone = new HashSet<int>();
         private ExploerNode[,] map;
         private int mapSize;
+        public bool isRingDiscovered { get; private set; }
 
         private DungeonMaster dungeonMaster;
 
@@ -98,6 +99,7 @@ namespace OperationBlueholeContent
 
         public void Init( Int2D position )
         {
+            isRingDiscovered = false;
             this.position = position;
 
             // 존 방문 기록도 업데이트하고, 첫 movePath 계산도 해둔다
@@ -186,6 +188,10 @@ namespace OperationBlueholeContent
             if ( item != null )
             {
                 dungeonMaster.LootItem( item, currentZoneId );
+
+                if ( item.code == ItemCode.Ring )
+                    isRingDiscovered = true;
+
                 UpdateDestination();
             }
 
