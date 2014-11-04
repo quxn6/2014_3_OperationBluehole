@@ -91,6 +91,7 @@ namespace OperationBlueholeContent
 		{
 			this.spNeed = spNeed;
 			this.type = actType;
+			this.targetType = targetType;
 		}
 
         public bool UseItem( RandomGenerator random, Character src )
