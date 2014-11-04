@@ -237,7 +237,7 @@ namespace OperationBlueholeContent
 // 			if (sid != SkillId.None && SkillManager.table[sid].spNeed <= sp && SkillManager.table[sid].mpNeed <= mp)
 // 				SkillManager.table[sid].Act(random, this, weakEnemy);
 
-			BattleAI oneCycle = new BattleAI(random, 20, this, ally, enemy);
+			BattleAI oneCycle = new BattleAI(random, 100, this, ally, enemy);
 			while (oneCycle.Act());
 		}
 
@@ -257,19 +257,19 @@ namespace OperationBlueholeContent
 			switch (type)
 			{
 				case GaugeType.Hp:
+					if (value > hp)
+						value = hp;
 					hp -= value;
-                    if ( hp > actualParams[(int)ParamType.maxHp] )
-                        hp = actualParams[(int)ParamType.maxHp];
 					break;
 				case GaugeType.Mp:
+					if (value > mp)
+						value = mp;
 					mp -= value;
-                    if ( mp > actualParams[(int)ParamType.maxMp] )
-                        mp = actualParams[(int)ParamType.maxMp];
 					break;
 				case GaugeType.Sp:
+					if (value > sp)
+						value = sp;
 					sp -= value;
-					if (sp > 100)
-						sp = 100;
 					break;
 			}
 		}

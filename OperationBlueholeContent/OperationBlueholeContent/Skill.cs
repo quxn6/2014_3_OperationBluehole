@@ -135,11 +135,10 @@ namespace OperationBlueholeContent
 						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]);
 						if (target.HitCheck(HitType.Melee, accuracy))
 						{
-							int damage = src.baseStats[(int)StatType.Str];
-							int maxDamage = (int)(damage * 1.2f);
-							damage = (int)(damage * 0.8f);
-							damage = random.Next(damage, maxDamage);
-							target.Hit(HitType.Melee, (uint)damage);
+							uint damage = src.actualParams[(int)ParamType.phyAtk];
+							uint minDamage = (uint)(damage * 0.8f);
+							damage = (uint)random.Next((int)minDamage, (int)damage);
+							target.Hit(HitType.Melee, damage);
 						}
 						return true;
 					}
@@ -158,10 +157,9 @@ namespace OperationBlueholeContent
 						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]*0.9);
 						if (target.HitCheck(HitType.Melee, accuracy))
 						{
-							int damage = src.baseStats[(int)StatType.Str];
-							int maxDamage = (int)(damage * 1.2f);
-							damage = (int)(damage * 0.8f);
-							damage = random.Next(damage, maxDamage);
+							uint damage = src.actualParams[(int)ParamType.phyAtk];
+							uint minDamage = (uint)(damage * 0.8f);
+							damage = (uint)random.Next((int)minDamage, (int)damage);
 							target.Hit(HitType.Melee, (uint)damage);
 						}
 						return true;
@@ -181,10 +179,9 @@ namespace OperationBlueholeContent
 						uint accuracy = (uint)(src.baseStats[(int)StatType.Wis] * 0.4 + src.baseStats[(int)StatType.Int] * 0.6);
 						if (target.HitCheck(HitType.Magical, accuracy))
 						{
-							int damage = src.baseStats[(int)StatType.Int];
-							int maxDamage = (int)(damage * 1.2f);
-							damage = (int)(damage * 0.8f);
-							damage = random.Next(damage, maxDamage);
+							uint damage = src.actualParams[(int)ParamType.magAtk];
+							uint minDamage = (uint)(damage * 0.8f);
+							damage = (uint)random.Next((int)minDamage, (int)damage);
 							target.Hit(HitType.Magical, (uint)damage);
 						}
 						return true;
@@ -201,10 +198,9 @@ namespace OperationBlueholeContent
 					50,
                     delegate( RandomGenerator random, Character src, Character target )
 					{
-						int damage = src.baseStats[(int)StatType.Int];
-						int maxDamage = (int)(damage * 1.2f);
-						damage = (int)(damage * 0.8f);
-						damage = random.Next(damage, maxDamage);
+						uint damage = src.actualParams[(int)ParamType.magAtk] * 2;
+						uint minDamage = (uint)(damage * 0.8f);
+						damage = (uint)random.Next((int)minDamage, (int)damage);
 						target.Recover(GaugeType.Hp, (uint)damage);
 						return true;
 					}
