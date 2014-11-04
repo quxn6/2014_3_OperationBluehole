@@ -98,7 +98,7 @@ namespace OperationBlueholeContent
 		{
 			if (action == null)
 				return false;
-			if (targetType != TargetType.None && targetType != TargetType.All)
+			if (targetType != TargetType.None)
 				return false;
 
 			if (src.items.Contains(this.code) &&
@@ -111,10 +111,10 @@ namespace OperationBlueholeContent
 
         public bool UseItem( RandomGenerator random, Character src, Character target )
 		{
-			if (action == null)
-				return false;
 			if (target == null)
 				return UseItem(random, src);
+			if (action == null)
+				return false;
 			if (targetType != TargetType.Single)
 				return false;
 
@@ -126,9 +126,13 @@ namespace OperationBlueholeContent
 			return false;
 		}
 
-        public bool UseItem( RandomGenerator random, Character src, Character[] targets )
+        public bool UseItem( RandomGenerator random, Character src, List<Character> targets )
 		{
+			if (targets.Count == 1)
+				return UseItem(random, src, targets.First());
 			if (action == null)
+				return false;
+			if (targetType != TargetType.All)
 				return false;
 
 			if (src.items.Contains(this.code) &&

@@ -44,7 +44,7 @@ namespace OperationBlueholeContent
 
         public bool Act( RandomGenerator random, Character src )
 		{
-			if (targetType != TargetType.None && targetType != TargetType.All)
+			if (targetType != TargetType.None)
 				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
@@ -67,20 +67,23 @@ namespace OperationBlueholeContent
 			return false;
 		}
 
-// 		public bool Act(Random random, Character src, Character[] targets)
-// 		{
-// 			if (targetType != SkillTargetType.Multiple)
-// 				return false;
-// 
-// 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
-// 			{
-// 				foreach (Character target in targets)
-// 					action(random, src, target);
-// 				return true;
-// 			}
-// 
-// 			return false;
-// 		}
+		public bool Act(RandomGenerator random, Character src, List<Character> targets)
+		{
+			if (targets.Count == 1)
+				return Act(random, src, targets.First());
+
+			if (targetType != TargetType.All)
+				return false;
+
+			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
+			{
+				foreach (Character target in targets)
+					action(random, src, target);
+				return true;
+			}
+
+			return false;
+		}
 	}
 
 	// 이거 뭔가 찝찝한데...
