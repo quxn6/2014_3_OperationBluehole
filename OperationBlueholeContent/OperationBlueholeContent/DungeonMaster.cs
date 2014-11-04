@@ -21,17 +21,39 @@ namespace OperationBlueholeContent
         private List<Item> lootedItems;
         private List<Party> mobs;
         private List<Item> items;
+        private Random random;
 
-        public bool Init( Party users, int size )
+        private Party tempMob;
+
+        public bool Init( int size )
         {
-            this.users = users;
+            SkillManager.Init();
+            ItemManager.Init();
+            TestData.InitPlayer();
+            Player[] player = { new Player(), new Player(), new Player() };
+            Mob[] mob = { new Mob(), new Mob(), new Mob() };
+            player[0].LoadPlayer( 102 );
+            player[1].LoadPlayer( 103 );
+            player[2].LoadPlayer( 104 );
+            Party Users = new Party( PartyType.PLAYER );
+            Party Mobs = new Party( PartyType.MOB );
+            foreach ( Player p in player )
+                Users.AddCharacter( p );
+            foreach ( Mob p in mob )
+                Mobs.AddCharacter( p );
+            random = new Random();
+
+            // 임시 사용
+            tempMob = Mobs;
 
             // 일단은 빈 리스트들이지만 던전이 생성되고 나면 내부에서 배치된 것들이 안에 등록된다.
+            this.users = Users;
+
             mobs = new List<Party>();
             items = new List<Item>();
             lootedItems = new List<Item>();
 
-            dungeon = new Dungeon( size, mobs, items, users );
+            dungeon = new Dungeon( size, mobs, items, users, random );
             explorer = new Explorer( this, size );
 
             explorer.Init( users.position );
@@ -99,6 +121,12 @@ namespace OperationBlueholeContent
                 Console.WriteLine( "NOOOOOOOOOOOOOOOO!!" );
 
             Console.WriteLine( "Battle : " );
+            Console.ReadLine();
+
+            Battle newBattle = new Battle( random, users, tempMob );
+            newBattle.StartBattle();
+
+            Console.WriteLine( "Test: {0} Win.", newBattle.battleResult );
             Console.ReadLine();
         }
 

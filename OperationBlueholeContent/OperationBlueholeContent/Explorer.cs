@@ -285,14 +285,9 @@ namespace OperationBlueholeContent
 
                 if ( current.position == destination )
                 {
-                    currentMovePath.Push( currentDestination );
+                    currentMovePath.Push( currentDestination ); // 최종 목적지를 일단 넣고 그 사이를 채움
+
                     ReconstructPath( current );
-
-                    foreach ( var p in currentMovePath )
-                    {
-                        Console.WriteLine( "position : " + p.x + " / " + p.y );
-                    }
-
                     currentMovePath.Pop();      // 현재 위치는 빼자
                     break;
                 }
