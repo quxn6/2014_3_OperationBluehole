@@ -109,6 +109,7 @@ static public class NGUITools
 			{
 				AudioSource source = mListener.audio;
 				if (source == null) source = mListener.gameObject.AddComponent<AudioSource>();
+				source.priority = 50;
 				source.pitch = pitch;
 				source.PlayOneShot(clip, volume);
 				return source;
@@ -210,7 +211,7 @@ static public class NGUITools
 		cam = Camera.main;
 		if (cam && (cam.cullingMask & layerMask) != 0) return cam;
 
-#if UNITY_4_3
+#if UNITY_4_3 || UNITY_FLASH
 		Camera[] cameras = NGUITools.FindActive<Camera>();
 		for (int i = 0, imax = cameras.Length; i < imax; ++i)
 #else
@@ -914,7 +915,20 @@ static public class NGUITools
 		widget.width = 100;
 		widget.height = 100;
 		widget.depth = depth;
-		widget.gameObject.layer = go.layer;
+		return widget;
+	}
+
+	/// <summary>
+	/// Add a new widget of specified type.
+	/// </summary>
+
+	static public T AddWidget<T> (GameObject go, int depth) where T : UIWidget
+	{
+		// Create the widget and place it above other widgets
+		T widget = AddChild<T>(go);
+		widget.width = 100;
+		widget.height = 100;
+		widget.depth = depth;
 		return widget;
 	}
 
