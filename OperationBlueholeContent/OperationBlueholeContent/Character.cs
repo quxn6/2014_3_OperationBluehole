@@ -98,6 +98,7 @@ namespace OperationBlueholeContent
         public List<ItemCode> equipments { get; protected set; }
         public MinHeap<BuffPiece> buffs { get; protected set; }
 		public EquipType equipStatus { get; private set; }
+		public WeaponType weaponStatus { get; private set; }
 		//TODO: 버프리스트
 
 		public BattleStyle battleStyle { get; private set; }
@@ -130,7 +131,10 @@ namespace OperationBlueholeContent
             // 2. extra stat과 effectParams은 모두 0으로 설정
             Array.Clear( extraStats, 0, extraStats.Length );
             Array.Clear( effectParams, 0, effectParams.Length );
-            
+
+			equipStatus = 0;
+			weaponStatus = 0;
+
             // 3. 아이템 정보 로드
                 // 이것도 됐다 치고...
 
@@ -140,10 +144,13 @@ namespace OperationBlueholeContent
                 var equip = (Equipment)ItemManager.table[id];
 
                 // tank's code
-                if ( ( equipStatus & equip.equipType ) > 0 )
-                    UnEquipItem( id );
-                else
-                    equipStatus |= equip.equipType;
+				if ((equipStatus & equip.equipType) > 0)
+					UnEquipItem(id);
+				else
+				{
+					equipStatus |= equip.equipType;
+					weaponStatus |= equip.weaponType;
+				}
 
                 // equip.action( this, this );
                 // 여기까지
@@ -319,6 +326,7 @@ namespace OperationBlueholeContent
 			// 착용 상태에 추가
 			equipStatus |= item.equipType;
 			equipments.Add(id);
+			weaponStatus |= item.weaponType;
 
 			// 추가 스탯 적용
 			foreach (var stat in item.plusStat)
@@ -339,6 +347,7 @@ namespace OperationBlueholeContent
 			Equipment item = (Equipment)ItemManager.table[id];
 
 			// 착용 상태에서 제거
+			weaponStatus -= item.weaponType;
 			equipStatus -= item.equipType;
 			equipments.Remove(id);
 

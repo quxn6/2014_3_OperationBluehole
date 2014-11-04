@@ -26,16 +26,22 @@ namespace OperationBlueholeContent
 	{
 		public ActionType type { get; private set; }
 		public TargetType targetType { get; private set; }
+		public WeaponType weaponType { get; private set; }
 		public string name { get; private set; }
 		public uint hpNeed { get; private set; }
 		public uint mpNeed { get; private set; }
 		public uint spNeed { get; private set; }
         private Func<RandomGenerator, Character, Character, bool> action;
 
-        public Skill( ActionType type, TargetType targetType, uint hpNeed, uint mpNeed, uint spNeed, Func<RandomGenerator, Character, Character, bool> action )
+        public Skill( ActionType type, 
+			TargetType targetType,
+			WeaponType weaponType,
+			uint hpNeed, uint mpNeed, uint spNeed, 
+			Func<RandomGenerator, Character, Character, bool> action )
 		{
 			this.type = type;
 			this.targetType = targetType;
+			this.weaponType = weaponType;
 			this.hpNeed = hpNeed;
 			this.mpNeed = mpNeed;
 			this.spNeed = spNeed;
@@ -45,6 +51,8 @@ namespace OperationBlueholeContent
         public bool Act( RandomGenerator random, Character src )
 		{
 			if (targetType != TargetType.None)
+				return false;
+			if (WeaponCheck(src))
 				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
@@ -60,6 +68,8 @@ namespace OperationBlueholeContent
 
 			if (targetType != TargetType.Single)
 				return false;
+			if (!WeaponCheck(src))
+				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
 				return action(random, src, target);
@@ -74,6 +84,8 @@ namespace OperationBlueholeContent
 
 			if (targetType != TargetType.All)
 				return false;
+			if (WeaponCheck(src))
+				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
 			{
@@ -83,6 +95,13 @@ namespace OperationBlueholeContent
 			}
 
 			return false;
+		}
+		bool WeaponCheck(Character src)
+		{
+			if ((src.weaponStatus & weaponType) > 0)
+				return true;
+			else
+				return false;
 		}
 	}
 
@@ -130,6 +149,7 @@ namespace OperationBlueholeContent
 				new Skill(
 					ActionType.PhyAttack,
 					TargetType.Single,
+					WeaponType.Sword,
 					0,
 					0,
 					50,
@@ -152,6 +172,7 @@ namespace OperationBlueholeContent
 				new Skill(
 					ActionType.PhyAttack,
 					TargetType.Single,
+					WeaponType.All,
 					0,
 					0,
 					50,
@@ -174,6 +195,7 @@ namespace OperationBlueholeContent
 				new Skill(
 					ActionType.MagAttack,
 					TargetType.Single,
+					WeaponType.All,
 					0,
 					10,
 					50,
@@ -196,6 +218,7 @@ namespace OperationBlueholeContent
 				new Skill(
 					ActionType.RecoverHp,
 					TargetType.Single,
+					WeaponType.All,
 					0,
 					10,
 					50,

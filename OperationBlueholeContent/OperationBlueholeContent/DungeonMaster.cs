@@ -55,14 +55,14 @@ namespace OperationBlueholeContent
 
         public bool Init( int size, int seed )
         {
-            // user 생성
-            this.users = LoadPlayers();
-
             // 전투 로직 초기화
             SkillManager.Init();
             ItemManager.Init();
 
-            // 던전 생성
+			// user 생성
+			this.users = LoadPlayers();
+
+			// 던전 생성
             // 일단은 빈 리스트들이지만 던전이 생성되고 나면 내부에서 배치된 것들이 안에 등록된다.
             mobs = new List<Party>();
             items = new List<Item>();

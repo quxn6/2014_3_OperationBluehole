@@ -96,7 +96,8 @@ namespace OperationBlueholeContent
 						SkillManager.table[sid].type == res.type &&
 						SkillManager.table[sid].hpNeed < player.hp &&
 						SkillManager.table[sid].mpNeed <= player.mp &&
-						SkillManager.table[sid].spNeed <= player.sp);
+						SkillManager.table[sid].spNeed <= player.sp &&
+						(SkillManager.table[sid].weaponType & player.weaponStatus) > 0);
 					if (res.targets.Count > 1)
 						resSkills = resSkills.Where(sid => SkillManager.table[sid].targetType == TargetType.All);
 
