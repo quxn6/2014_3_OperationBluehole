@@ -26,25 +26,33 @@ namespace OperationBlueholeContent
 	{
 		public ActionType type { get; private set; }
 		public TargetType targetType { get; private set; }
+		public WeaponType weaponType { get; private set; }
 		public string name { get; private set; }
 		public uint hpNeed { get; private set; }
 		public uint mpNeed { get; private set; }
 		public uint spNeed { get; private set; }
-		private Func<Random, Character, Character, bool> action;
+        private Func<RandomGenerator, Character, Character, bool> action;
 
-		public Skill(ActionType type, TargetType targetType, uint hpNeed, uint mpNeed, uint spNeed, Func<Random, Character, Character, bool> action)
+        public Skill( ActionType type, 
+			TargetType targetType,
+			WeaponType weaponType,
+			uint hpNeed, uint mpNeed, uint spNeed, 
+			Func<RandomGenerator, Character, Character, bool> action )
 		{
 			this.type = type;
 			this.targetType = targetType;
+			this.weaponType = weaponType;
 			this.hpNeed = hpNeed;
 			this.mpNeed = mpNeed;
 			this.spNeed = spNeed;
 			this.action = action;
 		}
 
-		public bool Act(Random random, Character src)
+        public bool Act( RandomGenerator random, Character src )
 		{
-			if (targetType != TargetType.None && targetType != TargetType.All)
+			if (targetType != TargetType.None)
+				return false;
+			if (WeaponCheck(src))
 				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
@@ -53,12 +61,14 @@ namespace OperationBlueholeContent
 			return false;
 		}
 
-		public bool Act(Random random, Character src, Character target)
+        public bool Act( RandomGenerator random, Character src, Character target )
 		{
 			if (target == null)
 				return Act(random, src);
 
 			if (targetType != TargetType.Single)
+				return false;
+			if (!WeaponCheck(src))
 				return false;
 
 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
@@ -67,20 +77,32 @@ namespace OperationBlueholeContent
 			return false;
 		}
 
-// 		public bool Act(Random random, Character src, Character[] targets)
-// 		{
-// 			if (targetType != SkillTargetType.Multiple)
-// 				return false;
-// 
-// 			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
-// 			{
-// 				foreach (Character target in targets)
-// 					action(random, src, target);
-// 				return true;
-// 			}
-// 
-// 			return false;
-// 		}
+		public bool Act(RandomGenerator random, Character src, List<Character> targets)
+		{
+			if (targets.Count == 1)
+				return Act(random, src, targets.First());
+
+			if (targetType != TargetType.All)
+				return false;
+			if (WeaponCheck(src))
+				return false;
+
+			if (src.ReduceForAction(hpNeed, mpNeed, spNeed))
+			{
+				foreach (Character target in targets)
+					action(random, src, target);
+				return true;
+			}
+
+			return false;
+		}
+		bool WeaponCheck(Character src)
+		{
+			if ((src.weaponStatus & weaponType) > 0)
+				return true;
+			else
+				return false;
+		}
 	}
 
 	// 이거 뭔가 찝찝한데...
@@ -127,19 +149,19 @@ namespace OperationBlueholeContent
 				new Skill(
 					ActionType.PhyAttack,
 					TargetType.Single,
+					WeaponType.Sword,
 					0,
 					0,
 					50,
-					delegate(Random random, Character src, Character target)
+                    delegate( RandomGenerator random, Character src, Character target )
 					{
 						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]);
 						if (target.HitCheck(HitType.Melee, accuracy))
 						{
-							int damage = src.baseStats[(int)StatType.Str];
-							int maxDamage = (int)(damage * 1.2f);
-							damage = (int)(damage * 0.8f);
-							damage = random.Next(damage, maxDamage);
-							target.Hit(HitType.Melee, (uint)damage);
+							uint damage = src.actualParams[(int)ParamType.phyAtk];
+							uint minDamage = (uint)(damage * 0.8f);
+							damage = (uint)random.Next((int)minDamage, (int)damage);
+							target.Hit(HitType.Melee, damage);
 						}
 						return true;
 					}
@@ -150,18 +172,18 @@ namespace OperationBlueholeContent
 				new Skill(
 					ActionType.PhyAttack,
 					TargetType.Single,
+					WeaponType.All,
 					0,
 					0,
 					50,
-					delegate(Random random, Character src, Character target)
+                    delegate( RandomGenerator random, Character src, Character target )
 					{
 						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]*0.9);
 						if (target.HitCheck(HitType.Melee, accuracy))
 						{
-							int damage = src.baseStats[(int)StatType.Str];
-							int maxDamage = (int)(damage * 1.2f);
-							damage = (int)(damage * 0.8f);
-							damage = random.Next(damage, maxDamage);
+							uint damage = src.actualParams[(int)ParamType.phyAtk];
+							uint minDamage = (uint)(damage * 0.8f);
+							damage = (uint)random.Next((int)minDamage, (int)damage);
 							target.Hit(HitType.Melee, (uint)damage);
 						}
 						return true;
@@ -173,18 +195,18 @@ namespace OperationBlueholeContent
 				new Skill(
 					ActionType.MagAttack,
 					TargetType.Single,
+					WeaponType.All,
 					0,
 					10,
 					50,
-					delegate(Random random, Character src, Character target)
+                    delegate( RandomGenerator random, Character src, Character target )
 					{
 						uint accuracy = (uint)(src.baseStats[(int)StatType.Wis] * 0.4 + src.baseStats[(int)StatType.Int] * 0.6);
 						if (target.HitCheck(HitType.Magical, accuracy))
 						{
-							int damage = src.baseStats[(int)StatType.Int];
-							int maxDamage = (int)(damage * 1.2f);
-							damage = (int)(damage * 0.8f);
-							damage = random.Next(damage, maxDamage);
+							uint damage = src.actualParams[(int)ParamType.magAtk];
+							uint minDamage = (uint)(damage * 0.8f);
+							damage = (uint)random.Next((int)minDamage, (int)damage);
 							target.Hit(HitType.Magical, (uint)damage);
 						}
 						return true;
@@ -196,15 +218,15 @@ namespace OperationBlueholeContent
 				new Skill(
 					ActionType.RecoverHp,
 					TargetType.Single,
+					WeaponType.All,
 					0,
 					10,
 					50,
-					delegate(Random random, Character src, Character target)
+                    delegate( RandomGenerator random, Character src, Character target )
 					{
-						int damage = src.baseStats[(int)StatType.Int];
-						int maxDamage = (int)(damage * 1.2f);
-						damage = (int)(damage * 0.8f);
-						damage = random.Next(damage, maxDamage);
+						uint damage = src.actualParams[(int)ParamType.magAtk] * 2;
+						uint minDamage = (uint)(damage * 0.8f);
+						damage = (uint)random.Next((int)minDamage, (int)damage);
 						target.Recover(GaugeType.Hp, (uint)damage);
 						return true;
 					}

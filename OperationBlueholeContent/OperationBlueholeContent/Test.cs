@@ -57,7 +57,7 @@ namespace OperationBlueholeContent
 				},
 				new List<ItemCode>
 				{
-					ItemCode.MpPotionS,
+					ItemCode.MpPotion_S,
 				},
 				new List<ItemCode>
 				{
@@ -82,12 +82,12 @@ namespace OperationBlueholeContent
 				},
 				new List<ItemCode>
 				{
-					ItemCode.HpPotionS,
-					ItemCode.HpPotionS,
+					ItemCode.HpPotion_S,
+					ItemCode.HpPotion_S,
 				},
 				new List<ItemCode>
 				{
-
+					ItemCode.Sword_Test,
 				},
 				BattleStyle.AGGRESSIVE
 			));
@@ -109,7 +109,7 @@ namespace OperationBlueholeContent
 				},
 				new List<ItemCode>
 				{
-					ItemCode.MpPotionS,
+					ItemCode.MpPotion_S,
 				},
 				new List<ItemCode>
 				{

@@ -43,13 +43,20 @@ namespace OperationBlueholeContent
 
 	struct AIDecision{
 		public ActionType type;
-		public Character target;
+		public List<Character> targets;
 		public short value;		// 우선도 판단용 수치
+
+		public AIDecision(ActionType type, List<Character> targets, short value)
+		{
+			this.type = type;
+			this.targets = targets;
+			this.value = value;
+		}
 
 		public AIDecision(ActionType type, Character target, short value)
 		{
 			this.type = type;
-			this.target = target;
+			this.targets = new List<Character>() { target };
 			this.value = value;
 		}
 	}
@@ -61,9 +68,9 @@ namespace OperationBlueholeContent
 		private List<AIDecision> decisions;
 		private Character player;
 		private Party ally, enemy;
-		private Random random;
+        private RandomGenerator random;
 
-		public BattleAI(Random random, short randomLevel, Character player, Party ally, Party enemy)
+        public BattleAI( RandomGenerator random, short randomLevel, Character player, Party ally, Party enemy )
 		{
 // 			decisions = new short[(int)ActionType.ActionTypeCount];
 			decisions = new List<AIDecision>();
@@ -89,15 +96,16 @@ namespace OperationBlueholeContent
 						SkillManager.table[sid].type == res.type &&
 						SkillManager.table[sid].hpNeed < player.hp &&
 						SkillManager.table[sid].mpNeed <= player.mp &&
-						SkillManager.table[sid].spNeed <= player.sp);
-					if (res.target == null)
+						SkillManager.table[sid].spNeed <= player.sp &&
+						(SkillManager.table[sid].weaponType & player.weaponStatus) > 0);
+					if (res.targets.Count > 1)
 						resSkills = resSkills.Where(sid => SkillManager.table[sid].targetType == TargetType.All);
 
 					int skillCnt = resSkills.Count();
 					if (skillCnt > 0)
 					{
 						var resSkill = resSkills.ElementAt(random.Next(0, skillCnt - 1));
-						SkillManager.table[resSkill].Act(random, player, res.target);
+						SkillManager.table[resSkill].Act(random, player, res.targets);
 
 						ResetDecisions();
 						return true;
@@ -107,14 +115,14 @@ namespace OperationBlueholeContent
 					var resItems = player.items.Where(iid =>
 						((Consumable)ItemManager.table[iid]).type == res.type &&
 						((Consumable)ItemManager.table[iid]).spNeed <= player.sp);
-					if (res.target == null)
+					if (res.targets.Count > 1)
 						resItems = resItems.Where(iid => ((Consumable)ItemManager.table[iid]).targetType == TargetType.All);
 
 					int itemCnt = resItems.Count();
 					if (itemCnt > 0)
 					{
 						var resItem = resItems.ElementAt(random.Next(0, itemCnt - 1));
-						((Consumable)ItemManager.table[resItem]).UseItem(random, player, res.target);
+						((Consumable)ItemManager.table[resItem]).UseItem(random, player, res.targets);
 
 						ResetDecisions();
 						return true;
@@ -155,7 +163,7 @@ namespace OperationBlueholeContent
 			{
 				decisions.Add(new AIDecision(
 					ActionType.RecoverHp,
-					null,
+					ally.characters,
 					(short)AIConst.RcvAllP
 					));
 			}
@@ -199,7 +207,7 @@ namespace OperationBlueholeContent
 			{
 				decisions.Add(new AIDecision(
 					ActionType.PhyAttack,
-					null,
+					enemy.characters,
 					(short)AIConst.AtkAllP
 					));
 			}
@@ -208,7 +216,7 @@ namespace OperationBlueholeContent
 			{
 				decisions.Add(new AIDecision(
 					ActionType.MagAttack,
-					null,
+					enemy.characters,
 					(short)AIConst.AtkAllP
 					));
 			}

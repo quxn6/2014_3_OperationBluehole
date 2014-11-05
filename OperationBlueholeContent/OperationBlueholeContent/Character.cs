@@ -98,6 +98,7 @@ namespace OperationBlueholeContent
         public List<ItemCode> equipments { get; protected set; }
         public MinHeap<BuffPiece> buffs { get; protected set; }
 		public EquipType equipStatus { get; private set; }
+		public WeaponType weaponStatus { get; private set; }
 		//TODO: 버프리스트
 
 		public BattleStyle battleStyle { get; private set; }
@@ -130,7 +131,10 @@ namespace OperationBlueholeContent
             // 2. extra stat과 effectParams은 모두 0으로 설정
             Array.Clear( extraStats, 0, extraStats.Length );
             Array.Clear( effectParams, 0, effectParams.Length );
-            
+
+			equipStatus = 0;
+			weaponStatus = 0;
+
             // 3. 아이템 정보 로드
                 // 이것도 됐다 치고...
 
@@ -140,10 +144,13 @@ namespace OperationBlueholeContent
                 var equip = (Equipment)ItemManager.table[id];
 
                 // tank's code
-                if ( ( equipStatus & equip.equipType ) > 0 )
-                    UnEquipItem( id );
-                else
-                    equipStatus |= equip.equipType;
+				if ((equipStatus & equip.equipType) > 0)
+					UnEquipItem(id);
+				else
+				{
+					equipStatus |= equip.equipType;
+					weaponStatus |= equip.weaponType;
+				}
 
                 // equip.action( this, this );
                 // 여기까지
@@ -203,7 +210,7 @@ namespace OperationBlueholeContent
 			return items.Remove(usedItem);
 		}
 
-		public void BattleTurnAction(Random random, Party ally, Party enemy)
+        public void BattleTurnAction( RandomGenerator random, Party ally, Party enemy )
 		{
 			if (random == null || ally == null || enemy == null)
 				return;
@@ -237,7 +244,7 @@ namespace OperationBlueholeContent
 // 			if (sid != SkillId.None && SkillManager.table[sid].spNeed <= sp && SkillManager.table[sid].mpNeed <= mp)
 // 				SkillManager.table[sid].Act(random, this, weakEnemy);
 
-			BattleAI oneCycle = new BattleAI(random, 20, this, ally, enemy);
+			BattleAI oneCycle = new BattleAI(random, 100, this, ally, enemy);
 			while (oneCycle.Act());
 		}
 
@@ -257,19 +264,19 @@ namespace OperationBlueholeContent
 			switch (type)
 			{
 				case GaugeType.Hp:
+					if (value > hp)
+						value = hp;
 					hp -= value;
-                    if ( hp > actualParams[(int)ParamType.maxHp] )
-                        hp = actualParams[(int)ParamType.maxHp];
 					break;
 				case GaugeType.Mp:
+					if (value > mp)
+						value = mp;
 					mp -= value;
-                    if ( mp > actualParams[(int)ParamType.maxMp] )
-                        mp = actualParams[(int)ParamType.maxMp];
 					break;
 				case GaugeType.Sp:
+					if (value > sp)
+						value = sp;
 					sp -= value;
-					if (sp > 100)
-						sp = 100;
 					break;
 			}
 		}
@@ -283,19 +290,19 @@ namespace OperationBlueholeContent
 			switch(type)
 			{
 				case GaugeType.Hp:
+					if (value > actualParams[(int)ParamType.maxHp] - hp)
+						value = actualParams[(int)ParamType.maxHp] - hp;
 					hp += value;
-                    if ( hp > actualParams[(int)ParamType.maxHp] )
-                        hp = actualParams[(int)ParamType.maxHp];
 					break;
 				case GaugeType.Mp:
+					if (value > actualParams[(int)ParamType.maxMp] - mp)
+						value = actualParams[(int)ParamType.maxMp] - mp;
 					mp += value;
-                    if ( mp > actualParams[(int)ParamType.maxMp] )
-                        mp = actualParams[(int)ParamType.maxMp];
 					break;
 				case GaugeType.Sp:
+					if (value > 100 - sp)
+						value = 100 - sp;
 					sp += value;
-					if (sp > 100)
-						sp = 100;
 					break;
 			}
 		}
@@ -319,6 +326,7 @@ namespace OperationBlueholeContent
 			// 착용 상태에 추가
 			equipStatus |= item.equipType;
 			equipments.Add(id);
+			weaponStatus |= item.weaponType;
 
 			// 추가 스탯 적용
 			foreach (var stat in item.plusStat)
@@ -339,6 +347,7 @@ namespace OperationBlueholeContent
 			Equipment item = (Equipment)ItemManager.table[id];
 
 			// 착용 상태에서 제거
+			weaponStatus -= item.weaponType;
 			equipStatus -= item.equipType;
 			equipments.Remove(id);
 
@@ -479,7 +488,8 @@ namespace OperationBlueholeContent
 		public Mob()
 		{
 			//for test
-			skills.Add(SkillId.Punch);
+            skills.Add( SkillId.Punch );
+            CalcStat();
 		}
 	}
 }

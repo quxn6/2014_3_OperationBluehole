@@ -11,9 +11,9 @@ namespace OperationBlueholeContent
 		public Party[] party { get; private set; }
 		public int curTurn { get; private set; }
 		public int battleResult { get; private set; }
-		private Random random;
+        private RandomGenerator random;
 
-		public Battle(Random random, Party party1, Party party2)
+        public Battle( RandomGenerator random, Party party1, Party party2 )
 		{
 			this.random = random;
 

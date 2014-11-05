@@ -21,9 +21,7 @@ namespace OperationBlueholeContent
         private List<Item> lootedItems;
         private List<Party> mobs;
         private List<Item> items;
-        private Random random;
-
-        private Party tempMob;
+        private RandomGenerator random;
 
         // HARD CODED
         private Party LoadPlayers()
@@ -55,24 +53,21 @@ namespace OperationBlueholeContent
             return mobs;
         }
 
-        public bool Init( int size )
+        public bool Init( int size, int seed )
         {
-            // user 생성
-            this.users = LoadPlayers();
-            
-            // 임시 몹 사용
-            tempMob = TempMobGenerator();
-
             // 전투 로직 초기화
             SkillManager.Init();
             ItemManager.Init();
 
-            // 던전 생성
+			// user 생성
+			this.users = LoadPlayers();
+
+			// 던전 생성
             // 일단은 빈 리스트들이지만 던전이 생성되고 나면 내부에서 배치된 것들이 안에 등록된다.
             mobs = new List<Party>();
             items = new List<Item>();
             lootedItems = new List<Item>();
-            random = new Random();
+            random = new RandomGenerator( seed );
 
             dungeon = new Dungeon( size, mobs, items, users, random );
             explorer = new Explorer( this, size );
@@ -107,7 +102,7 @@ namespace OperationBlueholeContent
                 dungeon.PrintOutMAP();
                 Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
 
-                Thread.Sleep( 100 );
+                //Thread.Sleep( 100 );
             }
 
             Console.WriteLine( "THE END ( turn : " + turn + " )" );
@@ -140,6 +135,9 @@ namespace OperationBlueholeContent
 
             Console.WriteLine( "Battle : " );
             Console.ReadLine();
+
+            // 임시 몹 사용
+            Party tempMob = TempMobGenerator();
 
             Battle newBattle = new Battle( random, users, tempMob );
             newBattle.StartBattle();

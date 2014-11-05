@@ -280,7 +280,7 @@ namespace OperationBlueholeContent
                 ExploerNode current = openSet.Peek();
                 // Console.WriteLine( "current : " + current.position.x + " / " + current.position.y );
 
-                if ( current.position == destination )
+                if ( current.position.Equals( destination ) )
                 {
                     currentMovePath.Push( currentDestination ); // 최종 목적지를 일단 넣고 그 사이를 채움
 

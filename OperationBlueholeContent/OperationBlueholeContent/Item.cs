@@ -10,8 +10,9 @@ namespace OperationBlueholeContent
 	{
 		None = 0x0,
 		Ring,
-		HpPotionS,
-		MpPotionS,
+		HpPotion_S,
+		MpPotion_S,
+		Sword_Test,
 	}
 	enum ItemCatag : ushort
 	{
@@ -28,12 +29,21 @@ namespace OperationBlueholeContent
 		Leg = 0x10,
 		Feet = 0x20,
 	}
+	enum WeaponType : uint
+	{
+		None		= 0x0,
+		Sword		= 0x1,
+		Bow			= 0x2,
+		Axe			= 0x4,
+		Staff		= 0x8,
+		All			= 0xffffffff
+	}
 
 	internal class Item : GameObject
 	{
 		public ItemCode code { get; private set; }
 		public ItemCatag catagory { get; private set; }
-		public Func<Random, Character, Character, bool> action { get; protected set; }
+        public Func<RandomGenerator, Character, Character, bool> action { get; protected set; }
 
 		public Item()
 		{
@@ -43,7 +53,7 @@ namespace OperationBlueholeContent
 		}
 
 		public Item(ItemCode code, ItemCatag type,
-			Func<Random, Character, Character, bool> action)
+            Func<RandomGenerator, Character, Character, bool> action )
 		{
 			this.code = code;
 			this.catagory = type;
@@ -55,6 +65,7 @@ namespace OperationBlueholeContent
 	internal class Equipment : Item
 	{
 		public EquipType equipType { get; private set; }
+		public WeaponType weaponType { get; private set; }
 		public List<Tuple<StatType, ushort>> reqStat { get; private set; }
         public List<Tuple<StatType, ushort>> plusStat { get; private set; }
         public List<Tuple<StatType, uint>> plusParam { get; private set; }
@@ -62,13 +73,15 @@ namespace OperationBlueholeContent
 
 		public Equipment(ItemCode id, ItemCatag type,
 			EquipType equipType,
+			WeaponType weaponType,
 			List<Tuple<StatType, ushort>> reqStat,
             List<Tuple<StatType, ushort>> plusStat,
             List<Tuple<StatType, uint>> plusParam,
-			Func<Random, Character, Character, bool> action)
+            Func<RandomGenerator, Character, Character, bool> action )
 			: base( id, type, action )
 		{
 			this.equipType = equipType;
+			this.weaponType = weaponType;
 			this.reqStat = reqStat;
 			this.plusStat = plusStat;
             this.plusParam = plusParam;
@@ -86,18 +99,19 @@ namespace OperationBlueholeContent
 			TargetType targetType,
 			uint spNeed,
 			ActionType actType,
-			Func<Random, Character, Character, bool> action)
+            Func<RandomGenerator, Character, Character, bool> action )
 			: base(id, type, action)
 		{
 			this.spNeed = spNeed;
 			this.type = actType;
+			this.targetType = targetType;
 		}
 
-		public bool UseItem(Random random, Character src)
+        public bool UseItem( RandomGenerator random, Character src )
 		{
 			if (action == null)
 				return false;
-			if (targetType != TargetType.None && targetType != TargetType.All)
+			if (targetType != TargetType.None)
 				return false;
 
 			if (src.items.Contains(this.code) &&
@@ -108,12 +122,12 @@ namespace OperationBlueholeContent
 			return false;
 		}
 
-		public bool UseItem(Random random, Character src, Character target)
+        public bool UseItem( RandomGenerator random, Character src, Character target )
 		{
-			if (action == null)
-				return false;
 			if (target == null)
 				return UseItem(random, src);
+			if (action == null)
+				return false;
 			if (targetType != TargetType.Single)
 				return false;
 
@@ -125,9 +139,13 @@ namespace OperationBlueholeContent
 			return false;
 		}
 
-		public bool UseItem(Random random, Character src, Character[] targets)
+        public bool UseItem( RandomGenerator random, Character src, List<Character> targets )
 		{
+			if (targets.Count == 1)
+				return UseItem(random, src, targets.First());
 			if (action == null)
+				return false;
+			if (targetType != TargetType.All)
 				return false;
 
 			if (src.items.Contains(this.code) &&
@@ -159,28 +177,44 @@ namespace OperationBlueholeContent
 		{
 			ItemManager.table = new Dictionary<ItemCode, Item>();
 
-			ItemManager.table.Add(ItemCode.HpPotionS,
-				new Consumable(ItemCode.HpPotionS, ItemCatag.Consume, TargetType.Single,
+			ItemManager.table.Add(ItemCode.HpPotion_S,
+				new Consumable(ItemCode.HpPotion_S, ItemCatag.Consume, TargetType.Single,
 					50,
 					ActionType.RecoverHp,
-					delegate(Random random, Character src, Character target)
+                    delegate( RandomGenerator random, Character src, Character target )
 					{
 						target.Recover(GaugeType.Hp, 50);
 						return true;
 					}
 				));
 
-			ItemManager.table.Add(ItemCode.MpPotionS,
-				new Consumable(ItemCode.MpPotionS, ItemCatag.Consume, TargetType.Single,
+			ItemManager.table.Add(ItemCode.MpPotion_S,
+				new Consumable(ItemCode.MpPotion_S, ItemCatag.Consume, TargetType.Single,
 					50,
 					ActionType.RecoverMp,
-					delegate(Random random, Character src, Character target)
+                    delegate( RandomGenerator random, Character src, Character target )
 					{
 						target.Recover(GaugeType.Mp, 20);
 						return true;
 					}
 				));
 
+			ItemManager.table.Add(ItemCode.Sword_Test,
+				new Equipment(ItemCode.Sword_Test, ItemCatag.Equip,
+					EquipType.RHand,
+					WeaponType.Sword,
+					new List<Tuple<StatType, ushort>>() //reqStat
+					{
+						new Tuple<StatType, ushort>(StatType.Str, 10)
+					},
+					new List<Tuple<StatType, ushort>>() //plusStat
+					{
+					},
+					new List<Tuple<StatType, uint>>() //plusParam
+					{
+					},
+					null
+				));
 		}
 	}
 }
