@@ -4,13 +4,12 @@ using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour
 {
-	public GameObject enemyPrefab = null;
 	public GameObject[] heroStatus = null;
+	public GameObject enemyPrefab = null;
 	public GameObject playerPosition = null;
 	public GameObject[] mobPositions = null;
 
-	private GameObject[] enemyList = null;
-	private List<GameObject> heroList = null;
+	private GameObject[] enemyList = null;	
 
 	static private bool isInitialized = false;
 	
@@ -82,14 +81,15 @@ public class BattleManager : MonoBehaviour
 	{
 		// Check hero count validation
 		int heroCount = DataManager.Instance.HeroList.Count;
+
 		if ( heroCount != GameConfig.MAXIMUM_HERO_COUNT )
 			Debug.LogError( "Error(battle area) : We need " + GameConfig.MAXIMUM_HERO_COUNT + " heroes" );
 
 		// Set status of heroes and set UI values
 		for ( int i = 0 ; i< heroCount; ++i)
 		{
-			heroList[i].GetComponent<Hero>().HeroStat = DataManager.Instance.HeroList[i];
-			heroList[i].GetComponent<Hero>().InitHeroUI();
+			heroStatus[i].GetComponent<Hero>().HeroStat = DataManager.Instance.HeroList[i];
+			heroStatus[i].GetComponent<Hero>().InitHeroUI();
 		}
 
 		// Move camera on predetermined position in battle area

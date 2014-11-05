@@ -103,7 +103,7 @@ public class DataManager : MonoBehaviour
 		// Warning!!! It's Generate dummy data now		
 		for ( int i = 0 ; i < GameConfig.DUMMY_ENEMY_COUNT ; ++i )
 		{
-			enemyGroupList[i] = new EnemyGroup( MobType.spiderGroup );
+			enemyGroupList.Add( new EnemyGroup( MobType.spiderGroup ) );
 		}
 	}
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-public class RandomGenerater
+public class RandomGenerator
 {
 	private int m_Value = 0;
 

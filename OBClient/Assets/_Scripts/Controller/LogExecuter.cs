@@ -72,6 +72,8 @@ public class LogExecuter : MonoBehaviour
 		if ( GUI.Button( new Rect( 10 , 10 , 100 , 50 ) , "Init LogExe" ) )
 		{
 			InitLogExecuter();
+			DataManager.Instance.InitEnemyDataList();
+			DataManager.Instance.InitUserDataList();
 		}
 
 		if ( GUI.Button( new Rect( 10 , 70 , 100 , 50 ) , "MoveCharacter" ) )
