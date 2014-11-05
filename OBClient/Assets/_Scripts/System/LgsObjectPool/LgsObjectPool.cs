@@ -157,6 +157,7 @@ public class LgsObjectPool : ScriptableObject
 		isInitialized = false;
 	}
 
+	// Deactivate all members in object pool
 	public void ResetPool()
 	{
 		if ( !isInitialized )

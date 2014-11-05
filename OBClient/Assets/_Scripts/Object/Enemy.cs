@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Enemy : MonoBehaviour {
+public class Enemy : MonoBehaviour 
+{
+	private CharacterData enemyStat;
+	public CharacterData EnemyStat
+	{
+		get { return enemyStat; }
+		set { enemyStat = value; }
+	}
+	
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
 }

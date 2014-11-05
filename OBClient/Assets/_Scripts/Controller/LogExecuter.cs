@@ -17,7 +17,6 @@ public class LogExecuter : MonoBehaviour
 {
 	private GameObject playerParty = null;
 	private List<GameObject> mobList = null;
-	private BattlePart battlePart = null;
 
 	// init variables
 	public void InitLogExecuter()
@@ -29,8 +28,6 @@ public class LogExecuter : MonoBehaviour
 		mobList = MapManager.Instance.MobList;
 		if ( mobList == null)
 			Debug.LogError( "Error (Log Executer) : There is No Mob List" );
-
-		battlePart = GameObject.FindGameObjectWithTag( "SceneManager" ).GetComponent<BattlePart>();
 	}
 
 	// Warning!!! Dirty Code. We should use coroutine here
@@ -83,8 +80,9 @@ public class LogExecuter : MonoBehaviour
 		}
 
 		if ( GUI.Button( new Rect( 10 , 130 , 100 , 50 ) , "Init Battle Part" ) )
-		{
-			battlePart.InitBattlePart();
+		{			
+			BattleManager.Instance.InitBattleObjects();
+			BattleManager.Instance.PutBattleObjects( 1 );
 		}
 	}
 }
