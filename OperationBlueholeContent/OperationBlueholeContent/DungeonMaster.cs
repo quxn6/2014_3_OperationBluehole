@@ -18,7 +18,12 @@ namespace OperationBlueholeContent
         private Dungeon dungeon;
         private Party users;
         private Explorer explorer;
+
+        // 전리품은 파티가 공유하고 탐험이 끝나면 나눔한다... 공산주의돋네
         private List<Item> lootedItems;
+        private int lootedGold;
+        private int lootedExp;
+        
         private List<Party> mobs;
         private List<Item> items;
         private RandomGenerator random;
@@ -66,8 +71,11 @@ namespace OperationBlueholeContent
             // 일단은 빈 리스트들이지만 던전이 생성되고 나면 내부에서 배치된 것들이 안에 등록된다.
             mobs = new List<Party>();
             items = new List<Item>();
-            lootedItems = new List<Item>();
             random = new RandomGenerator( seed );
+
+            lootedItems = new List<Item>();
+            lootedGold = 0;
+            lootedExp = 0;
 
             dungeon = new Dungeon( size, mobs, items, users, random, users.partyLevel );
             explorer = new Explorer( this, size );
@@ -94,18 +102,19 @@ namespace OperationBlueholeContent
 
                 // 위에서 아이템도 먹고 몹도 처리했으면 실제로 맵에서의 좌표도 이동시킨다
                 dungeon.MovePlayer( explorer.position );
-                
-                // explorer.GetNextZone();
-                // explorer.Teleport( explorer.currentDestination );
-                // Console.WriteLine( "zone : " + explorer.GetCurrentZoneId() );
 
-                dungeon.PrintOutMAP();
-                Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
+                // dungeon.PrintOutMAP();
+                // Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
 
                 //Thread.Sleep( 100 );
             }
 
             Console.WriteLine( "THE END ( turn : " + turn + " )" );
+
+            Console.WriteLine( "Earned Exp : " + lootedExp );
+            Console.WriteLine( "Earned gold : " + lootedGold );
+            Console.WriteLine( "looted items : " );
+            lootedItems.ForEach( item => Console.Write( " " + ( (ItemToken)item ).level ) );
         }
 
         // 구현할 것
@@ -134,7 +143,7 @@ namespace OperationBlueholeContent
                 Console.WriteLine( "NOOOOOOOOOOOOOOOO!!" );
 
             Console.WriteLine( "Battle : " );
-            Console.ReadLine();
+            // Console.ReadLine();
 
             // 임시 몹 사용
             Party tempMob = TempMobGenerator();
@@ -142,8 +151,21 @@ namespace OperationBlueholeContent
             Battle newBattle = new Battle( random, users, tempMob );
             newBattle.StartBattle();
 
-            Console.WriteLine( "Test: {0} Win.", newBattle.battleResult );
-            Console.ReadLine();
+            if ( newBattle.battleResult == PartyIndex.USERS )
+            {
+                // 전리품 챙겨라
+                mob.characters.ForEach( m => {
+                    Mob currentMob = (Mob)m;
+                    lootedExp += currentMob.rewardExp;
+                    lootedGold += currentMob.rewardGold;
+
+                    if ( currentMob.rewardItem != null )
+                        lootedItems.Add( currentMob.rewardItem );
+                } );
+            }
+
+            Console.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
+            // Console.ReadLine();
         }
 
         public void LootItem( Item item, int zoneId )
@@ -156,7 +178,7 @@ namespace OperationBlueholeContent
             lootedItems.Add( item );
 
             Console.WriteLine( "looting : " );
-            Console.ReadLine();
+            // Console.ReadLine();
         }
     }
 }

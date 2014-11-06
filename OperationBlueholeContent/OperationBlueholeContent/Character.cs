@@ -89,8 +89,6 @@ namespace OperationBlueholeContent
 
         public uint[] effectParams { get; protected set; }
         public uint[] actualParams { get; protected set; }
-
-        public int lev { get; protected set; }
 		
         public uint hp { get; private set; }
 		public uint mp { get; private set; }
@@ -518,17 +516,15 @@ namespace OperationBlueholeContent
 	// 몹에는 드랍 아이템, 경험치 같은게 들어가야하려나
 	class Mob : Character
 	{
-        
-
         // 보상 리스트가 있어야 한다
         // 경험치와 골드와 아이템(지금은 일단 토큰만 준다)
-        private int rewardExp;
-        private int rewardGold;
-        private Item rewardItem;
+        public int rewardExp { get; private set; }
+        public int rewardGold { get; private set; }
+        public Item rewardItem { get; private set; }
 
 		public Mob( int level )
 		{
-            this.lev = level;
+            this.baseStats[(int)StatType.Lev] = (ushort)level;
 
 			//for test
 			skills.Add(SkillId.Punch);
@@ -537,18 +533,23 @@ namespace OperationBlueholeContent
 
         public void Init( RandomGenerator random )
         {
+            ushort level = baseStats[(int)StatType.Lev];
+
             // 타입 결정
 
             // 스탯 결정
 
             // 보상 결정
-            rewardExp = lev * Config.MOB_REWARD_EXP_WEIGHT;
-            rewardGold = lev * Config.MOB_REWARD_GOLD_WEIGHT;
-            rewardItem = new ItemToken(
-                    lev + random.Next(
-                        (int)( -lev * Config.MOB_REWARD_ITEM_RANGE ), 
-                        (int)( lev * Config.MOB_REWARD_ITEM_RANGE ) 
-                    ), random );
+            rewardExp = level * Config.MOB_REWARD_EXP_WEIGHT;
+            rewardGold = level * Config.MOB_REWARD_GOLD_WEIGHT;
+
+            // 10% 확률로 아이템을 준다
+            if ( random.Next(100) < 10 )
+                rewardItem = new ItemToken(
+                        level + random.Next(
+                            (int)( -level * Config.MOB_REWARD_ITEM_RANGE ),
+                            (int)( level * Config.MOB_REWARD_ITEM_RANGE ) 
+                        ), random );
         }
 	}
 }
