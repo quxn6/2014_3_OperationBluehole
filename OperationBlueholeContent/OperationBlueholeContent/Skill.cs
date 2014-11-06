@@ -20,6 +20,7 @@ namespace OperationBlueholeContent
 		Punch,
 		Heal,
 		MagicArrow,
+		Bite,
 	}
 	
 	internal class Skill
@@ -152,11 +153,11 @@ namespace OperationBlueholeContent
 					WeaponType.Sword,
 					0,
 					0,
-					50,
+					45,
                     delegate( RandomGenerator random, Character src, Character target )
 					{
 						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]);
-						if (target.HitCheck(HitType.Melee, accuracy))
+						if (target.HitCheck(random, HitType.Melee, accuracy))
 						{
 							uint damage = src.actualParams[(int)ParamType.phyAtk];
 							uint minDamage = (uint)(damage * 0.8f);
@@ -175,14 +176,14 @@ namespace OperationBlueholeContent
 					WeaponType.All,
 					0,
 					0,
-					50,
+					40,
                     delegate( RandomGenerator random, Character src, Character target )
 					{
 						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex]*0.9);
-						if (target.HitCheck(HitType.Melee, accuracy))
+						if (target.HitCheck(random, HitType.Melee, accuracy))
 						{
 							uint damage = src.actualParams[(int)ParamType.phyAtk];
-							uint minDamage = (uint)(damage * 0.8f);
+							uint minDamage = (uint)(damage * 0.7f);
 							damage = (uint)random.Next((int)minDamage, (int)damage);
 							target.Hit(HitType.Melee, (uint)damage);
 						}
@@ -202,7 +203,7 @@ namespace OperationBlueholeContent
                     delegate( RandomGenerator random, Character src, Character target )
 					{
 						uint accuracy = (uint)(src.baseStats[(int)StatType.Wis] * 0.4 + src.baseStats[(int)StatType.Int] * 0.6);
-						if (target.HitCheck(HitType.Magical, accuracy))
+						if (target.HitCheck(random, HitType.Magical, accuracy))
 						{
 							uint damage = src.actualParams[(int)ParamType.magAtk];
 							uint minDamage = (uint)(damage * 0.8f);
@@ -221,13 +222,36 @@ namespace OperationBlueholeContent
 					WeaponType.All,
 					0,
 					10,
-					50,
+					60,
                     delegate( RandomGenerator random, Character src, Character target )
 					{
 						uint damage = src.actualParams[(int)ParamType.magAtk] * 2;
 						uint minDamage = (uint)(damage * 0.8f);
 						damage = (uint)random.Next((int)minDamage, (int)damage);
 						target.Recover(GaugeType.Hp, (uint)damage);
+						return true;
+					}
+					)
+				);
+
+			SkillManager.table.Add(SkillId.Bite,
+				new Skill(
+					ActionType.PhyAttack,
+					TargetType.Single,
+					WeaponType.All,
+					0,
+					0,
+					30,
+					delegate(RandomGenerator random, Character src, Character target)
+					{
+						uint accuracy = (uint)(src.baseStats[(int)StatType.Dex] * 0.8);
+						if (target.HitCheck(random, HitType.Melee, accuracy))
+						{
+							uint damage = src.actualParams[(int)ParamType.phyAtk];
+							uint minDamage = (uint)(damage * 0.1f);
+							damage = (uint)random.Next((int)minDamage, (int)damage);
+							target.Hit(HitType.Melee, (uint)damage);
+						}
 						return true;
 					}
 					)

@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace OperationBlueholeContent
 {
-	// 전투 성향, 차후 AI행동시 사용...되려나
+	// 전투 성향. AI행동시 사용
 	enum BattleStyle : byte
 	{
 		AGGRESSIVE,
@@ -49,6 +49,7 @@ namespace OperationBlueholeContent
         magAtk,
         magDef,
         spRegn, // 하나만 튀어 나와 있어서 spRegen에서 바꿈 ㅋㅋ
+		avoid,
         maxHp,
         maxMp,
         pramCount,  // 전체 paramType 수
@@ -97,9 +98,8 @@ namespace OperationBlueholeContent
 		public List<ItemCode> items { get; protected set; }
         public List<ItemCode> equipments { get; protected set; }
         public MinHeap<BuffPiece> buffs { get; protected set; }
-		public EquipType equipStatus { get; private set; }
-		public WeaponType weaponStatus { get; private set; }
-		//TODO: 버프리스트
+		public EquipType equipStatus { get; private set; }			// 장비 장착 상태
+		public WeaponType weaponStatus { get; private set; }		// 무기 장착 상태
 
 		public BattleStyle battleStyle { get; private set; }
 // 		public PlayStyle playStyle { get; private set; }
@@ -176,10 +176,11 @@ namespace OperationBlueholeContent
             // 지금은 임시 값들 사용하고
             // 나중에 직업별 static function으로 만들어서 거기서 계산 할 것
             actualParams[(int)ParamType.phyAtk] = (uint)( baseStats[(int)StatType.Str] + extraStats[(int)StatType.Str] );
-            actualParams[(int)ParamType.phyDef] = (uint)( baseStats[(int)StatType.Agi] + extraStats[(int)StatType.Agi] );
-            actualParams[(int)ParamType.magAtk] = (uint)( baseStats[(int)StatType.Dex] + extraStats[(int)StatType.Dex] );
-            actualParams[(int)ParamType.magDef] = (uint)( baseStats[(int)StatType.Int] + extraStats[(int)StatType.Int] );
+            actualParams[(int)ParamType.phyDef] = (uint)( baseStats[(int)StatType.Con] + extraStats[(int)StatType.Con] );
+            actualParams[(int)ParamType.magAtk] = (uint)( baseStats[(int)StatType.Int] + extraStats[(int)StatType.Int] );
+            actualParams[(int)ParamType.magDef] = (uint)( baseStats[(int)StatType.Wis] + extraStats[(int)StatType.Wis] );
             actualParams[(int)ParamType.spRegn] = (uint)( baseStats[(int)StatType.Mov] + extraStats[(int)StatType.Mov] );
+			actualParams[(int)ParamType.avoid] = (uint)( baseStats[(int)StatType.Agi] + extraStats[(int)StatType.Agi] );
             actualParams[(int)ParamType.maxHp] = (uint)( baseStats[(int)StatType.Con] + extraStats[(int)StatType.Con] ) * 20;
             actualParams[(int)ParamType.maxMp] = (uint)( baseStats[(int)StatType.Wis] + extraStats[(int)StatType.Wis] );
 
@@ -248,17 +249,44 @@ namespace OperationBlueholeContent
 			while (oneCycle.Act());
 		}
 
-		public bool HitCheck(HitType type, uint accuracy)
+		// 명중 체크
+		public bool HitCheck(RandomGenerator random, HitType type, uint accuracy)
 		{
-			//TODO: 명중률과 회피율 계산하여 명중 여부 판단.
-			return true;
+			if (accuracy >= actualParams[(int)ParamType.avoid])
+				return true;
+
+			uint hitRate = (uint)random.Next((int)actualParams[(int)ParamType.avoid]);
+
+			return (hitRate <= accuracy);
 		}
+
+		// 명중시 방어력에 의한 데미지 감소 계산
 		public void Hit(HitType type, uint damage)
 		{
-			//TODO: 방어력 계산하여 실제 피해량 적용
+			uint def;
+			switch (type)
+			{
+				case HitType.Melee:
+				case HitType.Range:
+					def = actualParams[(int)ParamType.phyDef];
+					break;
+				case HitType.Magical:
+					def = actualParams[(int)ParamType.magDef];
+					break;
+				default:
+					def = actualParams[(int)ParamType.phyDef];
+					break;
+			}
+
+			if (damage <= def)
+				damage = 1;
+			else
+				damage -= def;
+
 			Damage(GaugeType.Hp, damage);
 		}
 
+		// 데미지 적용
 		public void Damage(GaugeType type, uint value)
 		{
 			switch (type)
@@ -281,10 +309,13 @@ namespace OperationBlueholeContent
 			}
 		}
 
+		// 휴식
 		public void Rest()
 		{
 			Recover(GaugeType.Sp, actualParams[(int)ParamType.spRegn]);
 		}
+
+		// 회복 처리
 		public void Recover(GaugeType type, uint value)
 		{
 			switch(type)
@@ -347,7 +378,7 @@ namespace OperationBlueholeContent
 			Equipment item = (Equipment)ItemManager.table[id];
 
 			// 착용 상태에서 제거
-			weaponStatus -= item.weaponType;
+			weaponStatus -= item.weaponType;		// 조심해! 만약 무기류가 복수 장착 가능하다면 문제가 생길 수 있다. CalcStat을 다시 호출해야...
 			equipStatus -= item.equipType;
 			equipments.Remove(id);
 
@@ -488,8 +519,8 @@ namespace OperationBlueholeContent
 		public Mob()
 		{
 			//for test
-            skills.Add( SkillId.Punch );
-            CalcStat();
+			skills.Add(SkillId.Punch);
+			CalcStat();
 		}
 	}
 }
