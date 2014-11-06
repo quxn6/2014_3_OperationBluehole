@@ -47,6 +47,7 @@
     <Compile Include="Character.cs" />
     <Compile Include="Dungeon.cs" />
     <Compile Include="DungeonMaster.cs" />
+    <Compile Include="Economy.cs" />
     <Compile Include="Explorer.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="Item.cs" />

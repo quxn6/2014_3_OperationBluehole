@@ -12,18 +12,6 @@ namespace OperationBlueholeContent
 
         public Int2D( int x, int y ) { this.x = x; this.y = y; }
         public Int2D( Int2D rhs ) { this.x = rhs.x; this.y = rhs.y; }
-
-        /*
-        public static bool operator ==( Int2D lhs, Int2D rhs )
-        {
-            return ( lhs.x == rhs.x && lhs.y == rhs.y );
-        }
-
-        public static bool operator !=( Int2D lhs, Int2D rhs )
-        {
-            return ( lhs.x != rhs.x || lhs.y != rhs.y );
-        }
-         * */
     }
 
     internal class DungeonZone
@@ -52,6 +40,7 @@ namespace OperationBlueholeContent
         const float MOB_DENSITY = 0.05f;
         const float ITEM_DENSITY = 0.05f;
         const int MAX_OFFSET = 2;
+        const float LEVEL_RANGE = 0.2f;
 
         const int MININUM_SPAN = 12;
         const int SLICE_WEIGHT_1 = 1;
@@ -70,14 +59,16 @@ namespace OperationBlueholeContent
         private List<Party> mobs;
         private List<Item> items;
         private List<DungeonZone> zoneList;
+        private int usersLevel;
 
-        public void SetRoot( int size, RandomGenerator random, MapObject[,] map, List<Party> mobs, List<Item> items, List<DungeonZone> zoneList )
+        public void SetRoot( int size, RandomGenerator random, MapObject[,] map, List<Party> mobs, List<Item> items, List<DungeonZone> zoneList, int usersLevel )
         {
             this.random = random;
             this.map = map;
             this.mobs = mobs;
             this.items = items;
             this.zoneList = zoneList;
+            this.usersLevel = usersLevel;
 
             this.upperBoundary.x = size - 1;
             this.upperBoundary.y = size - 1;
@@ -136,6 +127,7 @@ namespace OperationBlueholeContent
                 leftChild.mobs = rightChild.mobs = mobs;
                 leftChild.items = rightChild.items = items;
                 leftChild.zoneList = rightChild.zoneList = zoneList;
+                leftChild.usersLevel = rightChild.usersLevel = usersLevel;
 
                 // 실제로 영역 분할
                 SliceArea();
@@ -296,7 +288,10 @@ namespace OperationBlueholeContent
             for ( int i = 0; i < itemCOunt; ++i )
             {
                 // 아이템 생성하고
-                items.Add( new Item() );
+                items.Add( new ItemToken( 
+                    usersLevel + random.Next( 
+                    (int)(-usersLevel * LEVEL_RANGE) , (int)(usersLevel * LEVEL_RANGE) ) , 
+                    random ) );
                 int idx = items.Count - 1;
 
                 zone.items.Add( items[idx] );
