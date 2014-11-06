@@ -33,7 +33,7 @@ namespace OperationBlueholeContent
             player[1].LoadPlayer( 103 );
             player[2].LoadPlayer( 104 );
 
-            Party users = new Party( PartyType.PLAYER );
+            Party users = new Party( PartyType.PLAYER, 10 );
             foreach ( Player p in player )
                 users.AddCharacter( p );
 
@@ -44,8 +44,8 @@ namespace OperationBlueholeContent
         private Party TempMobGenerator()
         {
 
-            Mob[] mob = { new Mob(), new Mob(), new Mob() };
-            Party mobs = new Party( PartyType.MOB );
+            Mob[] mob = { new Mob( 10 ), new Mob( 10 ), new Mob( 10 ) };
+            Party mobs = new Party( PartyType.MOB, 10 );
 
             foreach ( Mob p in mob )
                 mobs.AddCharacter( p );
@@ -69,7 +69,7 @@ namespace OperationBlueholeContent
             lootedItems = new List<Item>();
             random = new RandomGenerator( seed );
 
-            dungeon = new Dungeon( size, mobs, items, users, random );
+            dungeon = new Dungeon( size, mobs, items, users, random, users.partyLevel );
             explorer = new Explorer( this, size );
 
             explorer.Init( users.position );

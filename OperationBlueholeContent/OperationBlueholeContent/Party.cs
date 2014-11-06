@@ -18,10 +18,12 @@ namespace OperationBlueholeContent
         public List<Character> characters = new List<Character>();
         public PartyType partyType;
         public Int2D position { get; set; }
+        public int partyLevel { get; private set; }
 
-        public Party( PartyType type )
+        public Party( PartyType type, int partyLevel )
         {
             this.partyType = type;
+            this.partyLevel = partyLevel;
         }
 
         public void AddCharacter(Character newMember)

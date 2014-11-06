@@ -45,6 +45,7 @@
     <Compile Include="Buff.cs" />
     <Compile Include="BattleAI.cs" />
     <Compile Include="Character.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Dungeon.cs" />
     <Compile Include="DungeonMaster.cs" />
     <Compile Include="Economy.cs" />

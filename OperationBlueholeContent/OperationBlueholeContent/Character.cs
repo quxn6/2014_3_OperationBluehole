@@ -90,7 +90,9 @@ namespace OperationBlueholeContent
         public uint[] effectParams { get; protected set; }
         public uint[] actualParams { get; protected set; }
 
-		public uint hp { get; private set; }
+        public int lev { get; protected set; }
+		
+        public uint hp { get; private set; }
 		public uint mp { get; private set; }
 		public uint sp { get; private set; }
 
@@ -331,8 +333,8 @@ namespace OperationBlueholeContent
 					mp += value;
 					break;
 				case GaugeType.Sp:
-					if (value > 100 - sp)
-						value = 100 - sp;
+                    if ( value > Config.MAX_CHARACTER_SP - sp )
+                        value = Config.MAX_CHARACTER_SP - sp;
 					sp += value;
 					break;
 			}
@@ -516,11 +518,37 @@ namespace OperationBlueholeContent
 	// 몹에는 드랍 아이템, 경험치 같은게 들어가야하려나
 	class Mob : Character
 	{
-		public Mob()
+        
+
+        // 보상 리스트가 있어야 한다
+        // 경험치와 골드와 아이템(지금은 일단 토큰만 준다)
+        private int rewardExp;
+        private int rewardGold;
+        private Item rewardItem;
+
+		public Mob( int level )
 		{
+            this.lev = level;
+
 			//for test
 			skills.Add(SkillId.Punch);
 			CalcStat();
 		}
+
+        public void Init( RandomGenerator random )
+        {
+            // 타입 결정
+
+            // 스탯 결정
+
+            // 보상 결정
+            rewardExp = lev * Config.MOB_REWARD_EXP_WEIGHT;
+            rewardGold = lev * Config.MOB_REWARD_GOLD_WEIGHT;
+            rewardItem = new ItemToken(
+                    lev + random.Next(
+                        (int)( -lev * Config.MOB_REWARD_ITEM_RANGE ), 
+                        (int)( lev * Config.MOB_REWARD_ITEM_RANGE ) 
+                    ), random );
+        }
 	}
 }
