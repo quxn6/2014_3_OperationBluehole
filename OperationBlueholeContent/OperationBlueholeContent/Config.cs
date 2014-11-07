@@ -22,7 +22,10 @@ namespace OperationBlueholeContent
         public const int SILCE_WEIGHT_TOTAL = SLICE_WEIGHT_1 + SLICE_WEIGHT_2;
 
         // Character
-        public const int MAX_CHARACTER_SP = 100;
+		public const int MAX_CHARACTER_SP = 100;
+		public static readonly ushort[] CHARACTER_BASE_STATS = { 1, 5, 5, 5, 5, 5, 5, 5 };
+		public const short BATTLE_AI_RANDOM_LEVEL = 100;
+		public const uint BATTLE_DEFENDED_MIN_DAMAGE = 1;
 
 		// Mob
         public const int MOB_REWARD_EXP_WEIGHT = 10;
