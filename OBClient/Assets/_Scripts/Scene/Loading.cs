@@ -5,12 +5,12 @@ public class Loading : MonoBehaviour
 {
 	public GameObject loadingUI;
 	public GameObject replayButton;
-	// Use this for initialization
+		
 	void Start()
 	{
 		replayButton.SetActive( false );
-		loadingUI.GetComponent<TweenAlpha>().enabled = false;
-		NetworkManager.Instance.RequestMapInfo();
+		loadingUI.GetComponent<TweenAlpha>().enabled = false;		
+		NetworkManager.Instance.RequestMapInfo();		
 	}
 
 	public void LoadMap(Dungeon dungeonMap)
@@ -25,4 +25,8 @@ public class Loading : MonoBehaviour
 		loadingUI.GetComponent<TweenAlpha>().enabled = true;
 	}
 
+	public void CloseLoadingView()
+	{
+		gameObject.SetActive( false );
+	}
 }

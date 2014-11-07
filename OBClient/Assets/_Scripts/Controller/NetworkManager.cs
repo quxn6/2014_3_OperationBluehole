@@ -36,21 +36,4 @@ public class NetworkManager : MonoBehaviour
 	{
 		sceneManager.GetComponent<Loading>().LoadMap( new Dungeon( dungeonMap , size ) );
 	}
-
-	// mob ///
-	public void RequestMobInfo()
-	{
-		StartCoroutine( DummyMobInfoResponse() );
-	}
-
-	IEnumerator DummyMobInfoResponse()
-	{
-		yield return new WaitForSeconds( 0.1f );
-		HandleMobInfo();
-	}
-
-	public void HandleMobInfo()
-	{
-		sceneManager.GetComponent<Loading>().LoadMap( new Dungeon( dungeonMap , size ) );
-	}
 }
