@@ -107,7 +107,7 @@ namespace OperationBlueholeContent
                 // 위에서 아이템도 먹고 몹도 처리했으면 실제로 맵에서의 좌표도 이동시킨다
                 dungeon.MovePlayer( explorer.position );
 
-                // dungeon.PrintOutMAP();
+                dungeon.PrintOutMAP();
                 // Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
 
                 //Thread.Sleep( 100 );

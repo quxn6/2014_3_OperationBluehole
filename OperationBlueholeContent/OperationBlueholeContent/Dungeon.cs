@@ -213,7 +213,7 @@ namespace OperationBlueholeContent
             upperBoundary.y -= offsetValue;
         }
 
-        public Int2D RegisterParty( Party party )
+        public Int2D RegisterParty( Party party, bool isUsers = false )
         {
             Int2D position = new Int2D( -1, -1 );
 
@@ -224,6 +224,10 @@ namespace OperationBlueholeContent
                 if ( map[position.y, position.x] != null && map[position.y, position.x].objectType == MapObjectType.TILE
                     && map[position.y, position.x].party == null )
                 {
+                    // 플레이어가 아이템 위에서 시작하지 않도록 제어
+                    if ( map[position.y, position.x].gameObject != null && isUsers )
+                        continue;
+
                     map[position.y, position.x].party = party;
                     party.position = position;
 
@@ -458,7 +462,7 @@ namespace OperationBlueholeContent
             // player party와 ring 배치 - 맵 전체를 기반으로
             RingOfErrethAkbe ring = new RingOfErrethAkbe();
 
-            playerPosition = root.RegisterParty( users );
+            playerPosition = root.RegisterParty( users, true );
             ringPosition = root.RegisterGameObject( ring );
 
             zoneList[map[ringPosition.y, ringPosition.x].zoneId].items.Add( ring );
