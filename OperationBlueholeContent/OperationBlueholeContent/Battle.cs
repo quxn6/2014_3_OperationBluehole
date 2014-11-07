@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
 {
+    enum PartyIndex
+    {
+        NONE = -1,
+        USERS = 0,
+        MOBS = 1,
+    }
+
 	class Battle
 	{
 		public Party[] party { get; private set; }
 		public int curTurn { get; private set; }
-		public int battleResult { get; private set; }
+        public PartyIndex battleResult { get; private set; }
         private RandomGenerator random;
 
         public Battle( RandomGenerator random, Party party1, Party party2 )
@@ -22,22 +29,22 @@ namespace OperationBlueholeContent
 			party[1] = party2;
 
 			curTurn = 1;
-			battleResult = 0;
+            battleResult = PartyIndex.NONE;
 		}
 
 		public void StartBattle()
 		{
-			while (battleResult == 0)
+            while ( battleResult == PartyIndex.NONE )
 			{
 				// 전투상 모든 캐릭터들에 턴행동 후 전멸 체크
-				foreach (Character i in party[0].characters)
+                foreach ( Character i in party[(int)PartyIndex.USERS].characters )
 				{
 					if (i.hp > 0)
 						TurnAction(i, true);
 					if (EndCheck())
 						return;
 				}
-                foreach ( Character i in party[1].characters )
+                foreach ( Character i in party[(int)PartyIndex.MOBS].characters )
 				{
 					if (i.hp > 0)
 						TurnAction(i, false);
@@ -59,23 +66,23 @@ namespace OperationBlueholeContent
 			}
 
 			if (isUserParty)
-                turnCharacter.BattleTurnAction( random, party[0], party[1] );
+                turnCharacter.BattleTurnAction( random, party[(int)PartyIndex.USERS], party[(int)PartyIndex.MOBS] );
 			else
-                turnCharacter.BattleTurnAction( random, party[1], party[0] );
+                turnCharacter.BattleTurnAction( random, party[(int)PartyIndex.MOBS], party[(int)PartyIndex.USERS] );
 		}
 
 		// 전투 종료 조건 체크( 상대 파티의 전멸 )
 		// mBattleResult에 이긴 파티의 번호를 저장.
 		bool EndCheck()
 		{
-            if ( party[0].characters.Sum( chr => chr.hp ) <= 0 )
+            if ( party[(int)PartyIndex.USERS].characters.Sum( chr => chr.hp ) <= 0 )
 			{
-				battleResult = 2;
+                battleResult = PartyIndex.MOBS;
 				return true;
 			}
-            if ( party[1].characters.Sum( chr => chr.hp ) <= 0 )
+            if ( party[(int)PartyIndex.MOBS].characters.Sum( chr => chr.hp ) <= 0 )
 			{
-				battleResult = 1;
+				battleResult = PartyIndex.USERS;
 				return true;
 			}
 			return false;

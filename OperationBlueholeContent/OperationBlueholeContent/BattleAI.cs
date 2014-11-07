@@ -89,7 +89,7 @@ namespace OperationBlueholeContent
 			Randomize();		// 랜덤 레벨에 의거한 랜덤 가중치
 
 			// Decision들을 우선순위에 따라 하나씩 시도.
-			foreach (var res in decisions.OrderBy(d => d.value))
+			foreach (var res in decisions.OrderByDescending(d => d.value))
 			{
 				{
 					var resSkills = player.skills.Where(sid =>
@@ -140,6 +140,9 @@ namespace OperationBlueholeContent
 			// 아군 회복 우선도 체크
 			foreach (var target in ally.characters)
 			{
+				if (target.hp == 0)
+					continue;
+
 				short value = (short)((short)AIConst.RecoverP - target.hp * (short)AIConst.RecoverP / target.actualParams[(int)ParamType.maxHp]);
 				
 				if (value > (short)AIConst.RcvMinP)
@@ -171,6 +174,9 @@ namespace OperationBlueholeContent
 			// 적 공격 우선도 체크
 			foreach (var target in enemy.characters)
 			{
+				if (target.hp == 0)
+					continue;
+
 				short value = (short)((short)AIConst.AttackP - target.hp * (short)AIConst.AttackP / target.actualParams[(int)ParamType.maxHp]);
 
 				AIDecision phy = new AIDecision(
@@ -260,16 +266,10 @@ namespace OperationBlueholeContent
 
 		void Randomize()
 		{
-// 			decisions = decisions.ConvertAll(d =>{ 
-// 				d.value += (short)random.Next(0, randomLevel); 
-// 				return d;
-// 			});
-			AIDecision tmp;
-			foreach (var d in decisions)
-			{
-				tmp = d;
-				tmp.value += (short)random.Next(0, randomLevel);
-			}
+			decisions = decisions.ConvertAll(d =>{ 
+				d.value += (short)random.Next(0, randomLevel); 
+				return d;
+			});
 		}
 
 		void ResetDecisions()

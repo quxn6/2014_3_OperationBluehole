@@ -178,12 +178,13 @@ namespace OperationBlueholeContent
             Item item = (Item)dungeonMaster.GetMapObject( position.x, position.y ).gameObject;
             if ( item != null )
             {
-                dungeonMaster.LootItem( item, currentZoneId );
-
                 if ( item.code == ItemCode.Ring )
                     isRingDiscovered = true;
-
-                UpdateDestination();
+                else
+                {
+                    dungeonMaster.LootItem( item, currentZoneId );
+                    UpdateDestination();
+                }
             }
 
             // 현재 존 정보 업데이트 할 것
@@ -255,9 +256,9 @@ namespace OperationBlueholeContent
 
         private void MakePath( Int2D destination )
         {
-            Console.WriteLine( "start to make the path" );
-            Console.WriteLine( "start : " + position.x + " / " + position.y );
-            Console.WriteLine( "dest : " + destination.x + " / " + destination.y );
+            // Console.WriteLine( "start to make the path" );
+            // Console.WriteLine( "start : " + position.x + " / " + position.y );
+            // Console.WriteLine( "dest : " + destination.x + " / " + destination.y );
 
             // 조심해!!!
             // priority_queue가 없어서 일단 list로 구현
@@ -332,7 +333,7 @@ namespace OperationBlueholeContent
                 }
             }
             
-            Console.WriteLine( "end!!!!" );
+            // Console.WriteLine( "end!!!!" );
         }
 
         private void ReconstructPath( ExploerNode currentNode )

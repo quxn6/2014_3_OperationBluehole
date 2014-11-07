@@ -12,18 +12,6 @@ namespace OperationBlueholeContent
 
         public Int2D( int x, int y ) { this.x = x; this.y = y; }
         public Int2D( Int2D rhs ) { this.x = rhs.x; this.y = rhs.y; }
-
-        /*
-        public static bool operator ==( Int2D lhs, Int2D rhs )
-        {
-            return ( lhs.x == rhs.x && lhs.y == rhs.y );
-        }
-
-        public static bool operator !=( Int2D lhs, Int2D rhs )
-        {
-            return ( lhs.x != rhs.x || lhs.y != rhs.y );
-        }
-         * */
     }
 
     internal class DungeonZone
@@ -49,14 +37,7 @@ namespace OperationBlueholeContent
     internal class DungeonTreeNode
     {
         // 컨텐츠 관련 상수들 따로 뺄 것
-        const float MOB_DENSITY = 0.05f;
-        const float ITEM_DENSITY = 0.05f;
-        const int MAX_OFFSET = 2;
-
-        const int MININUM_SPAN = 12;
-        const int SLICE_WEIGHT_1 = 1;
-        const int SLICE_WEIGHT_2 = 2;
-        const int SILCE_WEIGHT_TOTAL = SLICE_WEIGHT_1 + SLICE_WEIGHT_2;
+        
 
         public DungeonTreeNode parent, leftChild, rightChild;
         public int depth, upperDepth;
@@ -70,18 +51,20 @@ namespace OperationBlueholeContent
         private List<Party> mobs;
         private List<Item> items;
         private List<DungeonZone> zoneList;
+        private int usersLevel;
 
-        public void SetRoot( int size, RandomGenerator random, MapObject[,] map, List<Party> mobs, List<Item> items, List<DungeonZone> zoneList )
+        public void SetRoot( int size, RandomGenerator random, MapObject[,] map, List<Party> mobs, List<Item> items, List<DungeonZone> zoneList, int usersLevel )
         {
             this.random = random;
             this.map = map;
             this.mobs = mobs;
             this.items = items;
             this.zoneList = zoneList;
+            this.usersLevel = usersLevel;
 
             this.upperBoundary.x = size - 1;
             this.upperBoundary.y = size - 1;
-            this.upperDepth = size / MININUM_SPAN;  // 결과가 짝수이면 각각의 축에 대해서 이 결과만큼의 조각으로 나누어짐
+            this.upperDepth = size / Config.MININUM_SPAN;  // 결과가 짝수이면 각각의 축에 대해서 이 결과만큼의 조각으로 나누어짐
             this.siblingDirection = ( random.Next( 0, 1 ) % 2 == 0 );
             this.isLeft = false;
         }
@@ -106,7 +89,7 @@ namespace OperationBlueholeContent
                 // leafNode이므로 Bake하고
                 // 일정 거리를 offset
                 int shortSpan = Math.Min( upperBoundary.x - lowerBoundary.x, upperBoundary.y - lowerBoundary.y ) + 1;
-                int offset = Math.Min( random.Next( 0, MAX_OFFSET ), ( shortSpan - 3 ) / 2 );
+                int offset = Math.Min( random.Next( 0, Config.MAX_OFFSET ), ( shortSpan - 3 ) / 2 );
 
                 Offset( offset );
 
@@ -136,6 +119,7 @@ namespace OperationBlueholeContent
                 leftChild.mobs = rightChild.mobs = mobs;
                 leftChild.items = rightChild.items = items;
                 leftChild.zoneList = rightChild.zoneList = zoneList;
+                leftChild.usersLevel = rightChild.usersLevel = usersLevel;
 
                 // 실제로 영역 분할
                 SliceArea();
@@ -161,8 +145,8 @@ namespace OperationBlueholeContent
                 // 조심해!
                 // 중복 코드다
                 smallUpper = random.Next(
-                    ( SLICE_WEIGHT_1 * upperBoundary.x + SLICE_WEIGHT_2 * lowerBoundary.x ) / SILCE_WEIGHT_TOTAL,
-                    ( SLICE_WEIGHT_2 * upperBoundary.x + SLICE_WEIGHT_1 * lowerBoundary.x ) / SILCE_WEIGHT_TOTAL );
+                    ( Config.SLICE_WEIGHT_1 * upperBoundary.x + Config.SLICE_WEIGHT_2 * lowerBoundary.x ) / Config.SILCE_WEIGHT_TOTAL,
+                    ( Config.SLICE_WEIGHT_2 * upperBoundary.x + Config.SLICE_WEIGHT_1 * lowerBoundary.x ) / Config.SILCE_WEIGHT_TOTAL );
 
                 leftChild.lowerBoundary.x = lowerBoundary.x;
                 leftChild.upperBoundary.x = smallUpper;
@@ -178,8 +162,8 @@ namespace OperationBlueholeContent
                 // 조심해!
                 // 중복 코드다
                 smallUpper = random.Next(
-                    ( SLICE_WEIGHT_1 * upperBoundary.y + SLICE_WEIGHT_2 * lowerBoundary.y ) / SILCE_WEIGHT_TOTAL,
-                    ( SLICE_WEIGHT_2 * upperBoundary.y + SLICE_WEIGHT_1 * lowerBoundary.y ) / SILCE_WEIGHT_TOTAL );
+                    ( Config.SLICE_WEIGHT_1 * upperBoundary.y + Config.SLICE_WEIGHT_2 * lowerBoundary.y ) / Config.SILCE_WEIGHT_TOTAL,
+                    ( Config.SLICE_WEIGHT_2 * upperBoundary.y + Config.SLICE_WEIGHT_1 * lowerBoundary.y ) / Config.SILCE_WEIGHT_TOTAL );
 
                 leftChild.lowerBoundary.x = rightChild.lowerBoundary.x = lowerBoundary.x;
                 leftChild.upperBoundary.x = rightChild.upperBoundary.x = upperBoundary.x;
@@ -229,7 +213,7 @@ namespace OperationBlueholeContent
             upperBoundary.y -= offsetValue;
         }
 
-        public Int2D RegisterParty( Party party )
+        public Int2D RegisterParty( Party party, bool isUsers = false )
         {
             Int2D position = new Int2D( -1, -1 );
 
@@ -240,6 +224,10 @@ namespace OperationBlueholeContent
                 if ( map[position.y, position.x] != null && map[position.y, position.x].objectType == MapObjectType.TILE
                     && map[position.y, position.x].party == null )
                 {
+                    // 플레이어가 아이템 위에서 시작하지 않도록 제어
+                    if ( map[position.y, position.x].gameObject != null && isUsers )
+                        continue;
+
                     map[position.y, position.x].party = party;
                     party.position = position;
 
@@ -273,17 +261,48 @@ namespace OperationBlueholeContent
             return position;
         }
 
+        private ItemToken GenerateItemToken()
+        {
+            return new ItemToken(
+                    usersLevel + random.Next(
+                    (int)( -usersLevel * Config.LEVEL_RANGE ), (int)( usersLevel * Config.LEVEL_RANGE ) ),
+                    random );
+        }
+
+        private Party GeneratoMobParty()
+        {
+            Party mobs = new Party( PartyType.MOB, usersLevel );
+
+            // mob 생성해서 추가할 것
+            for ( int j = 0; j < Config.MAX_PARTY_MEMBER; ++j )
+            {
+                // 조심해!
+                // 몹타입에 따라서 Mob을 상속받아서 구현한다면
+                // 여기서 타입도 결정해서 그에 맞게 생성해주어야 한다
+				MobData newMobData = MobGenerator.GetMobData(random, MobId.Spider_Small,
+					(ushort)(usersLevel + random.Next(
+					(int)(-usersLevel * Config.LEVEL_RANGE), (int)(usersLevel * Config.LEVEL_RANGE)))
+					);
+                Mob mob = new Mob(newMobData);
+
+                mobs.AddCharacter( mob );
+            }
+
+            return mobs;
+        }
+
         private void AllocateObjects( DungeonZone zone )
         {
             // 아이템과 몹 배치
             int tileCount = ( upperBoundary.y - lowerBoundary.y - 1 )
                 * ( upperBoundary.x - lowerBoundary.x - 1 );
 
-            int mobCount = (int)( tileCount * MOB_DENSITY );
+            int mobCount = (int)( tileCount * Config.MOB_DENSITY );
             for ( int i = 0; i < mobCount; ++i )
             {
                 // 몹 생성하고
-                mobs.Add( new Party( PartyType.MOB ) );
+                mobs.Add( GeneratoMobParty() );
+
                 int idx = mobs.Count - 1;
 
                 zone.mobs.Add( mobs[idx] );
@@ -292,11 +311,11 @@ namespace OperationBlueholeContent
                 Int2D mobPosition = RegisterParty( mobs[idx] );
             }
 
-            int itemCOunt = (int)( tileCount * ITEM_DENSITY );
+            int itemCOunt = (int)( tileCount * Config.ITEM_DENSITY );
             for ( int i = 0; i < itemCOunt; ++i )
             {
                 // 아이템 생성하고
-                items.Add( new Item() );
+                items.Add( GenerateItemToken() );
                 int idx = items.Count - 1;
 
                 zone.items.Add( items[idx] );
@@ -407,16 +426,18 @@ namespace OperationBlueholeContent
         private int size;
         private MapObject[,] map;
         private RandomGenerator random;
+        private int userLevel;
 
         private Int2D playerPosition, ringPosition;
 
         public List<DungeonZone> zoneList = new List<DungeonZone>();
 
-        public Dungeon( int size, List<Party> mobs, List<Item> items, Party users, RandomGenerator random )
+        public Dungeon( int size, List<Party> mobs, List<Item> items, Party users, RandomGenerator random, int userLevel )
         {
             this.size = size;
             map = new MapObject[size, size];
             this.random = random;
+            this.userLevel = userLevel;
 
             // 나중에는 object pool 만들 것
             for ( int i = 0; i < size; ++i )
@@ -435,13 +456,13 @@ namespace OperationBlueholeContent
             // 만약 자신의 depth가 upper bound보다 작으면 아래의 작업을 수행한다
             // 자신의 반대 방향으로 임의의 위치에서 다시 잘라서 해당 영역을 자식으로 추가
             DungeonTreeNode root = new DungeonTreeNode();
-            root.SetRoot( size, random, map, mobs, items, zoneList );
+            root.SetRoot( size, random, map, mobs, items, zoneList, userLevel );
             root.GenerateRecursivly();
 
             // player party와 ring 배치 - 맵 전체를 기반으로
             RingOfErrethAkbe ring = new RingOfErrethAkbe();
 
-            playerPosition = root.RegisterParty( users );
+            playerPosition = root.RegisterParty( users, true );
             ringPosition = root.RegisterGameObject( ring );
 
             zoneList[map[ringPosition.y, ringPosition.x].zoneId].items.Add( ring );

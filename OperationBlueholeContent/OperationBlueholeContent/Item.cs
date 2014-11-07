@@ -13,6 +13,7 @@ namespace OperationBlueholeContent
 		HpPotion_S,
 		MpPotion_S,
 		Sword_Test,
+        Token,
 	}
 	enum ItemCatag : ushort
 	{
@@ -36,12 +37,13 @@ namespace OperationBlueholeContent
 		Bow			= 0x2,
 		Axe			= 0x4,
 		Staff		= 0x8,
+		Shield		= 0x10,
 		All			= 0xffffffff
 	}
 
 	internal class Item : GameObject
 	{
-		public ItemCode code { get; private set; }
+		public ItemCode code { get; protected set; }
 		public ItemCatag catagory { get; private set; }
         public Func<RandomGenerator, Character, Character, bool> action { get; protected set; }
 
