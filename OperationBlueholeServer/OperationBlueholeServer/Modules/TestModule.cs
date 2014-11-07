@@ -11,69 +11,65 @@ namespace OperationBlueholeServer.Modules
 {
     using Nancy;
 
-    public class Beer
-    {
-        [JsonProperty( "name" )]
-        public string Name { get; set; }
-
-        [JsonProperty( "abv" )]
-        public float ABV { get; set; }
-
-        [JsonProperty( "type" )]
-        public string Type
-        {
-            get { return "beer"; }
-        }
-
-        [JsonProperty( "brewery_id" )]
-        public string BreweryId { get; set; }
-
-        [JsonProperty( "style" )]
-        public string Style { get; set; }
-
-        [JsonProperty( "category" )]
-        public string Category { get; set; }
-    }
-
-    public class PlayerData
-    {
-        [JsonProperty( "player id" )]
-        public uint PlayerId { get; set; }
-
-        [JsonProperty( "name" )]
-        public string Name { get; set; }
-
-        [JsonProperty( "baseStat" )]
-        public ushort[] BaseStat { get; set; }
-
-        [JsonProperty( "Exp" )]
-        public uint Exp { get; set; }
-
-        [JsonProperty( "skill list" )]
-        public List<ushort> SkillList { get; set; }
-
-        [JsonProperty( "item list" )]
-        public List<uint> ItemList { get; set; }
-
-        [JsonProperty( "equipments" )]
-        public List<uint> Equipments { get; set; }
-
-        [JsonProperty( "battle style" )]
-        public byte BattleStyle { get; set; }
-    }
-
     // 한다! 테스트! 
     public class TestModule : NancyModule
     {
         public TestModule()
         {
-            Get["/couchbase/"] = parameters =>
+            Get["/example"] = parameters =>
             {
                 var client = CouchbaseManager.Instance;
 
                 var savedBeer = client.Get( "new_holland_brewing_company-sundog" );
 
                 return savedBeer;
+            };
+
+            Get["/dict_save"] = parameters =>
+            {
+                var playerData = new Dictionary<string, object>
+                {
+                    { "id", 0 },
+                    { "name", "quxn6" },
+                    { "exp", 4 },
+                    { "skil", new List<ushort>
+                        {
+                            0, 1, 2,
+                        }
+                    },
+                    { "inventory", new List<uint>
+                        {
+                            2, 4, 6, 8, 10,
+                        }
+                    },
+                    { "items", new List<uint>
+                        {
+                            4, 6, 10,
+                        }
+                    },
+                    { "equipment", new List<uint>
+                        {
+                            2, 8,
+                        }
+                    },
+                    { "battle style", 0 },
+                };
+
+                var client = CouchbaseManager.Instance;
+                var result = client.StoreDictionary(StoreMode.Set, "testPlayer_0", playerData);
+
+                if (result.Item1) 
+                    return "success";
+                
+                return "fail";
+            };
+
+            Get["/dict_load"] = parameters =>
+            {
+                var client = CouchbaseManager.Instance;
+                var dict = client.GetDictionary( "testPlayer_0" ).Item4["name"];
+
+                return dict.ToString();
             };
         }
     }

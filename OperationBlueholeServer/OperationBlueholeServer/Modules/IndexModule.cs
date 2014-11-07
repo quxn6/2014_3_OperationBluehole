@@ -10,6 +10,8 @@
             {
                 return View["index"];
             };
+
+            Get["/hi"] = parameters => "test hi";
         }
     }
 }
