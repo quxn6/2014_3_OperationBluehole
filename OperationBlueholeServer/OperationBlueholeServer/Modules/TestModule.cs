@@ -32,6 +32,11 @@ namespace OperationBlueholeServer.Modules
                     { "id", 0 },
                     { "name", "quxn6" },
                     { "exp", 4 },
+                    { "stat", new List<ushort>
+                        {
+                            1, 1, 1, 1, 1, 1, 1, 1,
+                        }
+                    },
                     { "skil", new List<ushort>
                         {
                             0, 1, 2,
