@@ -112,7 +112,7 @@ namespace OperationBlueholeContent
 
 		public void Reset()
 		{
-            baseStats = new ushort[(int)StatType.StatCount] { 1, 5, 5, 5, 5, 5, 5, 5 };
+			baseStats = Config.CHARACTER_BASE_STATS;
             extraStats = new ushort[(int)StatType.StatCount];
 
             effectParams = new uint[(int)ParamType.pramCount];
@@ -246,7 +246,7 @@ namespace OperationBlueholeContent
 // 			if (sid != SkillId.None && SkillManager.table[sid].spNeed <= sp && SkillManager.table[sid].mpNeed <= mp)
 // 				SkillManager.table[sid].Act(random, this, weakEnemy);
 
-			BattleAI oneCycle = new BattleAI(random, 100, this, ally, enemy);
+			BattleAI oneCycle = new BattleAI(random, Config.BATTLE_AI_RANDOM_LEVEL, this, ally, enemy);
 			while (oneCycle.Act());
 		}
 
@@ -280,7 +280,7 @@ namespace OperationBlueholeContent
 			}
 
 			if (damage <= def)
-				damage = 1;
+				damage = Config.BATTLE_DEFENDED_MIN_DAMAGE;
 			else
 				damage -= def;
 

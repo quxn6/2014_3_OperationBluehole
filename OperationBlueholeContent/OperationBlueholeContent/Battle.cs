@@ -59,7 +59,7 @@ namespace OperationBlueholeContent
 		// 매턴마다 SP를 증가시켜주고 SP 100이 되면 해당 캐릭터 행동 실행
 		void TurnAction(Character turnCharacter, bool isUserParty)
 		{
-			if (turnCharacter.sp < 100)
+			if (turnCharacter.sp < Config.MAX_CHARACTER_SP)
 			{
 				turnCharacter.Rest();
 				return;
