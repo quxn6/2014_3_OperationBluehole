@@ -37,6 +37,7 @@ namespace OperationBlueholeContent
 		Bow			= 0x2,
 		Axe			= 0x4,
 		Staff		= 0x8,
+		Shield		= 0x10,
 		All			= 0xffffffff
 	}
 

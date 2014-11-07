@@ -16,6 +16,7 @@ namespace OperationBlueholeContent
 
 			TestData.playerList.Add(101, new PlayerData
 			(
+				"TestPlayer101",
 				0,
 				1,
 				5,
@@ -41,6 +42,7 @@ namespace OperationBlueholeContent
 
 			TestData.playerList.Add(102, new PlayerData
 			(
+				"TestPlayer102",
 				0,
 				3,
 				5,
@@ -68,6 +70,7 @@ namespace OperationBlueholeContent
 
 			TestData.playerList.Add(103, new PlayerData
 			(
+				"TestPlayer103",
 				0,
 				3,
 				15,
@@ -94,6 +97,7 @@ namespace OperationBlueholeContent
 
 			TestData.playerList.Add(104, new PlayerData
 			(
+				"TestPlayer104",
 				0,
 				3,
 				10,
@@ -118,8 +122,5 @@ namespace OperationBlueholeContent
 				BattleStyle.AGGRESSIVE
 			));
 		}
-	}
-	class Test
-	{
 	}
 }

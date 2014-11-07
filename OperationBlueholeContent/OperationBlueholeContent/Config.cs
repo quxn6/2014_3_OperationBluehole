@@ -23,9 +23,12 @@ namespace OperationBlueholeContent
 
         // Character
         public const int MAX_CHARACTER_SP = 100;
+
+		// Mob
         public const int MOB_REWARD_EXP_WEIGHT = 10;
         public const int MOB_REWARD_GOLD_WEIGHT = 10;
         public const float MOB_REWARD_ITEM_RANGE = 0.2f;
+		public const int MOB_REWARD_ITEM_CHANCE_MAX = 100000;
 
         // Party
         public const int MAX_PARTY_MEMBER = 4;
