@@ -214,7 +214,7 @@ namespace OperationBlueholeContent
 
         public void BattleTurnAction( RandomGenerator random, Party ally, Party enemy )
 		{
-			if (random == null || ally == null || enemy == null)
+			if (random == null || ally == null || enemy == null || this.hp == 0)
 				return;
 
 // 			SkillId sid;
