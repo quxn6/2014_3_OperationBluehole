@@ -9,7 +9,14 @@ namespace OperationBlueholeContent
 	enum MobId : uint
 	{
 		Dummy	= 0,
-		Spider_Small,
+		Demon,
+		Troll,
+		Goblin,
+		IceGolem,
+		Spider,
+		Skeleton_Warrior,
+		Skeleton_Soldier,
+		Skeleton_Mage,
 	}
 
 	class Mob : Character
@@ -151,10 +158,114 @@ namespace OperationBlueholeContent
 		public static void Init()
 		{
 			mobTypeDataTable = new Dictionary<MobId, MobTypeData>();
-			// Spider_Small
+			// Demon
 			{
 				MobTypeData tData = new MobTypeData(
-					"SmallSpider",
+					"Demon",
+					2, 2, 2, 2, 1, 1,
+					5,
+					new List<SkillId>() 
+					{
+						SkillId.Punch 
+					},
+					new List<ItemCode>()
+					{
+					},
+					new List<ItemCode>()
+					{
+					},
+					new BattleStyle[] { 
+						BattleStyle.AGGRESSIVE
+					},
+					5000
+					);
+				MobGenerator.mobTypeDataTable.Add(MobId.Demon,
+					tData
+					);
+			}
+
+			// Troll
+			{
+				MobTypeData tData = new MobTypeData(
+					"Troll",
+					2, 1, 0, 3, 1, 0,
+					5,
+					new List<SkillId>() 
+					{
+						SkillId.Punch 
+					},
+					new List<ItemCode>()
+					{
+					},
+					new List<ItemCode>()
+					{
+					},
+					new BattleStyle[] { 
+						BattleStyle.AGGRESSIVE
+					},
+					5000
+					);
+				MobGenerator.mobTypeDataTable.Add(MobId.Troll,
+					tData
+					);
+			}
+
+			// Goblin
+			{
+				MobTypeData tData = new MobTypeData(
+					"Goblin",
+					1, 1, 1, 1, 1, 1,
+					5,
+					new List<SkillId>() 
+					{
+						SkillId.Punch 
+					},
+					new List<ItemCode>()
+					{
+					},
+					new List<ItemCode>()
+					{
+					},
+					new BattleStyle[] { 
+						BattleStyle.AGGRESSIVE
+					},
+					5000
+					);
+				MobGenerator.mobTypeDataTable.Add(MobId.Goblin,
+					tData
+					);
+			}
+
+			// Ice Golem
+			{
+				MobTypeData tData = new MobTypeData(
+					"Ice Golem",
+					3, 1, 1, 3, 1, 1,
+					5,
+					new List<SkillId>() 
+					{
+						SkillId.Punch 
+					},
+					new List<ItemCode>()
+					{
+					},
+					new List<ItemCode>()
+					{
+					},
+					new BattleStyle[] { 
+						BattleStyle.AGGRESSIVE
+					},
+					5000
+					);
+				MobGenerator.mobTypeDataTable.Add(MobId.IceGolem,
+					tData
+					);
+			}
+
+			// Spider
+			{
+				MobTypeData tData = new MobTypeData(
+					"Spider",
 					1, 2, 1, 1, 1, 1,
 					5,
 					new List<SkillId>() 
@@ -172,12 +283,88 @@ namespace OperationBlueholeContent
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobId.Spider_Small,
+				MobGenerator.mobTypeDataTable.Add(MobId.Spider,
 					tData
 					);
 			}
 
+			// Skeleton Warrior
+			{
+				MobTypeData tData = new MobTypeData(
+					"Skeleton Warrior",
+					2, 2, 0, 2, 2, 0,
+					5,
+					new List<SkillId>() 
+					{
+						SkillId.Punch 
+					},
+					new List<ItemCode>()
+					{
+					},
+					new List<ItemCode>()
+					{
+					},
+					new BattleStyle[] { 
+						BattleStyle.AGGRESSIVE
+					},
+					5000
+					);
+				MobGenerator.mobTypeDataTable.Add(MobId.Skeleton_Warrior,
+					tData
+					);
+			}
 
+			// Skeleton Soldier
+			{
+				MobTypeData tData = new MobTypeData(
+					"Skeleton Soldier",
+					2, 2, 1, 2, 2, 1,
+					5,
+					new List<SkillId>() 
+					{
+						SkillId.Punch 
+					},
+					new List<ItemCode>()
+					{
+					},
+					new List<ItemCode>()
+					{
+					},
+					new BattleStyle[] { 
+						BattleStyle.AGGRESSIVE
+					},
+					5000
+					);
+				MobGenerator.mobTypeDataTable.Add(MobId.Skeleton_Soldier,
+					tData
+					);
+			}
+
+			// Skeleton Mage
+			{
+				MobTypeData tData = new MobTypeData(
+					"Skeleton Mage",
+					1, 1, 2, 1, 1, 2,
+					5,
+					new List<SkillId>() 
+					{
+						SkillId.Punch 
+					},
+					new List<ItemCode>()
+					{
+					},
+					new List<ItemCode>()
+					{
+					},
+					new BattleStyle[] { 
+						BattleStyle.AGGRESSIVE
+					},
+					5000
+					);
+				MobGenerator.mobTypeDataTable.Add(MobId.Skeleton_Mage,
+					tData
+					);
+			}
 		}
 	}
 }
