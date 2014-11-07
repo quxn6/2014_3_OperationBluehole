@@ -145,6 +145,7 @@ namespace OperationBlueholeContent
             Console.WriteLine( "Battle : " );
             // Console.ReadLine();
 
+            // 조심해!
             // 임시 몹 사용
             Party tempMob = TempMobGenerator();
 
