@@ -48,8 +48,11 @@ namespace OperationBlueholeContent
         // FOR DEBUG
         private Party TempMobGenerator()
         {
-
-            Mob[] mob = { new Mob( 10 ), new Mob( 10 ), new Mob( 10 ) };
+            Mob[] mob = {
+							new Mob( MobGenerator.GetMobData(random, MobId.Spider_Small,10) ), 
+							new Mob( MobGenerator.GetMobData(random, MobId.Spider_Small,10) ), 
+							new Mob( MobGenerator.GetMobData(random, MobId.Spider_Small,10) )
+						};
             Party mobs = new Party( PartyType.MOB, 10 );
 
             foreach ( Mob p in mob )
@@ -63,6 +66,7 @@ namespace OperationBlueholeContent
             // 전투 로직 초기화
             SkillManager.Init();
             ItemManager.Init();
+			MobGenerator.Init();
 
 			// user 생성
 			this.users = LoadPlayers();

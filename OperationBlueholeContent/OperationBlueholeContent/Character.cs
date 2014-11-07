@@ -81,6 +81,7 @@ namespace OperationBlueholeContent
 
 	class Character : GameObject
 	{
+		public String name { get; protected set; }
         // stat = 캐릭터의 능력치
         // param = 전투에 사용되는 수치( 기본적으로 stat으로부터 유도된다 )
         // actualParams = effectParams + ( baseStats + extraStats ) * 쿵덕쿵
@@ -89,7 +90,7 @@ namespace OperationBlueholeContent
 
         public uint[] effectParams { get; protected set; }
         public uint[] actualParams { get; protected set; }
-		
+
         public uint hp { get; private set; }
 		public uint mp { get; private set; }
 		public uint sp { get; private set; }
@@ -101,7 +102,7 @@ namespace OperationBlueholeContent
 		public EquipType equipStatus { get; private set; }			// 장비 장착 상태
 		public WeaponType weaponStatus { get; private set; }		// 무기 장착 상태
 
-		public BattleStyle battleStyle { get; private set; }
+		public BattleStyle battleStyle { get; protected set; }
 // 		public PlayStyle playStyle { get; private set; }
 
 		public Character()
@@ -430,126 +431,6 @@ namespace OperationBlueholeContent
             CalcStat();
 
             return true;
-        }
-	}
-
-	struct PlayerData
-	{
-		public uint exp;
-		public ushort[] stats;
-
-		public List<SkillId> skills;
-		public List<ItemCode> items;
-		public List<ItemCode> equipments;
-		public BattleStyle battleStyle;
-
-		public PlayerData(
-			uint exp,
-			ushort statLev,
-			ushort statStr,
-			ushort statDex,
-			ushort statInt,
-			ushort statCon,
-			ushort statAgi,
-			ushort statWis,
-			ushort statMov,
-			List<SkillId> skills,
-			List<ItemCode> items,
-			List<ItemCode> equipments,
-			BattleStyle battleStyle
-			)
-		{
-			this.exp = exp;
-			this.stats = new ushort[8];
-			this.stats[(int)StatType.Lev] = statLev;
-			this.stats[(int)StatType.Str] = statStr;
-			this.stats[(int)StatType.Dex] = statDex;
-			this.stats[(int)StatType.Int] = statInt;
-			this.stats[(int)StatType.Con] = statCon;
-			this.stats[(int)StatType.Agi] = statAgi;
-			this.stats[(int)StatType.Wis] = statWis;
-			this.stats[(int)StatType.Mov] = statMov;
-			this.skills = skills;
-			this.items = items;
-			this.equipments = equipments;
-			this.battleStyle = battleStyle;
-		}
-	}
-
-	class Player : Character
-	{
-		public ulong pId { get; private set; }
-		public uint exp { get; private set; }
-
-		public Player()
-		{
-			pId = 0;
-			exp = 0;
-		}
-
-		public bool LoadPlayer(ulong playerId)
-		{
-			PlayerData data;
-			if( !TestData.playerList.TryGetValue(playerId, out data) )
-				return false;
-
-			this.exp = data.exp;
-			this.baseStats[(int)StatType.Lev] = data.stats[(int)StatType.Lev];
-			this.baseStats[(int)StatType.Str] = data.stats[(int)StatType.Str];
-			this.baseStats[(int)StatType.Dex] = data.stats[(int)StatType.Dex];
-			this.baseStats[(int)StatType.Int] = data.stats[(int)StatType.Int];
-			this.baseStats[(int)StatType.Con] = data.stats[(int)StatType.Con];
-			this.baseStats[(int)StatType.Agi] = data.stats[(int)StatType.Agi];
-			this.baseStats[(int)StatType.Wis] = data.stats[(int)StatType.Wis];
-			this.baseStats[(int)StatType.Mov] = data.stats[(int)StatType.Mov];
-
-			this.skills = data.skills;
-			this.items = data.items;
-			this.equipments = data.equipments;
-
-            CalcStat();
-
-			return true;
-		}
-	}
-
-	// 몹에는 드랍 아이템, 경험치 같은게 들어가야하려나
-	class Mob : Character
-	{
-        // 보상 리스트가 있어야 한다
-        // 경험치와 골드와 아이템(지금은 일단 토큰만 준다)
-        public int rewardExp { get; private set; }
-        public int rewardGold { get; private set; }
-        public Item rewardItem { get; private set; }
-
-		public Mob( int level )
-		{
-            this.baseStats[(int)StatType.Lev] = (ushort)level;
-
-			//for test
-			skills.Add(SkillId.Punch);
-			CalcStat();
-		}
-
-        public void Init( RandomGenerator random )
-        {
-            ushort level = baseStats[(int)StatType.Lev];
-
-            // 타입 결정
-
-            // 스탯 결정
-
-            // 보상 결정
-            rewardExp = level * Config.MOB_REWARD_EXP_WEIGHT;
-            rewardGold = level * Config.MOB_REWARD_GOLD_WEIGHT;
-
-            // 10% 확률로 아이템을 준다
-            if ( random.Next(100) < 10 )
-                rewardItem = new ItemToken(
-                        level + random.Next(
-                            (int)( -level * Config.MOB_REWARD_ITEM_RANGE ),
-                            (int)( level * Config.MOB_REWARD_ITEM_RANGE ) 
-                        ), random );
         }
 	}
 }
