@@ -4,10 +4,11 @@ using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour
 {
-	public GameObject[] heroStatus = null;
+	public GameObject battleUI = null;
 	public GameObject enemyPrefab = null;
 	public GameObject playerPosition = null;
-	public GameObject[] mobPositions = null;
+	public GameObject[] mobPositions = null;	
+	public GameObject[] heroStatus = null;
 
 	private GameObject[] enemyList = null;	
 
@@ -30,8 +31,24 @@ public class BattleManager : MonoBehaviour
 		instance = this;
 	}
 
+	// Move Camera, enemy and heroes status UI
+	public void StartBattle(int targetMobId)
+	{
+		InitBattleObjects();		
+		LoadEnemyData( targetMobId );
+		LoadHeroData();
+		battleUI.SetActive( true );
+	}
+
+	// Clear battle area and turn back main camera to dungeon
+	public void EndBattle()
+	{
+		LgsObjectPoolManager.Instance.ObjectPools[enemyPrefab.name].ResetPool();
+		EnvironmentManager.Instance.PutCamera( MapManager.Instance.PlayerParty , CameraMode.THIRD_PERSON );
+	}
+
 	// Create object pool for enemy
-	public void InitBattleObjects()
+	private void InitBattleObjects()
 	{
 		// Create object pool in first battle
 		if ( isInitialized )
@@ -42,13 +59,6 @@ public class BattleManager : MonoBehaviour
 
 		// Set initilize flag
 		isInitialized = true;
-	}
-
-	// Set Camera, enemy and heroes status UI
-	public void PutBattleObjects( int mobId )
-	{
-		LoadEnemyData( mobId );
-		LoadHeroData();
 	}
 
 	// Instantiate enemy object, set status and position in battle area. 
@@ -89,17 +99,10 @@ public class BattleManager : MonoBehaviour
 		for ( int i = 0 ; i< heroCount; ++i)
 		{
 			heroStatus[i].GetComponent<Hero>().HeroStat = DataManager.Instance.HeroList[i];
-			heroStatus[i].GetComponent<Hero>().InitHeroUI();
 		}
 
 		// Move camera on predetermined position in battle area
 		EnvironmentManager.Instance.PutCamera(playerPosition, CameraMode.FIRST_PERSON);
 	}
 
-	// Clear battle area and turn back main camera to dungeon
-	public void EndBattle()
-	{
-		LgsObjectPoolManager.Instance.ObjectPools[enemyPrefab.name].ResetPool();
-		EnvironmentManager.Instance.PutCamera( MapManager.Instance.PlayerParty , CameraMode.THIRD_PERSON );
-	}
 }

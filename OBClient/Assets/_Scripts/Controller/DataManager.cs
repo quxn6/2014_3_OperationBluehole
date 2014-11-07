@@ -20,12 +20,14 @@ public struct CharacterData
 	public float hp;
 	public float mp;
 	public float sp;
+	public int level;
 
-	public CharacterData( float hp , float mp , float sp )
+	public CharacterData( float hp , float mp , float sp , int level )
 	{
 		this.hp = hp;
 		this.mp = mp;
 		this.sp = sp;
+		this.level = level;
 	}
 }
 
@@ -57,7 +59,8 @@ static public class MobType
 	static public CharacterData spider = new CharacterData(
 		GameConfig.MOB_SPIDER_HP ,
 		GameConfig.MOB_SPIDER_MP ,
-		GameConfig.MOB_SPIDER_SP );
+		GameConfig.MOB_SPIDER_SP ,
+		3);
 
 	static public EnemyGroup spiderGroup = new EnemyGroup( GameConfig.MOB_SPIDER_GROUP_COUNT , spider );
 }
@@ -66,6 +69,8 @@ static public class MobType
 // manage raw data that had received from server in json form
 public class DataManager : MonoBehaviour
 {
+	public UIAtlas atlasSet = null;
+
 	private List<EnemyGroup> enemyGroupList;
 	public List<EnemyGroup> EnemyGroupList
 	{
@@ -85,7 +90,7 @@ public class DataManager : MonoBehaviour
 	}
 
 	void Awake()
-	{
+	{		
 		if ( null != instance )
 		{
 			Debug.LogError( this + " already exist" );
@@ -110,9 +115,9 @@ public class DataManager : MonoBehaviour
 	// It have to contains 4 hero, 
 	public void InitUserDataList()
 	{
-		heroList.Add( new CharacterData( 100.0f , 100.0f , 30.0f ) );
-		heroList.Add( new CharacterData( 200.0f , 100.0f , 30.0f ) );
-		heroList.Add( new CharacterData( 300.0f , 50.0f , 20.0f ) );
-		heroList.Add( new CharacterData( 200.0f , 300.0f , 50.0f ) );
+		heroList.Add( new CharacterData( 100.0f , 100.0f , 30.0f , 1 ) );
+		heroList.Add( new CharacterData( 200.0f , 100.0f , 30.0f , 2 ) );
+		heroList.Add( new CharacterData( 300.0f , 50.0f , 20.0f , 10 ) );
+		heroList.Add( new CharacterData( 200.0f , 300.0f , 50.0f , 3 ) );
 	}
 }

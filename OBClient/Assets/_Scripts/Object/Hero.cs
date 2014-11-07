@@ -16,6 +16,8 @@ public class Hero : MonoBehaviour
 		set { heroStat = value; }
 	}
 
+	private CharacterData currentStat;
+
 	void Awake()
 	{
 		faceUI = GameObject.Find( gameObject.name +"Icon BG/Face" );
@@ -26,8 +28,19 @@ public class Hero : MonoBehaviour
 	}
 
 	// Set hero UI value with character data
-	public void InitHeroUI()
-	{
 
+	void Start()
+	{
+		InitHeroUI();
+	}
+
+	public void InitHeroUI()
+	{		
+		currentStat = heroStat;
+
+		faceUI.GetComponent<UISprite>().spriteName = DataManager.Instance.atlasSet.spriteList[0].name;
+		hpUI.GetComponent<UISprite>().fillAmount = currentStat.hp / heroStat.hp;
+		mpUI.GetComponent<UISprite>().fillAmount = currentStat.mp / heroStat.mp;
+		levelUI.GetComponent<UILabel>().text = heroStat.level.ToString();
 	}
 }

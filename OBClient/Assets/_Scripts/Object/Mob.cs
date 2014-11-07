@@ -1,16 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Mob : MonoBehaviour , IAnimatable{
+public class Mob : MonoBehaviour , IAnimatable
+{
+	private int modId = -1;
+	public int ModId
+	{
+		get { return modId; }
+		set { modId = value; }
+	}
 
 	// Use this for initialization
-	void Start () {
-	
+	void Start()
+	{
+
 	}
-	 
+
 	// Update is called once per frame
-	void Update () {
-	
+	void Update()
+	{
+
 	}
 
 	public void PlayIdle()
@@ -32,5 +41,5 @@ public class Mob : MonoBehaviour , IAnimatable{
 	{
 
 	}
-	
+
 }

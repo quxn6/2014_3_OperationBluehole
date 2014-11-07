@@ -18,6 +18,24 @@ public class LogExecuter : MonoBehaviour
 	private GameObject playerParty = null;
 	private List<GameObject> mobList = null;
 
+	static private LogExecuter instance;
+	static public LogExecuter Instance
+	{
+		get { return instance; }
+	}
+
+	void Awake()
+	{
+		if ( null != instance )
+		{
+			Debug.LogError( this + " already exist" );
+			return;
+		}
+
+		instance = this;
+		mobList = new List<GameObject>();
+	}
+
 	// init variables
 	public void InitLogExecuter()
 	{
@@ -61,30 +79,9 @@ public class LogExecuter : MonoBehaviour
 				) );
 	}
 
-	public void StartBattle(GameObject target)
+	public void DoBattle(int targetMobId)
 	{
-		Debug.Log( "Start battle!! with" + target );
-	}
-
-	// test gui
-	void OnGUI()
-	{
-		if ( GUI.Button( new Rect( 10 , 10 , 100 , 50 ) , "Init LogExe" ) )
-		{
-			InitLogExecuter();
-			DataManager.Instance.InitEnemyDataList();
-			DataManager.Instance.InitUserDataList();
-		}
-
-		if ( GUI.Button( new Rect( 10 , 70 , 100 , 50 ) , "MoveCharacter" ) )
-		{
-			MoveCharacter( playerParty , (MoveDirection)UnityEngine.Random.Range( 1 , 5 ) );
-		}
-
-		if ( GUI.Button( new Rect( 10 , 130 , 100 , 50 ) , "Init Battle Part" ) )
-		{			
-			BattleManager.Instance.InitBattleObjects();
-			BattleManager.Instance.PutBattleObjects( 1 );
-		}
+		// Debug.Log( "Start battle!! with" + mob );
+		BattleManager.Instance.StartBattle( targetMobId );
 	}
 }
