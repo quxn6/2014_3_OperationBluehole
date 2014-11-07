@@ -84,4 +84,9 @@ public class LogExecuter : MonoBehaviour
 		// Debug.Log( "Start battle!! with" + mob );
 		BattleManager.Instance.StartBattle( targetMobId );
 	}
+
+	public void AttackTarget( GameObject attacker, GameObject target)
+	{
+		
+	}
 }

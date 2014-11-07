@@ -95,7 +95,7 @@ public class MapManager : MonoBehaviour
 					break;
 				case 'M':
 					GameObject mobInstance = InstantiateObject( mobPrefab , i );
-					mobInstance.GetComponent<Mob>().ModId = mobList.Count;
+					mobInstance.GetComponent<Spider>().ModId = mobList.Count;
 					mobList.Add(mobInstance);
 					break;
 			}
