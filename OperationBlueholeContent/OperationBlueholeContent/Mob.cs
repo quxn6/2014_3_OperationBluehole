@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
 {
-	enum MobId : uint
+	enum MobType : uint
 	{
 		Dummy	= 0,
 		Demon,
@@ -95,12 +95,12 @@ namespace OperationBlueholeContent
 
 	static class MobGenerator
 	{
-		static Dictionary<MobId, MobTypeData> mobTypeDataTable;
-		public static MobData GetMobData(RandomGenerator random, MobId mobId, ushort level)
+		static Dictionary<MobType, MobTypeData> mobTypeDataTable;
+		public static MobData GetMobData(RandomGenerator random, MobType mobType, ushort level)
 		{
 			MobData newData = new MobData();
 
-			newData.name = mobTypeDataTable[mobId].name;
+			newData.name = mobTypeDataTable[mobType].name;
 
 			// 스탯 statRate에 따라 랜덤 분배
 			ushort[] stats = new ushort[(int)StatType.StatCount];
@@ -108,7 +108,7 @@ namespace OperationBlueholeContent
 				stats[(int)StatType.Lev] = level;
 				
 				int totalStat = level * 3 + 27;
-				ushort[] statRate = mobTypeDataTable[mobId].statRate;
+				ushort[] statRate = mobTypeDataTable[mobType].statRate;
 
 				int[] statBlock = new int[statRate.Sum(i => i) + 1];
 				statBlock[0] = 0;
@@ -131,19 +131,19 @@ namespace OperationBlueholeContent
 					cnt += statRate[i-1];
 				}
 				
-				stats[(int)StatType.Mov] = mobTypeDataTable[mobId].statMov;
+				stats[(int)StatType.Mov] = mobTypeDataTable[mobType].statMov;
 			}
 			newData.stats = stats;
 
-			newData.skills = mobTypeDataTable[mobId].skills;
-			newData.items = mobTypeDataTable[mobId].items;
-			newData.equipments = mobTypeDataTable[mobId].equipments;
-			newData.battleStyle = mobTypeDataTable[mobId].battleStyles[random.Next(mobTypeDataTable[mobId].battleStyles.Length-1)];
+			newData.skills = mobTypeDataTable[mobType].skills;
+			newData.items = mobTypeDataTable[mobType].items;
+			newData.equipments = mobTypeDataTable[mobType].equipments;
+			newData.battleStyle = mobTypeDataTable[mobType].battleStyles[random.Next(mobTypeDataTable[mobType].battleStyles.Length-1)];
 
 			newData.rewardExp = level * Config.MOB_REWARD_EXP_WEIGHT;
 			newData.rewardGold = level * Config.MOB_REWARD_GOLD_WEIGHT;
 
-			if (random.Next(Config.MOB_REWARD_ITEM_CHANCE_MAX) < mobTypeDataTable[mobId].tokenDropChance)
+			if (random.Next(Config.MOB_REWARD_ITEM_CHANCE_MAX) < mobTypeDataTable[mobType].tokenDropChance)
 				newData.rewardItem = new ItemToken(
 					level + random.Next(
 						(int)(-level * Config.MOB_REWARD_ITEM_RANGE),
@@ -157,7 +157,7 @@ namespace OperationBlueholeContent
 
 		public static void Init()
 		{
-			mobTypeDataTable = new Dictionary<MobId, MobTypeData>();
+			mobTypeDataTable = new Dictionary<MobType, MobTypeData>();
 			// Demon
 			{
 				MobTypeData tData = new MobTypeData(
@@ -179,7 +179,7 @@ namespace OperationBlueholeContent
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobId.Demon,
+				MobGenerator.mobTypeDataTable.Add(MobType.Demon,
 					tData
 					);
 			}
@@ -205,7 +205,7 @@ namespace OperationBlueholeContent
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobId.Troll,
+				MobGenerator.mobTypeDataTable.Add(MobType.Troll,
 					tData
 					);
 			}
@@ -231,7 +231,7 @@ namespace OperationBlueholeContent
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobId.Goblin,
+				MobGenerator.mobTypeDataTable.Add(MobType.Goblin,
 					tData
 					);
 			}
@@ -257,7 +257,7 @@ namespace OperationBlueholeContent
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobId.IceGolem,
+				MobGenerator.mobTypeDataTable.Add(MobType.IceGolem,
 					tData
 					);
 			}
@@ -283,7 +283,7 @@ namespace OperationBlueholeContent
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobId.Spider,
+				MobGenerator.mobTypeDataTable.Add(MobType.Spider,
 					tData
 					);
 			}
@@ -309,7 +309,7 @@ namespace OperationBlueholeContent
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobId.Skeleton_Warrior,
+				MobGenerator.mobTypeDataTable.Add(MobType.Skeleton_Warrior,
 					tData
 					);
 			}
@@ -335,7 +335,7 @@ namespace OperationBlueholeContent
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobId.Skeleton_Soldier,
+				MobGenerator.mobTypeDataTable.Add(MobType.Skeleton_Soldier,
 					tData
 					);
 			}
@@ -361,7 +361,7 @@ namespace OperationBlueholeContent
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobId.Skeleton_Mage,
+				MobGenerator.mobTypeDataTable.Add(MobType.Skeleton_Mage,
 					tData
 					);
 			}
