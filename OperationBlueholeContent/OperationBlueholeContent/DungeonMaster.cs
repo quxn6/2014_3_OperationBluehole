@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
 {
-    class DungeonMaster
+    public class DungeonMaster
     {
         // 사실상 게임을 진행하는 로직
         // 맵을 생성하고, 플레이어를 위치 시킨다
@@ -89,9 +89,9 @@ namespace OperationBlueholeContent
             return true;
         }
 
-        public void Start()
+        public uint Start()
         {
-            int turn = 0;
+            uint turn = 0;
 
             while ( true )
             {
@@ -107,7 +107,7 @@ namespace OperationBlueholeContent
                 // 위에서 아이템도 먹고 몹도 처리했으면 실제로 맵에서의 좌표도 이동시킨다
                 dungeon.MovePlayer( explorer.position );
 
-                dungeon.PrintOutMAP();
+                // dungeon.PrintOutMAP();
                 // Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
 
                 //Thread.Sleep( 100 );
@@ -119,6 +119,8 @@ namespace OperationBlueholeContent
             Console.WriteLine( "Earned gold : " + lootedGold );
             Console.WriteLine( "looted items : " );
             lootedItems.ForEach( item => Console.Write( " " + ( (ItemToken)item ).level ) );
+
+            return turn;
         }
 
         // 구현할 것
@@ -133,14 +135,14 @@ namespace OperationBlueholeContent
         }
 
         public bool IsTile( int x, int y ) { return MapObjectType.TILE == dungeon.GetMapObject( x, y ).objectType; }
-        public MapObject GetMapObject( int x, int y ) { return dungeon.GetMapObject( x, y ); }
+        internal MapObject GetMapObject( int x, int y ) { return dungeon.GetMapObject( x, y ); }
 
-        public IEnumerable<Item> GetItems( int zoneId )
+        internal IEnumerable<Item> GetItems( int zoneId )
         {
             return dungeon.zoneList[zoneId].items;
         }
 
-        public void StartBattle( Party mob )
+        internal void StartBattle( Party mob )
         {
             // explorer 좌표에 있는 몹을 읽어와서 전투 시작
             if ( mob.partyType != PartyType.MOB )
@@ -172,7 +174,7 @@ namespace OperationBlueholeContent
             // Console.ReadLine();
         }
 
-        public void LootItem( Item item, int zoneId )
+        internal void LootItem( Item item, int zoneId )
         {
             // 아이템 줍기!
             // 맵에서도 지우고, 해당 존에서도 지운다
