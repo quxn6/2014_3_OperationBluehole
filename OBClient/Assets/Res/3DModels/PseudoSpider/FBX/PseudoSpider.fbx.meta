@@ -116,7 +116,7 @@ ModelImporter:
       takeName: animations
       firstFrame: 0
       lastFrame: 119
-      wrapMode: 0
+      wrapMode: 2
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
@@ -142,7 +142,7 @@ ModelImporter:
       takeName: animations
       firstFrame: 1
       lastFrame: 18
-      wrapMode: 0
+      wrapMode: 2
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
@@ -168,7 +168,7 @@ ModelImporter:
       takeName: animations
       firstFrame: 20
       lastFrame: 38
-      wrapMode: 0
+      wrapMode: 2
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
@@ -220,7 +220,7 @@ ModelImporter:
       takeName: animations
       firstFrame: 55
       lastFrame: 65
-      wrapMode: 0
+      wrapMode: 8
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
@@ -246,7 +246,7 @@ ModelImporter:
       takeName: animations
       firstFrame: 65
       lastFrame: 72
-      wrapMode: 0
+      wrapMode: 8
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
@@ -272,7 +272,7 @@ ModelImporter:
       takeName: animations
       firstFrame: 73
       lastFrame: 87
-      wrapMode: 0
+      wrapMode: 8
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
