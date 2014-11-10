@@ -16,15 +16,6 @@ namespace OperationBlueholeServer.Modules
     {
         public TestModule()
         {
-            Get["/example"] = parameters =>
-            {
-                var client = CouchbaseManager.Instance;
-
-                var savedBeer = client.Get( "new_holland_brewing_company-sundog" );
-
-                return savedBeer;
-            };
-
             Get["/dict_save"] = parameters =>
             {
                 var playerData = new Dictionary<string, object>
