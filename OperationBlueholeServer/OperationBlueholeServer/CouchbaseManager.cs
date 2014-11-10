@@ -47,7 +47,7 @@ namespace OperationBlueholeServer
            Console.WriteLine(dict); //should be output of Dictionary.ToString()
         }
         */
-
+        
         public static Tuple<bool, int, string> StoreDictionary(
             this ICouchbaseClient client,
             StoreMode storeMode,
@@ -118,7 +118,7 @@ namespace OperationBlueholeServer
             var obj = JsonConvert.DeserializeObject<ExpandoObject>( result.Value );
             return Tuple.Create( true, 0, string.Empty, obj );
         }
-
+        
         /*
         dynamic user2 = new ExpandoObject();
         user2.Username = "jzablocki";

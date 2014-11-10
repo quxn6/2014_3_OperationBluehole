@@ -13,7 +13,7 @@ namespace OperationBlueholeContent
             // 던전 테스트--------
             DungeonMaster newMaster = new DungeonMaster();
             newMaster.Init( 60, 4 );
-            newMaster.Start();
+            Console.WriteLine( "turn : " + newMaster.Start() );
             // ------------------
 
             Console.ReadLine();
