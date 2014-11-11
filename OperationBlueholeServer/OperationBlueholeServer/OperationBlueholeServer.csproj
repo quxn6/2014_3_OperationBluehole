@@ -83,7 +83,7 @@
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="CouchbaseManager.cs" />
-    <Compile Include="DbHelper.cs" />
+    <Compile Include="MatchingManager.cs" />
     <Compile Include="Modules\CharacterModule.cs" />
     <Compile Include="Modules\IndexModule.cs" />
     <Compile Include="Modules\MatchingModule.cs" />

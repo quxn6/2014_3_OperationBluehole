@@ -54,7 +54,7 @@ namespace OperationBlueholeServer.Modules
                     { "battle style", 0 },
                 };
 
-                var client = CouchbaseManager.Instance;
+                var client = CouchbaseManager.Client;
                 var result = client.StoreDictionary(StoreMode.Set, "testPlayer_0", playerData);
 
                 if (result.Item1) 
@@ -65,7 +65,7 @@ namespace OperationBlueholeServer.Modules
 
             Get["/dict_load"] = parameters =>
             {
-                var client = CouchbaseManager.Instance;
+                var client = CouchbaseManager.Client;
                 var dict = client.GetDictionary( "testPlayer_0" ).Item4["name"];
 
                 return dict.ToString();
@@ -86,12 +86,12 @@ namespace OperationBlueholeServer.Modules
                     BattleStyle = 0,
                 };
 
-                return DbHelper.SetPlayerData(testData);
+                return CouchbaseManager.SetPlayerData(testData);
             };
 
             Get["/load_test_class"] = parameters =>
             {
-                var savedData = DbHelper.GetPlayerData( 0 );
+                var savedData = CouchbaseManager.GetPlayerData( 0 );
 
                 string result = "";
 
