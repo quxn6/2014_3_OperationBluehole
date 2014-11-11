@@ -30,6 +30,9 @@ static class GameConfig
 
 	// battle
 	public const int MAXIMUM_HERO_COUNT = 4;
+	public const float MOB_ATTACKMOVING_TIME = 0.3f;
+
+	public static Color DEAD_HERO_COLOR = new Color( 0.2f , 0.2f , 0.2f );
 
 	// Scene
 	public const float SPLASH_IMAGE_PLAY_TIME = 2.0f;

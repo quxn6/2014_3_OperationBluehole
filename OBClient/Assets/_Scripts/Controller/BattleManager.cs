@@ -7,9 +7,21 @@ public class BattleManager : MonoBehaviour
 	public GameObject battleUI = null;
 	public GameObject playerPosition = null;
 	public GameObject[] mobPositions = null;	
-	public GameObject[] heroStatus = null;
 
-	private GameObject[] enemyInstanceList = null;
+	public GameObject[] heroStatus;
+	public GameObject[] HeroStatus
+	{
+		get { return heroStatus; }
+		set { heroStatus = value; }
+	}
+
+	private GameObject[] enemyInstanceList;
+	public GameObject[] EnemyInstanceList
+	{
+		get { return enemyInstanceList; }
+		set { enemyInstanceList = value; }
+	}
+
 	private EnemyGroup enemyGroupData;
 
 	static private bool isInitialized = false;

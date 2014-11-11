@@ -43,4 +43,16 @@ public class Hero : MonoBehaviour
 		mpUI.GetComponent<UISprite>().fillAmount = currentStat.mp / heroStat.mp;
 		levelUI.GetComponent<UILabel>().text = heroStat.level.ToString();
 	}
+
+	public void BeAttacked(float damage)
+	{
+		currentStat.hp -= damage;
+		hpUI.GetComponent<UISprite>().fillAmount = currentStat.hp / heroStat.hp;
+	}
+
+	public void BeKilled()
+	{
+		faceUI.GetComponent<UISprite>().color = GameConfig.DEAD_HERO_COLOR;
+	}
+
 }

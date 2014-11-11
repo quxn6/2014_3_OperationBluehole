@@ -773,7 +773,7 @@ ModelImporter:
       takeName: GOB_atak1
       firstFrame: 0
       lastFrame: 40
-      wrapMode: 2
+      wrapMode: 1
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
@@ -799,7 +799,7 @@ ModelImporter:
       takeName: GOB_atak2
       firstFrame: 0
       lastFrame: 18
-      wrapMode: 2
+      wrapMode: 1
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
@@ -825,7 +825,7 @@ ModelImporter:
       takeName: GOB_atak_left
       firstFrame: 0
       lastFrame: 24
-      wrapMode: 2
+      wrapMode: 1
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
@@ -955,7 +955,7 @@ ModelImporter:
       takeName: GOB_kill1
       firstFrame: 0
       lastFrame: 66
-      wrapMode: 0
+      wrapMode: 1
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0

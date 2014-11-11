@@ -5,7 +5,7 @@ public class SkeletonMage : MonoBehaviour , IAnimatable
 {
 	public void PlayIdle()
 	{
-		animation.CrossFade( "waitingforbattle" );
+		animation.Blend( "waitingforbattle" );
 	}
 
 	public void PlayWalk()

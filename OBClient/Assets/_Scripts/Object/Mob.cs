@@ -28,4 +28,15 @@ public class Mob : MonoBehaviour
 	{
 		animatable.PlayIdle();
 	}
+
+	public void BeAttacked( float damage )
+	{
+		enemyStat.hp -= damage;
+	}
+
+	public bool IsAnimationPlaying()
+	{
+		return animation.isPlaying;
+	}
+
 }
