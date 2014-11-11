@@ -12,7 +12,7 @@ public class MapManager : MonoBehaviour
 	public GameObject emptySpacePrefab;
 	public GameObject itemBoxPrefab;
 	public GameObject floorPrefab;
-	public GameObject mobPrefab;
+	public GameObject[] mobPrefab;
 	
 	private Dungeon instanceDungeon;
 	private GameObject playerParty;
@@ -59,7 +59,13 @@ public class MapManager : MonoBehaviour
 		LgsObjectPoolManager.Instance.CreateObjectPool( emptySpacePrefab.name , emptySpacePrefab , 2048 );
 		LgsObjectPoolManager.Instance.CreateObjectPool( itemBoxPrefab.name , itemBoxPrefab , 128 );
 		LgsObjectPoolManager.Instance.CreateObjectPool( floorPrefab.name , floorPrefab , 1 );
-		LgsObjectPoolManager.Instance.CreateObjectPool( mobPrefab.name, mobPrefab, 128 );
+
+		for ( int i = 1 ; i < mobPrefab.Length ; ++i )
+		{
+			string typeName = ((MobType)i).ToString();
+			LgsObjectPoolManager.Instance.CreateObjectPool( typeName, mobPrefab[i] , 32 );
+		}
+			
 		
 		// set initilize flag
 		isInitialized = true;
@@ -81,21 +87,24 @@ public class MapManager : MonoBehaviour
 			switch ( instanceDungeon.dungeonMap[i] )
 			{
 				case 'O':
-					InstantiateObject( emptySpacePrefab , i );
+					InstantiateObject( emptySpacePrefab.name , i );
 					break;
 				case 'X':
-					InstantiateObject( wallPrefab , i );
+					InstantiateObject( wallPrefab.name , i );
 					break;
 				case 'P':
-					playerParty = InstantiateObject( playerPrefab , i );
+					playerParty = InstantiateObject( playerPrefab.name , i );
 					EnvironmentManager.Instance.PutCamera( playerParty, CameraMode.THIRD_PERSON );
 					break;
 				case 'I':
-					InstantiateObject( itemBoxPrefab , i );
+					InstantiateObject( itemBoxPrefab.name , i );
 					break;
 				case 'M':
-					GameObject mobInstance = InstantiateObject( mobPrefab , i );
-					mobInstance.GetComponent<Mob>().MobId = mobList.Count;
+					// Mob Model in the dungeon will be first mob in the Mob Group;
+					int mobId = mobList.Count;
+					MobType newMobType = DataManager.Instance.EnemyGroupList[mobId].enemies[0].mobType;
+					GameObject mobInstance = InstantiateObject( newMobType.ToString() , i );
+					mobInstance.GetComponent<Mob>().MobId = mobId;
 					mobList.Add(mobInstance);
 					break;
 			}
@@ -108,9 +117,15 @@ public class MapManager : MonoBehaviour
 		mobList.Clear();
 	}
 
-	private GameObject InstantiateObject( GameObject prefabObject, int instanceOrder )
+	private GameObject InstantiateObject( string prefabObjectName, int instanceOrder )
 	{
-		GameObject instanceObject = LgsObjectPoolManager.Instance.ObjectPools[prefabObject.name].PullObject();
+		LgsObjectPool pool;
+		if ( !LgsObjectPoolManager.Instance.ObjectPools.TryGetValue(prefabObjectName, out pool))
+		{
+			Debug.LogError( "No Object in pool name of " + prefabObjectName );
+		}		
+
+		GameObject instanceObject = LgsObjectPoolManager.Instance.ObjectPools[prefabObjectName].PullObject();
 		instanceObject.transform.Translate( (float)( instanceOrder % instanceDungeon.size ) , 0.0f , (float)( instanceOrder / instanceDungeon.size ) );		//instanceObject.transform.position = new Vector3( (float)( instanceOrder % instanceDungeon.size ) , 1.0f , (float)( instanceOrder / instanceDungeon.size ) );
 		return instanceObject;
 	}

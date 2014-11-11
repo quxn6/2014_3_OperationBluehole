@@ -4,16 +4,12 @@ using System.Collections.Generic;
 
 public class ReplayScene : MonoBehaviour 
 {
-	
-
 	// test gui
 	void OnGUI()
 	{
-		if ( GUI.Button( new Rect( 10 , 10 , 100 , 50 ) , "Init LogExe" ) )
+		if ( GUI.Button( new Rect( 10 , 10 , 100 , 50 ) , "End Battle" ) )
 		{
-			LogExecuter.Instance.InitLogExecuter();
-			DataManager.Instance.InitEnemyDataList();
-			DataManager.Instance.InitUserDataList();
+			BattleManager.Instance.EndBattle();
 		}
 
 		if ( GUI.Button( new Rect( 10 , 70 , 100 , 50 ) , "MoveCharacter" ) )

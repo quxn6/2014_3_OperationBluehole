@@ -1,12 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Mob : MonoBehaviour {
+public class Mob : MonoBehaviour
+{
 	private int mobId = -1;
 	public int MobId
 	{
 		get { return mobId; }
 		set { mobId = value; }
+	}
+
+	private CharacterData enemyStat;
+	public CharacterData EnemyStat
+	{
+		get { return enemyStat; }
+		set { enemyStat = value; }
 	}
 
 	private IAnimatable animatable;

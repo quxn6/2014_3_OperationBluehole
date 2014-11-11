@@ -5,12 +5,12 @@ using System.Collections.Generic;
 public class BattleManager : MonoBehaviour
 {
 	public GameObject battleUI = null;
-	public GameObject enemyPrefab = null;
 	public GameObject playerPosition = null;
 	public GameObject[] mobPositions = null;	
 	public GameObject[] heroStatus = null;
 
-	private GameObject[] enemyList = null;	
+	private GameObject[] enemyInstanceList = null;
+	private EnemyGroup enemyGroupData;
 
 	static private bool isInitialized = false;
 	
@@ -34,8 +34,8 @@ public class BattleManager : MonoBehaviour
 	// Move Camera, enemy and heroes status UI
 	public void StartBattle(int targetMobId)
 	{
-		InitBattleObjects();		
-		LoadEnemyData( targetMobId );
+		InitBattleObjects( targetMobId );		
+		LoadEnemyData();
 		LoadHeroData();
 		battleUI.SetActive( true );
 	}
@@ -43,46 +43,59 @@ public class BattleManager : MonoBehaviour
 	// Clear battle area and turn back main camera to dungeon
 	public void EndBattle()
 	{
-		LgsObjectPoolManager.Instance.ObjectPools[enemyPrefab.name].ResetPool();
+		//LgsObjectPoolManager.Instance.ObjectPools[enemyPrefab.name].ResetPool();
+		for ( int i = 0 ; i < enemyGroupData.enemies.Length ; ++i )
+		{
+			//Destroy( enemyInstanceList[i].GetComponent<Enemy>() );
+			LgsObjectPoolManager.Instance.ObjectPools[( enemyGroupData.enemies[i].mobType ).ToString()]
+				.PushObject( enemyInstanceList[i] );
+		}
+
+		// move camera to dungeon
 		EnvironmentManager.Instance.PutCamera( MapManager.Instance.PlayerParty , CameraMode.THIRD_PERSON );
 	}
 
-	// Create object pool for enemy
-	private void InitBattleObjects()
+	// Get Enemy Group Data from data manager class
+	private void InitBattleObjects(int mobId)
 	{
-		// Create object pool in first battle
-		if ( isInitialized )
-			return;
-
-		// Create object pool for battle area
-		LgsObjectPoolManager.Instance.CreateObjectPool( enemyPrefab.name , enemyPrefab , 10 );
-
-		// Set initilize flag
-		isInitialized = true;
+		enemyGroupData = DataManager.Instance.EnemyGroupList[mobId];		
+// 		// Create object pool in first battle
+// 		if ( isInitialized )
+// 			return;
+// 
+// 		// Create object pool for battle area
+// 		LgsObjectPoolManager.Instance.CreateObjectPool( enemyPrefab.name , enemyPrefab , 10 );
+// 
+// 		// Set initilize flag
+// 		isInitialized = true;
 	}
 
 	// Instantiate enemy object, set status and position in battle area. 
-	private void LoadEnemyData(int mobId)
+	private void LoadEnemyData()
 	{
 		// Load enemy count and check validation
-		int enemyCount = DataManager.Instance.EnemyGroupList[mobId].enemies.Length;
+		int enemyCount = enemyGroupData.enemies.Length;
 		if ( enemyCount > mobPositions.Length )
 		{
 			Debug.LogError( "Error(battle area) : Two many enemies loaded. current " + enemyCount + ", it have to be LE " + mobPositions.Length );
 		}
 
 		// Set the script in enemy instance
-		enemyList = new GameObject[enemyCount];
+		enemyInstanceList = new GameObject[enemyCount];
 		for ( int i = 0 ; i < enemyCount ; ++i )
 		{
 			// Instance enemy and set the status data
-			enemyList[i] = LgsObjectPoolManager.Instance.ObjectPools[enemyPrefab.name].PullObject();
-			enemyList[i].GetComponent<Enemy>().EnemyStat = DataManager.Instance.EnemyGroupList[mobId].enemies[i];
+			string mobTypeName = (enemyGroupData.enemies[i].mobType).ToString();
+			enemyInstanceList[i] = LgsObjectPoolManager.Instance.ObjectPools[mobTypeName].PullObject();
+			enemyInstanceList[i].GetComponent<Mob>().EnemyStat = enemyGroupData.enemies[i].characterData;
+			//enemyInstanceList[i].AddComponent( "Enemy" );
+			//enemyInstanceList[i].GetComponent<Enemy>().EnemyStat = enemyGroupData.enemies[i].characterData;
+			
 
 			// Put enemy own position
-			enemyList[i].transform.parent = mobPositions[i].transform;
-			enemyList[i].transform.localPosition = Vector3.zero;
-			enemyList[i].transform.localEulerAngles = Vector3.zero;
+			//enemyInstanceList[i].transform.parent = mobPositions[i].transform;
+			enemyInstanceList[i].transform.position = mobPositions[i].transform.position;
+			enemyInstanceList[i].transform.rotation = mobPositions[i].transform.rotation;
 		}
 	}
 

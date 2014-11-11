@@ -31,22 +31,29 @@ public struct CharacterData
 	}
 }
 
+public struct EnemyData
+{
+	public CharacterData characterData;
+	public MobType mobType;
+}
+
 public struct EnemyGroup
 {
-	public CharacterData[] enemies;
-	public EnemyGroup( int mobCount , CharacterData mob )
+	public EnemyData[] enemies;
+	public EnemyGroup( int mobCount , CharacterData cd , MobType mt )
 	{
-		this.enemies = new CharacterData[mobCount];
+		this.enemies = new EnemyData[mobCount];
 		for ( int i = 0 ; i < mobCount ; ++i )
 		{
-			enemies[i] = mob;
+			enemies[i].characterData = cd;
+			enemies[i].mobType = mt;
 		}
 	}
 
 	public EnemyGroup( EnemyGroup otherEnemyGroup )
 	{
 		int len = otherEnemyGroup.enemies.Length;
-		this.enemies = new CharacterData[len];
+		this.enemies = new EnemyData[len];
 		for ( int i = 0 ; i < len ; ++i )
 		{
 			enemies[i] = otherEnemyGroup.enemies[i];
@@ -54,16 +61,16 @@ public struct EnemyGroup
 	}
 }
 
-static public class MobType
-{
-	static public CharacterData spider = new CharacterData(
-		GameConfig.MOB_SPIDER_HP ,
-		GameConfig.MOB_SPIDER_MP ,
-		GameConfig.MOB_SPIDER_SP ,
-		3);
-
-	static public EnemyGroup spiderGroup = new EnemyGroup( GameConfig.MOB_SPIDER_GROUP_COUNT , spider );
-}
+// static public class MobTypeTemp
+// {
+// 	static public CharacterData dummyMob = new CharacterData(
+// 		GameConfig.MOB_DUMMY_HP ,
+// 		GameConfig.MOB_DUMMY_MP ,
+// 		GameConfig.MOB_DUMMY_SP ,
+// 		3 );
+// 
+// 	static public EnemyGroup spiderGroup = new EnemyGroup( GameConfig.MOB_SPIDER_GROUP_COUNT , dummyMob , (MobType)( Random.Range( 1 , 10 ) ) );
+// }
 
 
 // manage raw data that had received from server in json form
@@ -90,7 +97,7 @@ public class DataManager : MonoBehaviour
 	}
 
 	void Awake()
-	{		
+	{
 		if ( null != instance )
 		{
 			Debug.LogError( this + " already exist" );
@@ -108,7 +115,17 @@ public class DataManager : MonoBehaviour
 		// Warning!!! It's Generate dummy data now		
 		for ( int i = 0 ; i < GameConfig.DUMMY_ENEMY_COUNT ; ++i )
 		{
-			enemyGroupList.Add( new EnemyGroup( MobType.spiderGroup ) );
+			enemyGroupList.Add( 
+				new EnemyGroup( 
+					GameConfig.MOB_SPIDER_GROUP_COUNT , 
+					new CharacterData(		
+						GameConfig.MOB_DUMMY_HP ,
+						GameConfig.MOB_DUMMY_MP ,
+						GameConfig.MOB_DUMMY_SP , 
+						Random.Range(1,11) ) , 
+					(MobType)( Random.Range( 1 , (int)MobType.Length ) ) 
+				) 
+			);
 		}
 	}
 
