@@ -90,7 +90,7 @@ public class LogExecuter : MonoBehaviour
 		StopAllCoroutines();
 		StartCoroutine( MobAttackProcess( 
 			BattleManager.Instance.EnemyInstanceList[mobNumber],
-			BattleManager.Instance.HeroStatus[heroNumber],
+			BattleManager.Instance.heroStatus[heroNumber],
 			damage
 			) );
 
@@ -123,7 +123,7 @@ public class LogExecuter : MonoBehaviour
 
 	public void KillPlayer( int heroesNumber )
 	{
-		BattleManager.Instance.HeroStatus[heroesNumber].GetComponent<Hero>().BeKilled();
+		BattleManager.Instance.heroStatus[heroesNumber].GetComponent<Hero>().BeKilled();
 	}
 
 	public void KillMob( int mobNumber )

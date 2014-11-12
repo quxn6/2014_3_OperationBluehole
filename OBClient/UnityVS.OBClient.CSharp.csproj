@@ -192,6 +192,7 @@
     <Compile Include="Assets\_Scripts\Controller\NetworkManager.cs" />
     <Compile Include="Assets\_Scripts\Object\Enemy.cs" />
     <Compile Include="Assets\_Scripts\Object\Explorer.cs" />
+    <Compile Include="Assets\_Scripts\Object\HPBar.cs" />
     <Compile Include="Assets\_Scripts\Object\Hero.cs" />
     <Compile Include="Assets\_Scripts\Object\Mob.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\Demon.cs" />

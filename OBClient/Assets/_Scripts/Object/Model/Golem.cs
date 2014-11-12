@@ -5,7 +5,7 @@ public class Golem : MonoBehaviour , IAnimatable
 {
 	public void PlayIdle()
 	{
-		animation.CrossFade( "idle" );
+		animation.Blend( "idle" );
 	}
 
 	public void PlayWalk()

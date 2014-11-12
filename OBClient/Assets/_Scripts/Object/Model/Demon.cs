@@ -5,7 +5,7 @@ public class Demon : MonoBehaviour, IAnimatable
 {
 	public void PlayIdle()
 	{
-		animation.CrossFade( "idle" );
+		animation.Blend( "idle" );
 	}
 
 	public void PlayWalk()
