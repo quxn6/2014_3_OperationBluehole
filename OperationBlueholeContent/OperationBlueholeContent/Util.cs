@@ -119,7 +119,7 @@ namespace OperationBlueholeContent
         }
     }
 
-    class MinHeap<T> : IEnumerable<T> where T : IComparable<T>
+    public class MinHeap<T> : IEnumerable<T> where T : IComparable<T>
     {
         private int size;
         private List<T> elements;

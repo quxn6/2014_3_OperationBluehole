@@ -8,7 +8,8 @@ using System.Collections;
 namespace OperationBlueholeContent
 {
 	// 전투 성향. AI행동시 사용
-	enum BattleStyle : byte
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public enum BattleStyle : byte
 	{
 		AGGRESSIVE,
 		DEFENSIVE,
@@ -22,14 +23,16 @@ namespace OperationBlueholeContent
 		SELFLESS,
 	}
 
-	enum HitType : byte
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public enum HitType : byte
 	{
 		Melee,
 		Range,
 		Magical,
 	}
 
-	enum StatType : byte
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public enum StatType : byte
 	{
 		Lev,
 		Str,
@@ -42,7 +45,8 @@ namespace OperationBlueholeContent
         StatCount,  // 전체 statType 수
 	}
 
-    enum ParamType : byte
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public enum ParamType : byte
     {
         phyAtk,
         phyDef,
@@ -55,14 +59,16 @@ namespace OperationBlueholeContent
         pramCount,  // 전체 paramType 수
     }
 
-	enum GaugeType : byte
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public enum GaugeType : byte
 	{
 		Hp,
 		Mp,
 		Sp,
 	}
 
-    class BuffPiece : IComparable<BuffPiece>
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public class BuffPiece : IComparable<BuffPiece>
     {
         public BuffCode id;
         public uint expireTime;
@@ -79,7 +85,8 @@ namespace OperationBlueholeContent
         }
     }
 
-	class Character : GameObject
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+	public class Character : GameObject
 	{
 		public String name { get; protected set; }
         // stat = 캐릭터의 능력치

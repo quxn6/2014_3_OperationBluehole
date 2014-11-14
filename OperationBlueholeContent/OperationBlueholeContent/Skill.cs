@@ -13,7 +13,8 @@ namespace OperationBlueholeContent
 // 		Multiple,	// 여러명 지정 스킬
 		All,		// 전체 스킬
 	}
-	enum SkillId : ushort
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public enum SkillId : ushort
 	{
 		None = 0,
 		Slash,

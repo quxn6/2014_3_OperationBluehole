@@ -52,7 +52,7 @@ namespace OperationBlueholeContent
 		}
 	}
 
-	class Player : Character
+	public class Player : Character
 	{
 		public ulong pId { get; private set; }
 		public uint exp { get; private set; }

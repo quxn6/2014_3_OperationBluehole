@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
 {
-	enum ItemCode : uint
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public enum ItemCode : uint
 	{
 		None = 0x0,
 		Ring,
@@ -21,7 +22,8 @@ namespace OperationBlueholeContent
 		Equip = 0x1,	// 장비 가능
 		Consume = 0x2,	// 소모품
 	}
-	enum EquipType : ushort
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public enum EquipType : ushort
 	{
 		Head = 0x1,
 		Body = 0x2,
@@ -30,7 +32,8 @@ namespace OperationBlueholeContent
 		Leg = 0x10,
 		Feet = 0x20,
 	}
-	enum WeaponType : uint
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public enum WeaponType : uint
 	{
 		None		= 0x0,
 		Sword		= 0x1,
