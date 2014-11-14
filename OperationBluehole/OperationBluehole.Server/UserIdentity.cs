@@ -34,5 +34,8 @@ namespace OperationBluehole.Server
 
         [JsonProperty("claims")]
         public IEnumerable<string> Claims { get; set; }
+
+        [JsonProperty("characterId")]
+        public ulong CharacterId { get; set; }
     }
 }

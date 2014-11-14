@@ -99,7 +99,7 @@ namespace OperationBluehole.Server.Modules
 
             Get["/load_test_class"] = parameters =>
             {
-                var savedData = CouchbaseManager.GetPlayerData( 0 );
+                var savedData = CouchbaseManager.GetPlayerData("test");
 
                 string result = "";
 
@@ -167,13 +167,56 @@ namespace OperationBluehole.Server.Modules
 
                 // user identity
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, UserIdentity.PREFIX + "wooq", new UserIdentity{ UserName = "wooq", Claims = new List<string>{ "admin", } } );
+                    result = client.StoreJson(StoreMode.Set, UserIdentity.PREFIX + "wooq", new UserIdentity{ UserName = "wooq", Claims = new List<string>{ "admin", }, CharacterId = 0 } );
 
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, UserIdentity.PREFIX + "quxn6", new UserIdentity { UserName = "quxn6", Claims = new List<string> { "admin", } });
+                    result = client.StoreJson(StoreMode.Set, UserIdentity.PREFIX + "quxn6", new UserIdentity { UserName = "quxn6", Claims = new List<string> { "admin", }, CharacterId = 1 });
 
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, UserIdentity.PREFIX + "yksera", new UserIdentity { UserName = "yksera", Claims = new List<string> { "admin", } });
+                    result = client.StoreJson(StoreMode.Set, UserIdentity.PREFIX + "yksera", new UserIdentity { UserName = "yksera", Claims = new List<string> { "admin", }, CharacterId = 2 });
+
+                // player data
+                if (result)
+                    result = client.StoreJson(StoreMode.Set, PlayerData.PREFIX + "wooq", new PlayerData
+                    {
+                        Id = 0,
+                        Name = "wooq",
+                        Exp = 4,
+                        Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
+                        Skill = new List<ushort> { 0, 1, 2, },
+                        Inventory = new List<uint> { 2, 4, 6, 8, 10, },
+                        Consumable = new List<uint> { 4, 6, 10, },
+                        Equipment = new List<uint> { 2, 8, },
+                        BattleStyle = 0,
+                    });
+
+                if (result)
+                    result = client.StoreJson(StoreMode.Set, PlayerData.PREFIX + "quxn6", new PlayerData
+                    {
+                        Id = 1,
+                        Name = "quxn6",
+                        Exp = 4,
+                        Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
+                        Skill = new List<ushort> { 0, 1, 2, },
+                        Inventory = new List<uint> { 2, 4, 6, 8, 10, },
+                        Consumable = new List<uint> { 4, 6, 10, },
+                        Equipment = new List<uint> { 2, 8, },
+                        BattleStyle = 0,
+                    });
+
+                if (result)
+                    result = client.StoreJson(StoreMode.Set, PlayerData.PREFIX + "yksera", new PlayerData
+                    {
+                        Id = 2,
+                        Name = "yksera",
+                        Exp = 4,
+                        Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
+                        Skill = new List<ushort> { 0, 1, 2, },
+                        Inventory = new List<uint> { 2, 4, 6, 8, 10, },
+                        Consumable = new List<uint> { 4, 6, 10, },
+                        Equipment = new List<uint> { 2, 8, },
+                        BattleStyle = 0,
+                    });
 
                 if (result)
                     return "done!";
@@ -212,7 +255,11 @@ namespace OperationBluehole.Server.Modules
                 this.RequiresAuthentication();
                 this.RequiresClaims(new[] { "admin" });
 
-                Console.WriteLine("name : " + this.Context.CurrentUser.UserName);
+                PlayerData playerData = CouchbaseManager.GetPlayerData(this.Context.CurrentUser.UserName);
+
+                Console.WriteLine("Character Info");
+                Console.WriteLine("name : " + playerData.Name + " / Id : " + playerData.Id);
+                Console.WriteLine("Lev : " + playerData.Stat[(int)StatType.Lev] + " / Exp : " + playerData.Exp);
 
                 return "Yay! You are authorized!";
             };

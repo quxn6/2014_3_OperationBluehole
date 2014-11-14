@@ -75,7 +75,8 @@ namespace OperationBluehole.Server
 
         public static CouchbaseClient Client { get { return _instance; } }
 
-        public static PlayerData GetPlayerData(ulong playerId)
+        // public static PlayerData GetPlayerData(ulong playerId)
+        public static PlayerData GetPlayerData(string playerId)
         {
             var client = _instance;
             return client.GetJson<PlayerData>(PlayerData.PREFIX + playerId);
@@ -84,7 +85,8 @@ namespace OperationBluehole.Server
         public static bool SetPlayerData(PlayerData data)
         {
             var client = _instance;
-            return client.StoreJson(StoreMode.Set, PlayerData.PREFIX + data.Id, data);
+            // return client.StoreJson(StoreMode.Set, PlayerData.PREFIX + data.Id, data);
+            return client.StoreJson(StoreMode.Set, PlayerData.PREFIX + data.Name, data);
         }
 
 

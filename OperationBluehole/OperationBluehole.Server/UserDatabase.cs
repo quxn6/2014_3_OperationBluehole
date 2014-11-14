@@ -12,18 +12,6 @@ namespace OperationBluehole.Server
 {
     public class UserDatabase
     {
-        // user name, password
-
-        // user name, claims( List<string> ) - 일종의 권한
-        // 특정 모듈 - 가령 관리자 모드 - 의 경우에는 claims 중에 admin 속성이 있어야 한다거나
-        // demo 속성을 가지고 있어야 한다거나
-        // 아무튼 그런 것들...
-
-        // 위의 두 자료는 디비 안에 저장되어야 한다
-        // 하나는 계정 로그인 정보 - id, password
-        // 하나는 계정 속성 정보 - id, claims, character id
-        // 캐릭터 정보 - 이건 이미 만들어 뒀고...
-        
         public static IUserIdentity ValidateUser(string userName, string password)
         {
             var client = CouchbaseManager.Client;
@@ -38,5 +26,12 @@ namespace OperationBluehole.Server
 
             return new UserIdentity { UserName = account.AccountName, Claims = claims };
         }
+
+        // Nancy module에서 token을 사용할 때
+        // context의 UserInterface에 포함되는 내용은 Nancy에서 제공하는 IUserIdentity를 따른다
+        // 그래서 context로 접근해서는 palyerId를 얻을 수 없음
+        // 방법은 claim에 playerId를 끼워 넣는 것과
+        // 아니면 userName과 playerData의 key값을 같은 걸로 사용 - userName을 이용해서 검색 - 하는 방법 두 가지
+        // 일단은 후자로 구현하지만... 구리다...매우 구리다
     }
 }
