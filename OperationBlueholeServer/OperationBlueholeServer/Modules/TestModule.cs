@@ -31,7 +31,7 @@ namespace OperationBlueholeServer.Modules
                             1, 1, 1, 1, 1, 1, 1, 1,
                         }
                     },
-                    { "skil", new List<ushort>
+                    { "skill", new List<ushort>
                         {
                             0, 1, 2,
                         }
@@ -106,10 +106,34 @@ namespace OperationBlueholeServer.Modules
 
             Get["/simulation"] = parameters =>
             {
+                ContentsPrepare.Init();
+
+                Player[] player = { new Player(), new Player(), new Player() };
+                player[0].LoadPlayer(102);
+                player[1].LoadPlayer(103);
+                player[2].LoadPlayer(104);
+
+                Party users = new Party(PartyType.PLAYER, 10);
+                foreach (Player p in player)
+                    users.AddCharacter(p);
+
                 DungeonMaster newMaster = new DungeonMaster();
-                newMaster.Init(60, 4);
+                newMaster.Init(60, 4, users);
 
                 return "turn : " + newMaster.Start();
+            };
+
+            Get["/matching_test"] = parameters =>
+            {
+                SimulationManger.Init();
+                MatchingManager.Init();
+                
+                MatchingManager.RegisterPlayer(101, 0, new List<ulong>());
+                MatchingManager.RegisterPlayer(102, 0, new List<ulong>());
+                MatchingManager.RegisterPlayer(103, 0, new List<ulong>());
+                MatchingManager.RegisterPlayer(104, 0, new List<ulong>());
+
+                return "check";
             };
         }
     }

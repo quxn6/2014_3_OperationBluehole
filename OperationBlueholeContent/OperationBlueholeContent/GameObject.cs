@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace OperationBlueholeContent
 {
-    class GameObject
+    // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
+    public class GameObject
     {
         public Int2D position { get; set; }
 
