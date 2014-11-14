@@ -94,12 +94,12 @@ namespace OperationBluehole.Server.Modules
                     BattleStyle = 0,
                 };
 
-                return CouchbaseManager.SetPlayerData(testData);
+                return PlayerDataDatabase.SetPlayerData(testData);
             };
 
             Get["/load_test_class"] = parameters =>
             {
-                var savedData = CouchbaseManager.GetPlayerData("test");
+                var savedData = PlayerDataDatabase.GetPlayerData("test");
 
                 string result = "";
 
@@ -157,27 +157,27 @@ namespace OperationBluehole.Server.Modules
                 var client = CouchbaseManager.Client;
 
                 // account
-                var result = client.StoreJson(StoreMode.Set, AccountInfo.PREFIX + "wooq", new AccountInfo("wooq", "next!!@@##$$"));
+                var result = AccountInfoDatabase.SetAccountInfo(new AccountInfo("wooq", "next!!@@##$$"));
 
                 if ( result )
-                    result = client.StoreJson(StoreMode.Set, AccountInfo.PREFIX + "quxn6", new AccountInfo("quxn6", "next!!@@##$$"));
+                    result = AccountInfoDatabase.SetAccountInfo(new AccountInfo("quxn6", "next!!@@##$$")); 
 
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, AccountInfo.PREFIX + "yksera", new AccountInfo("yksera", "next!!@@##$$"));
+                    result = AccountInfoDatabase.SetAccountInfo(new AccountInfo("yksera", "next!!@@##$$")); 
 
                 // user identity
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, UserIdentity.PREFIX + "wooq", new UserIdentity{ UserName = "wooq", Claims = new List<string>{ "admin", }, CharacterId = 0 } );
+                    result = UserIdentityDatabase.SetUserIdentity(new UserIdentity { UserName = "wooq", Claims = new List<string> { "admin", } });
 
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, UserIdentity.PREFIX + "quxn6", new UserIdentity { UserName = "quxn6", Claims = new List<string> { "admin", }, CharacterId = 1 });
+                    result = UserIdentityDatabase.SetUserIdentity(new UserIdentity { UserName = "quxn6", Claims = new List<string> { "admin", } }); 
 
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, UserIdentity.PREFIX + "yksera", new UserIdentity { UserName = "yksera", Claims = new List<string> { "admin", }, CharacterId = 2 });
+                    result = UserIdentityDatabase.SetUserIdentity(new UserIdentity { UserName = "yksera", Claims = new List<string> { "admin", } }); 
 
                 // player data
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, PlayerData.PREFIX + "wooq", new PlayerData
+                    result = PlayerDataDatabase.SetPlayerData(new PlayerData
                     {
                         Id = 0,
                         Name = "wooq",
@@ -191,7 +191,7 @@ namespace OperationBluehole.Server.Modules
                     });
 
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, PlayerData.PREFIX + "quxn6", new PlayerData
+                    result = PlayerDataDatabase.SetPlayerData(new PlayerData
                     {
                         Id = 1,
                         Name = "quxn6",
@@ -205,7 +205,7 @@ namespace OperationBluehole.Server.Modules
                     });
 
                 if (result)
-                    result = client.StoreJson(StoreMode.Set, PlayerData.PREFIX + "yksera", new PlayerData
+                    result = PlayerDataDatabase.SetPlayerData(new PlayerData
                     {
                         Id = 2,
                         Name = "yksera",
@@ -229,7 +229,7 @@ namespace OperationBluehole.Server.Modules
                 var userName = (string)this.Request.Form.UserName;
                 var password = (string)this.Request.Form.Password;
 
-                var userIdentity = UserDatabase.ValidateUser(userName, password);
+                var userIdentity = UserIdentityDatabase.ValidateUser(userName, password);
 
                 if (userIdentity == null)
                 {
@@ -255,7 +255,7 @@ namespace OperationBluehole.Server.Modules
                 this.RequiresAuthentication();
                 this.RequiresClaims(new[] { "admin" });
 
-                PlayerData playerData = CouchbaseManager.GetPlayerData(this.Context.CurrentUser.UserName);
+                PlayerData playerData = PlayerDataDatabase.GetPlayerData(this.Context.CurrentUser.UserName);
 
                 Console.WriteLine("Character Info");
                 Console.WriteLine("name : " + playerData.Name + " / Id : " + playerData.Id);

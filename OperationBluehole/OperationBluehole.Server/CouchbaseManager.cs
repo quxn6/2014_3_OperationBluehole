@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Dynamic;
 
+using Nancy.Security;
+
 using Couchbase;
 using Couchbase.Extensions;
 using Enyim.Caching.Memcached;
@@ -11,10 +13,37 @@ using Newtonsoft.Json;
 
 namespace OperationBluehole.Server
 {
+    public class AccountInfo
+    {
+        [JsonProperty("name")]
+        public string AccountName { get; set; }
+
+        [JsonProperty("password")]
+        public string Password { get; set; }
+
+        public AccountInfo(string name, string password)
+        {
+            this.AccountName = name;
+            this.Password = password;
+        }
+    }
+
+    public class UserIdentity : IUserIdentity
+    {
+        [JsonProperty("name")]
+        public string UserName { get; set; }
+
+        [JsonProperty("claims")]
+        public IEnumerable<string> Claims { get; set; }
+
+        /*
+        [JsonProperty("characterId")]
+        public ulong CharacterId { get; set; }
+        */ 
+    }
+
     public class PlayerData
     {
-        public const string PREFIX = "PlayerData ";
-
         [JsonProperty("id")]
         public ulong Id { get; set; }
 
@@ -74,22 +103,6 @@ namespace OperationBluehole.Server
         }
 
         public static CouchbaseClient Client { get { return _instance; } }
-
-        // public static PlayerData GetPlayerData(ulong playerId)
-        public static PlayerData GetPlayerData(string playerId)
-        {
-            var client = _instance;
-            return client.GetJson<PlayerData>(PlayerData.PREFIX + playerId);
-        }
-
-        public static bool SetPlayerData(PlayerData data)
-        {
-            var client = _instance;
-            // return client.StoreJson(StoreMode.Set, PlayerData.PREFIX + data.Id, data);
-            return client.StoreJson(StoreMode.Set, PlayerData.PREFIX + data.Name, data);
-        }
-
-
 
         #region STORE JSON
         // 1. store Dictionary<string, object>
@@ -207,4 +220,74 @@ namespace OperationBluehole.Server
         */
         #endregion
     }
+
+    public static class AccountInfoDatabase
+    {
+        public const string PREFIX = "Account ";
+
+        public static AccountInfo GetAccountInfo(string userName)
+        {
+            return CouchbaseManager.Client.GetJson<AccountInfo>(PREFIX + userName);
+        }
+
+        public static bool SetAccountInfo(AccountInfo info )
+        {
+            return CouchbaseManager.Client.StoreJson(StoreMode.Set, PREFIX + info.AccountName, info);
+        }
+    }
+
+    public static class UserIdentityDatabase
+    {
+        public const string PREFIX = "UserIdentity ";
+
+        public static UserIdentity GetUserIdentity(string userName)
+        {
+            return CouchbaseManager.Client.GetJson<UserIdentity>(PREFIX + userName);
+        }
+
+        public static bool SetUserIdentity(UserIdentity userIdentity)
+        {
+            return CouchbaseManager.Client.StoreJson(StoreMode.Set, PREFIX + userIdentity.UserName, userIdentity);
+        }
+
+        public static IUserIdentity ValidateUser(string userName, string password)
+        {
+            var client = CouchbaseManager.Client;
+
+            var account = AccountInfoDatabase.GetAccountInfo(userName);
+
+            if (account == null || !account.Password.Equals(password))
+                return null;
+
+            var userIdentity = client.GetJson<UserIdentity>(PREFIX + userName);
+            var claims = userIdentity.Claims;
+
+            return new UserIdentity { UserName = account.AccountName, Claims = claims };
+        }
+
+        // Nancy module에서 token을 사용할 때
+        // context의 UserInterface에 포함되는 내용은 Nancy에서 제공하는 IUserIdentity를 따른다
+        // 그래서 context로 접근해서는 palyerId를 얻을 수 없음
+        // 방법은 claim에 playerId를 끼워 넣는 것과
+        // 아니면 userName과 playerData의 key값을 같은 걸로 사용 - userName을 이용해서 검색 - 하는 방법 두 가지
+        // 일단은 후자로 구현하지만... 구리다...매우 구리다
+    }
+
+    public static class PlayerDataDatabase
+    {
+        public const string PREFIX = "PlayerData ";
+
+        // public static PlayerData GetPlayerData(ulong playerId)
+        public static PlayerData GetPlayerData(string playerId)
+        {
+            return CouchbaseManager.Client.GetJson<PlayerData>(PREFIX + playerId);
+        }
+
+        public static bool SetPlayerData(PlayerData data)
+        {
+            // return CouchbaseManager.Client.StoreJson(StoreMode.Set, PlayerData.PREFIX + data.Id, data);
+            return CouchbaseManager.Client.StoreJson(StoreMode.Set, PREFIX + data.Name, data);
+        }
+    }
+
 }

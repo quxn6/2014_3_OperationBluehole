@@ -90,8 +90,6 @@
     <Compile Include="SimulationManger.cs" />
     <Compile Include="TokenAuthBootstrapper.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="UserDatabase.cs" />
-    <Compile Include="UserIdentity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
