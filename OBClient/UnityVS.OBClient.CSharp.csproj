@@ -203,8 +203,10 @@
     <Compile Include="Assets\_Scripts\Object\Model\SkeletonWarrior.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\Spider.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\Troll.cs" />
+    <Compile Include="Assets\_Scripts\Object\UserStatus.cs" />
     <Compile Include="Assets\_Scripts\Scene\AnimationTester.cs" />
     <Compile Include="Assets\_Scripts\Scene\Loading.cs" />
+    <Compile Include="Assets\_Scripts\Scene\MainMenu.cs" />
     <Compile Include="Assets\_Scripts\Scene\ReplayResult.cs" />
     <Compile Include="Assets\_Scripts\Scene\ReplayScene.cs" />
     <Compile Include="Assets\_Scripts\Scene\SplashImage.cs" />
