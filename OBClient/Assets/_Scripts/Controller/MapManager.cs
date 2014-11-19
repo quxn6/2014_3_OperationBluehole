@@ -86,7 +86,7 @@ public class MapManager : MonoBehaviour
 		{
 			switch ( instanceDungeon.dungeonMap[i] )
 			{
-				case 'O':
+				case '#':
 					InstantiateObject( emptySpacePrefab.name , i );
 					break;
 				case 'X':

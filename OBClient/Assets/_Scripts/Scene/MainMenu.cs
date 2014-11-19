@@ -51,7 +51,7 @@ public class MainMenu : MonoBehaviour
 
 	public void BackButton()
 	{
-
+		SwipeMenu( MenuSwipeDirection.Default , GameConfig.MENU_SWIPE_TIME );
 	}
 
 	public void MaintainCharacter()

@@ -8,9 +8,10 @@ public struct Dungeon
 	public char[] dungeonMap;
 	public int size;
 
-	public Dungeon( string dungeonMap , int size )
+	public Dungeon( char[] dungeonMap , int size )
 	{
-		this.dungeonMap = dungeonMap.ToCharArray();
+		//this.dungeonMap = dungeonMap.ToCharArray();
+		this.dungeonMap = dungeonMap;
 		this.size = size;
 	}
 }

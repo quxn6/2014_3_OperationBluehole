@@ -19,7 +19,8 @@ public class ReplayScene : MonoBehaviour
 
 		if ( GUI.Button( new Rect( 10 , 130 , 100 , 50 ) , "MoveCharacter" ) )
 		{
-			LogExecuter.Instance.MoveCharacter( MapManager.Instance.PlayerParty, (MoveDirection)UnityEngine.Random.Range( 1 , 5 ) );
+			//LogExecuter.Instance.MoveCharacter( MapManager.Instance.PlayerParty, (MoveDirection)UnityEngine.Random.Range( 1 , 5 ) );
+			LogExecuter.Instance.PlayLog();
 		}
 
 		if ( GUI.Button( new Rect( 10 , 190 , 100 , 50 ) , "Player attack" ) )
@@ -27,7 +28,7 @@ public class ReplayScene : MonoBehaviour
 			LogExecuter.Instance.HeroAttackMob(0,1,10);
 		}
 
-		if ( GUI.Button( new Rect( 10 , 260 , 100 , 50 ) , "Mob attack" ) )
+		if ( GUI.Button( new Rect( 10 , 250 , 100 , 50 ) , "Mob attack" ) )
 		{
 			LogExecuter.Instance.MobAttackHero(0,1,10);
 		}

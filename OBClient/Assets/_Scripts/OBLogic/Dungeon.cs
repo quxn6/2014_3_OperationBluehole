@@ -497,7 +497,7 @@ namespace OperationBluehole.Content
         {
             char[] visualizer = { '#', ' ', 'X', 'I', 'M', 'P' };
 
-            Console.Clear();
+            //Console.Clear();
 			char[] dungeonMap = new char[size * size];
             for ( int i = 0; i < size; ++i )
             {
@@ -520,7 +520,7 @@ namespace OperationBluehole.Content
                             Console.Write( visualizer[2] );
 							dungeonMap[size * i + j] = visualizer[2];
                             break;
-                        default:	
+                        default:
                             if ( map[i, j].party != null )
                             {
 								if ( map[i , j].party.partyType == PartyType.MOB )

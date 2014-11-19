@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OperationBluehole.Content
 {
@@ -82,7 +81,7 @@ namespace OperationBluehole.Content
             return true;
         }
 
-		public MapObject[,] GetMapInfo() { return dungeon.map; }
+        public MapObject[,] GetMapInfo() { return dungeon.map; }
 		public char[] GetDungeonMap() { return dungeon.PrintOutMAP(); }
 
         public uint Start()
