@@ -15,35 +15,35 @@ namespace OperationBluehole.Content
         // 전투가 일어나면 관련 로직을 불러다가 전투 수행하고 결과를 적용
         // 대충 뭐 그런 거 하면 되는 거 아닌가
 
+        // 클라이언트에서 리플레이를 할 때 필요한 정보는 크게 세 가지로 나눌 수 있다
+        // 처음 dungeon master가 초기화 되었을 때 복사할 정보 - 시뮬레이션 과정에 영향을 받아서 정보가 바뀔 수 있는 것
+        //      map, mobList
+        // 시뮬레이션과 상관없이 항상 고정적인 값들
+        //      users, itemList
+        // 시뮬레이션이 끝나야 알 수 있는 정보 언제든지 필요하면 접근할 수 있는 정보
+        //      path, battle log, looted items, looted gold, looted exp
+
+        // users는 어차피 외부에서 입력받는 것이므로 고려하지 않아도 되고,
+        // 크게 시뮬레이션 전에 복사해둘 정보와 시뮬레이션 끝나고 참조할 정보로 나눈다
+        // 복사할 정보 : map, mobList, itemList
+        // 참조할 정보 : path, battle log, looted items, looted gold, looted exp
+
+        // 복사할 정보들은 밖에서 get으로 내부 정보를 접근할 수 있도록 접근 속성을 수정
+        // 참조할 정보들은 내부에 컨테이너를 하나 만들어서 저장해둔다
+ 
+        public GameRecord record;
+
         private Dungeon dungeon;
         private Party users;
         private Explorer explorer;
 
-        // 전리품은 파티가 공유하고 탐험이 끝나면 나눔한다... 공산주의돋네
-        private List<Item> lootedItems;
-        private int lootedGold;
-        private int lootedExp;
+        // private List<Item> lootedItems;
+        // private int lootedGold;
+        // private int lootedExp;
         
-        private List<Party> mobs;
-        private List<Item> items;
+        public List<Party> mobs;
+        public List<Item> items;
         private RandomGenerator random;
-
-        // HARD CODED
-        private Party LoadPlayers()
-        {
-            TestData.InitPlayer();
-
-            Player[] player = { new Player(), new Player(), new Player() };
-            player[0].LoadPlayer( 102 );
-            player[1].LoadPlayer( 103 );
-            player[2].LoadPlayer( 104 );
-
-            Party users = new Party( PartyType.PLAYER, 10 );
-            foreach ( Player p in player )
-                users.AddCharacter( p );
-
-            return users;
-        }
 
         // FOR DEBUG
         private Party TempMobGenerator()
@@ -72,17 +72,17 @@ namespace OperationBluehole.Content
             items = new List<Item>();
             random = new RandomGenerator( seed );
 
-            lootedItems = new List<Item>();
-            lootedGold = 0;
-            lootedExp = 0;
+            record = new GameRecord();
 
             dungeon = new Dungeon( size, mobs, items, users, random, users.partyLevel );
             explorer = new Explorer( this, size );
 
-            explorer.Init( users.position );
+            explorer.Init(users.position);
 
             return true;
         }
+
+        public MapObject[,] GetMapInfo() { return dungeon.map; }
 
         public uint Start()
         {
@@ -91,6 +91,10 @@ namespace OperationBluehole.Content
             while ( true )
             {
                 ++turn;
+
+                #region 결과 기록
+                record.pathfinding.Add(new Int2D { x = explorer.position.x, y = explorer.position.y });
+                #endregion
 
                 // 비밀의 방에 도착
                 if ( explorer.isRingDiscovered )
@@ -110,10 +114,10 @@ namespace OperationBluehole.Content
 
             Console.WriteLine( "THE END ( turn : " + turn + " )" );
 
-            Console.WriteLine( "Earned Exp : " + lootedExp );
-            Console.WriteLine( "Earned gold : " + lootedGold );
+            Console.WriteLine( "Earned Exp : " + record.lootedExp );
+            Console.WriteLine( "Earned gold : " + record.lootedGold );
             Console.WriteLine( "looted items : " );
-            lootedItems.ForEach( item => Console.Write( " " + ( (ItemToken)item ).level ) );
+            record.lootedItems.ForEach(item => Console.Write(" " + ((ItemToken)item).level));
 
             return turn;
         }
@@ -157,16 +161,20 @@ namespace OperationBluehole.Content
                 // 전리품 챙겨라
                 mob.characters.ForEach( m => {
                     Mob currentMob = (Mob)m;
-                    lootedExp += currentMob.rewardExp;
-                    lootedGold += currentMob.rewardGold;
+                    record.lootedExp += currentMob.rewardExp;
+                    record.lootedGold += currentMob.rewardGold;
 
                     if ( currentMob.rewardItem != null )
-                        lootedItems.Add( currentMob.rewardItem );
+                        record.lootedItems.Add( currentMob.rewardItem );
                 } );
             }
 
             Console.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
             // Console.ReadLine();
+
+            #region 결과 기록
+            record.battleLog.Add( new GameRecord.BattleInfo() );
+            #endregion
         }
 
         internal void LootItem( Item item, int zoneId )
@@ -176,7 +184,7 @@ namespace OperationBluehole.Content
             dungeon.GetMapObject( item.position.x, item.position.y ).gameObject = null;
             dungeon.zoneList[zoneId].items.Remove( item );
 
-            lootedItems.Add( item );
+            record.lootedItems.Add( item );
 
             Console.WriteLine( "looting : " );
             // Console.ReadLine();

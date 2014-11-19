@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OperationBluehole.Content
 {
-	enum ActionType : byte		// 이거 어디둘까...
+	public enum ActionType : byte		// 이거 어디둘까...
 	{
 		None,
 		PhyAttack,
@@ -20,7 +20,7 @@ namespace OperationBluehole.Content
 		ActionTypeCount
 	}
 
-	enum AIConst : short
+	public enum AIConst : short
 	{
 		Default		= 0,
 

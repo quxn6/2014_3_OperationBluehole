@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OperationBluehole.Content
 {
-	enum TargetType : byte
+	public enum TargetType : byte
 	{
 		None,		// 타겟 지정 없음
 		Single,		// 1명 지정 스킬
@@ -24,7 +24,7 @@ namespace OperationBluehole.Content
 		Bite,
 	}
 	
-	internal class Skill
+	public class Skill
 	{
 		public ActionType type { get; private set; }
 		public TargetType targetType { get; private set; }

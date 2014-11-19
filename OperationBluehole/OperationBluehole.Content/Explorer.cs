@@ -172,7 +172,7 @@ namespace OperationBluehole.Content
             // 있으면 일단 전투부터 요청
             Party target = dungeonMaster.GetMapObject( position.x, position.y ).party;
             if ( target != null && target.partyType == PartyType.MOB )
-                dungeonMaster.StartBattle( target );
+                dungeonMaster.StartBattle(target);
 
             // 아이템 있는지 확인한다
             Item item = (Item)dungeonMaster.GetMapObject( position.x, position.y ).gameObject;

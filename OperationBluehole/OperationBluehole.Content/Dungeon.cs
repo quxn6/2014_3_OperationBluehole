@@ -423,8 +423,9 @@ namespace OperationBluehole.Content
 
     class Dungeon
     {
+        public MapObject[,] map;
+
         private int size;
-        private MapObject[,] map;
         private RandomGenerator random;
         private int userLevel;
 
@@ -464,6 +465,7 @@ namespace OperationBluehole.Content
 
             playerPosition = root.RegisterParty( users, true );
             ringPosition = root.RegisterGameObject( ring );
+            items.Add(ring);
 
             zoneList[map[ringPosition.y, ringPosition.x].zoneId].items.Add( ring );
 

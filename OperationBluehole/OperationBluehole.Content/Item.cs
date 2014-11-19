@@ -16,7 +16,7 @@ namespace OperationBluehole.Content
 		Sword_Test,
         Token,
 	}
-	enum ItemCatag : ushort
+	public enum ItemCatag : ushort
 	{
 		None = 0x0,
 		Equip = 0x1,	// 장비 가능
@@ -44,7 +44,7 @@ namespace OperationBluehole.Content
 		All			= 0xffffffff
 	}
 
-	internal class Item : GameObject
+	public class Item : GameObject
 	{
 		public ItemCode code { get; protected set; }
 		public ItemCatag catagory { get; private set; }
@@ -67,7 +67,7 @@ namespace OperationBluehole.Content
 		}
 	}
 
-	internal class Equipment : Item
+	public class Equipment : Item
 	{
 		public EquipType equipType { get; private set; }
 		public WeaponType weaponType { get; private set; }
@@ -93,7 +93,7 @@ namespace OperationBluehole.Content
 		}
 	}
 
-	internal class Consumable : Item
+	public class Consumable : Item
 	{
 		public uint spNeed { get; private set; }
 		public ActionType type { get; private set; }
@@ -167,7 +167,7 @@ namespace OperationBluehole.Content
 	}
 
 	// 이걸 획득하면 게임 종료
-	class RingOfErrethAkbe : Item
+	public class RingOfErrethAkbe : Item
 	{
 		public RingOfErrethAkbe()
 			: base(ItemCode.Ring, ItemCatag.None, null)
