@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace OperationBluehole.Content
 {
-    enum MapObjectType
+    public enum MapObjectType
     {
         VOID = 0,
         TILE,
         WALL,
     }
 
-    class MapObject
+    public class MapObject
     {
         public MapObjectType objectType { get; set; }
         public GameObject gameObject { get; set; }

@@ -58,7 +58,7 @@
     <Compile Include="Economy.cs" />
     <Compile Include="Explorer.cs" />
     <Compile Include="GameObject.cs" />
-    <Compile Include="GameResult.cs" />
+    <Compile Include="GameRecord.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="MapObject.cs" />
     <Compile Include="Mob.cs" />

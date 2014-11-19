@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OperationBluehole.Content
 {
-    internal class ItemToken : Item
+    public class ItemToken : Item
     {
         static readonly EquipType[] equipTypePool = { 
                                                         EquipType.Head, 
