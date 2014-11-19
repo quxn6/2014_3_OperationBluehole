@@ -143,12 +143,14 @@ namespace OperationBluehole.Content
 
         private void Heapify( int idx )
         {
-            if ( 2 * idx > size ) //children이 없으면 종료
+            int left = (idx == 0) ? 1 : idx * 2;
+
+            if ( left > size ) //children이 없으면 종료
                 return;
 
-            int largeIdx = 2 * idx;
-            if ( 2 * idx + 1 <= size && elements[largeIdx].CompareTo( elements[2 * idx + 1] ) > 0 )
-                largeIdx = 2 * idx + 1;
+            int largeIdx = left;
+            if ( left + 1 <= size && elements[largeIdx].CompareTo( elements[left + 1] ) > 0 )
+                largeIdx = left + 1;
 
             T tempElement;
 
@@ -176,7 +178,7 @@ namespace OperationBluehole.Content
             ++size;
             T tempElement;
 
-            while ( currentIdx > 0 && elements[currentIdx].CompareTo( elements[currentIdx / 2] ) < 0 )
+            while ( currentIdx >= 0 && elements[currentIdx].CompareTo( elements[currentIdx / 2] ) < 0 )
             {
                 tempElement = elements[currentIdx];
                 elements[currentIdx] = elements[currentIdx / 2];

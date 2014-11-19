@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 namespace OperationBluehole.Content
 {
     public class DungeonMaster
@@ -14,6 +16,11 @@ namespace OperationBluehole.Content
         // 플레이어가 행동을 인풋하게 하고 그걸 받아서 내부적으로 적용시킨다
         // 전투가 일어나면 관련 로직을 불러다가 전투 수행하고 결과를 적용
         // 대충 뭐 그런 거 하면 되는 거 아닌가
+
+        // 게임 기록을 기록한다
+        // 사실 서버는 기록할 필요는 없지만
+        // 일단 모두다 기록하는 방향으로 진행
+        public GameResult result { get; private set; }
 
         private Dungeon dungeon;
         private Party users;
@@ -72,6 +79,8 @@ namespace OperationBluehole.Content
             items = new List<Item>();
             random = new RandomGenerator( seed );
 
+            result = new GameResult();
+
             lootedItems = new List<Item>();
             lootedGold = 0;
             lootedExp = 0;
@@ -79,7 +88,58 @@ namespace OperationBluehole.Content
             dungeon = new Dungeon( size, mobs, items, users, random, users.partyLevel );
             explorer = new Explorer( this, size );
 
-            explorer.Init( users.position );
+
+            #region 결과 기록
+            /**************** 기록 관련 *********************/
+            // 기록에 관련된 것만 나중에 delegate로 구현할 수 있으려나
+            // 생성된 맵 정보 기록
+            result.MapSize = size;
+            for (int i = 0; i < size; ++i )
+            {
+                for ( int j = 0; j < size; ++j )
+                {
+                    int currentIdx = i * size + j;
+                    MapObject currentObject = dungeon.GetMapObject(j, i);
+
+                    // 일단 여기서는 맵 타입 정보만 기록하고 아이템과 몹 정보는 나중에 해당 리스트 순회하면서 저장
+                    result.Map[currentIdx].type = (int)currentObject.objectType;
+                    result.Map[currentIdx].itemIndex = -1;
+                    result.Map[currentIdx].mobIndex = -1;
+                }
+            }
+
+            // 아이템 정보 기록 
+            for (int i = 0; i < items.Count; ++i )
+            {
+                int idx = items[i].position.x + items[i].position.y * size;
+                result.Map[idx].itemIndex = i;
+
+                ItemToken currentItem = (ItemToken)items[i];
+
+                result.ItemList.Add( new GameResult.ItemInfo { 
+                    code = (uint)currentItem.code, 
+                    level = (int)currentItem.level, 
+                    equiptype = (ushort)currentItem.equipType 
+                    } ); 
+            }
+
+            // 몹 정보 기록
+            // 애매하다
+            for (int i = 0; i < mobs.Count; ++i)
+            {
+                int idx = mobs[i].position.x + mobs[i].position.y * size;
+                result.Map[idx].mobIndex = i;
+
+                result.MobList.Add(new List<GameResult.MobInfo> { 
+                    new GameResult.MobInfo { Lev = mobs[i].characters[0].baseStats[0] },
+                    new GameResult.MobInfo { Lev = mobs[i].characters[1].baseStats[0] },
+                    new GameResult.MobInfo { Lev = mobs[i].characters[2].baseStats[0] },
+                    new GameResult.MobInfo { Lev = mobs[i].characters[3].baseStats[0] },
+                });
+            }
+            #endregion
+
+            explorer.Init(users.position);
 
             return true;
         }
@@ -91,6 +151,10 @@ namespace OperationBluehole.Content
             while ( true )
             {
                 ++turn;
+
+                #region 결과 기록
+                result.Pathfinding.Add(new GameResult.Position { x = explorer.position.x, y = explorer.position.y, battleIdx = -1 });
+                #endregion
 
                 // 비밀의 방에 도착
                 if ( explorer.isRingDiscovered )
@@ -167,6 +231,11 @@ namespace OperationBluehole.Content
 
             Console.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
             // Console.ReadLine();
+
+            #region 결과 기록
+            // 전투 결과 기록
+            // result.battleList.Add();
+            #endregion
         }
 
         internal void LootItem( Item item, int zoneId )
