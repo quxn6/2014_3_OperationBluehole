@@ -83,7 +83,7 @@ namespace OperationBluehole.Server.Modules
             {
                 var testData = new PlayerData
                 {
-                    Id = 0,
+                    Id = "0",
                     Name = "test",
                     Exp = 4,
                     Stat = new List<ushort> {1, 1, 1, 1, 1, 1, 1, 1,},
@@ -179,7 +179,7 @@ namespace OperationBluehole.Server.Modules
                 if (result)
                     result = PlayerDataDatabase.SetPlayerData(new PlayerData
                     {
-                        Id = 0,
+                        Id = "0",
                         Name = "wooq",
                         Exp = 4,
                         Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
@@ -193,7 +193,7 @@ namespace OperationBluehole.Server.Modules
                 if (result)
                     result = PlayerDataDatabase.SetPlayerData(new PlayerData
                     {
-                        Id = 1,
+                        Id = "1",
                         Name = "quxn6",
                         Exp = 4,
                         Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
@@ -207,7 +207,7 @@ namespace OperationBluehole.Server.Modules
                 if (result)
                     result = PlayerDataDatabase.SetPlayerData(new PlayerData
                     {
-                        Id = 2,
+                        Id = "2",
                         Name = "yksera",
                         Exp = 4,
                         Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },

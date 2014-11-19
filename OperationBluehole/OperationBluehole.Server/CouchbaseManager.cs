@@ -45,7 +45,8 @@ namespace OperationBluehole.Server
     public class PlayerData
     {
         [JsonProperty("id")]
-        public ulong Id { get; set; }
+        // public ulong Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -75,6 +76,18 @@ namespace OperationBluehole.Server
         public byte BattleStyle { get; set; }
     }
 
+    public class ResultTable
+    {
+        [JsonProperty( "playerId" )]
+        public string PlayerId { get; set; }
+
+        [JsonProperty( "unread" )]
+        public ulong UnreadId { get; set; }
+
+        [JsonProperty( "read" )]
+        public List<ulong> ReadId { get; set; }
+    }
+
     public class SimulationResult
     {
         [JsonProperty("id")]
@@ -82,15 +95,19 @@ namespace OperationBluehole.Server
 
         // 참가한 player id 목록
         [JsonProperty("player")]
-        public List<ulong> PlayerList { get; set; }
+        public List<string> PlayerList { get; set; }
+
+        // 맵 크기
+        [JsonProperty( "mapSize" )]
+        public int MapSize { get; set; }
+
+        // 게임 결과를 확인한 플레이어 - 전부 확인하면 지울 수 있도록? 아니면 아예 무조건 타임아웃? 적절히 혼합?
+        [JsonProperty( "checkedPlayer" )]
+        public List<ulong> CheckedPlayer { get; set; }
 
         // 시뮬레이션에 사용한 random seed 값
         [JsonProperty("seed")]
         public uint Seed { get; set; }
-
-        // 확인 안 한 숫자 - 0되면 자료 삭제
-        [JsonProperty("unreadCount")]
-        public byte UnreadCount { get; set; }
     }
 
     public static class CouchbaseManager
@@ -290,4 +307,33 @@ namespace OperationBluehole.Server
         }
     }
 
+    public static class ResultTableDatabase
+    {
+        public const string PREFIX = "ResultTable ";
+
+        public static ResultTable GetResultTable( string playerId )
+        {
+            return CouchbaseManager.Client.GetJson<ResultTable>( PREFIX + playerId );
+        }
+
+        public static bool SetResultTable( ResultTable data )
+        {
+            return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + data.PlayerId, data );
+        }
+    }
+
+    public static class SimulationResultDatabase
+    {
+        public const string PREFIX = "SimulationResult ";
+
+        public static SimulationResult GetSimulationResult( ulong resultIdx )
+        {
+            return CouchbaseManager.Client.GetJson<SimulationResult>( PREFIX + resultIdx );
+        }
+
+        public static bool SetSimulationResult( SimulationResult data )
+        {
+            return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + data.Id, data );
+        }
+    }
 }
