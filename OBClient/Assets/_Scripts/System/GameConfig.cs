@@ -48,4 +48,7 @@ static class GameConfig
 	public static Vector3 CAMERA_THIRD_PERSON_ANGLE = new Vector3( 80.0f , 0.0f , 0.0f );
 	public static Vector3 CAMERA_FIRST_PERSON_POSITION = new Vector3( 0.0f , 1.0f , 0.0f );
 	public static Vector3 CAMERA_FIRST_PERSON_ANGLE = new Vector3( 10.0f , 0.0f , 0.0f );
+
+	// MainMenu
+	public const float MENU_SWIPE_TIME = 0.3f;
 }
