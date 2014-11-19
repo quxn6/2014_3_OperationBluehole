@@ -217,6 +217,10 @@
     <Compile Include="Assets\_Scripts\System\LgsObjectPool\LgsObjectPoolManager.cs" />
     <Compile Include="Assets\_Scripts\System\LgsObjectPool\LgsObjectPoolTester.cs" />
     <Compile Include="Assets\_Scripts\Util\RandomGenerator.cs" />
+    <Compile Include="Assets\_Scripts\Util\Tuple.cs" />
+    <Compile Include="Assets\_Scripts\Util\Tuple2.cs" />
+    <Compile Include="Assets\_Scripts\Util\Tuple3.cs" />
+    <Compile Include="Assets\_Scripts\Util\Tuple4.cs" />
     <None Include="Assets\Res\3DModels\Earthborn Troll\Shader\Alpha_Texture.shader" />
     <None Include="Assets\Res\3DModels\Earthborn Troll\Shader\DoubleSided-Light-Spec.shader" />
     <None Include="Assets\Res\3DModels\SkeletonData\animations.txt" />

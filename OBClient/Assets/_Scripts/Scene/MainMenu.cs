@@ -45,7 +45,8 @@ public class MainMenu : MonoBehaviour
 
 	public void ReplayJournal()
 	{
-
+		//temp
+		Application.LoadLevel( "ReplayScene" );
 	}
 
 	public void BackButton()

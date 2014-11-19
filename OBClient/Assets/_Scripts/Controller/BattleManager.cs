@@ -21,7 +21,7 @@ public class BattleManager : MonoBehaviour
 
 	private EnemyGroup enemyGroupData;
 
-	static private bool isInitialized = false;
+	//static private bool isInitialized = false;
 
 	static private BattleManager instance;
 	static public BattleManager Instance

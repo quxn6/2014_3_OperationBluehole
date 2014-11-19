@@ -494,12 +494,12 @@ namespace OperationBluehole.Content
         public MapObject GetMapObject( int x, int y ) { return map[y, x]; }
 
         #region FOR DEBUG
-        public void PrintOutMAP()
+        public char[] PrintOutMAP()
         {
             char[] visualizer = { '#', ' ', 'X', 'I', 'M', 'P' };
 
             Console.Clear();
-
+			char[] dungeonMap = new char[size * size];
             for ( int i = 0; i < size; ++i )
             {
                 for ( int j = 0; j < size; ++j )
@@ -507,6 +507,7 @@ namespace OperationBluehole.Content
                     if ( j == ringPosition.x && i == ringPosition.y )
                     {
                         Console.Write( 'O' );
+						dungeonMap[size * i + j] = 'O';
                         continue;
                     }
 
@@ -514,27 +515,44 @@ namespace OperationBluehole.Content
                     {
                         case MapObjectType.VOID:
                             Console.Write( visualizer[0] );
+							dungeonMap[size * i + j] = visualizer[0];
                             break;
                         case MapObjectType.WALL:
                             Console.Write( visualizer[2] );
+							dungeonMap[size * i + j] = visualizer[2];
                             break;
                         default:
                             if ( map[i, j].party != null )
                             {
-                                if ( map[i, j].party.partyType == PartyType.MOB )
-                                    Console.Write( visualizer[4] );
-                                else
-                                    Console.Write( visualizer[5] );
+								if ( map[i , j].party.partyType == PartyType.MOB )
+								{
+									Console.Write( visualizer[4] );
+									dungeonMap[size * i + j] = visualizer[4];
+								}
+								else
+								{
+									Console.Write( visualizer[5] );
+									dungeonMap[size * i + j] = visualizer[5];		
+								}
                             }
                             else if ( map[i, j].gameObject != null )
-                                Console.Write( visualizer[3] );
+							{
+								Console.Write( visualizer[3] );
+								dungeonMap[size * i + j] = visualizer[3];		
+							}                                
                             else
-                                Console.Write( visualizer[1] );
+							{
+								Console.Write( visualizer[1] );
+								dungeonMap[size * i + j] = visualizer[5];		
+							}
+                                
                             break;
                     }
                 }
                 Console.WriteLine( "" );
             }
+
+			return dungeonMap;
         }
 
         public bool MovePlayer( Int2D position )
