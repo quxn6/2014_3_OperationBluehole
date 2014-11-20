@@ -111,9 +111,12 @@ namespace OperationBluehole.Content
 		public BattleStyle battleStyle { get; protected set; }
 // 		public PlayStyle playStyle { get; private set; }
 
+        public BattleInfo battleInfo;
+
 		public Character()
 		{
 			Reset();
+            battleInfo = null;
 		}
 
 		public void Reset()
@@ -139,8 +142,8 @@ namespace OperationBluehole.Content
             Array.Clear( extraStats, 0, extraStats.Length );
             Array.Clear( effectParams, 0, effectParams.Length );
 
-			equipStatus = 0;
-			weaponStatus = 0;
+			equipStatus = EquipType.None;
+			weaponStatus = WeaponType.None;
 
             // 3. 아이템 정보 로드
                 // 이것도 됐다 치고...
@@ -253,7 +256,17 @@ namespace OperationBluehole.Content
 // 				SkillManager.table[sid].Act(random, this, weakEnemy);
 
 			BattleAI oneCycle = new BattleAI(random, Config.BATTLE_AI_RANDOM_LEVEL, this, ally, enemy);
-			while (oneCycle.Act());
+
+            #region 전투기록 : BattleAI에 전투기록 설정
+            if (battleInfo != null)
+                oneCycle.battleInfo = battleInfo;
+            #endregion
+            #region 전투기록 : 턴 전투기록 시작
+            do
+                if (battleInfo != null)
+                    battleInfo.StartTurnInfo();
+            #endregion
+            while (oneCycle.Act());
 		}
 
 		// 명중 체크
@@ -314,12 +327,22 @@ namespace OperationBluehole.Content
 					sp -= value;
 					break;
 			}
+
+            #region 전투기록 : 효과 수치 기록
+            if (battleInfo != null)
+                battleInfo.RecordAffect(this, type, -(int)value); 
+            #endregion
 		}
 
 		// 휴식
 		public void Rest()
 		{
-			Recover(GaugeType.Sp, actualParams[(int)ParamType.spRegn]);
+			//Recover(GaugeType.Sp, actualParams[(int)ParamType.spRegn]);
+
+            uint value = actualParams[(int)ParamType.spRegn];
+            if (value > Config.MAX_CHARACTER_SP - sp)
+                value = Config.MAX_CHARACTER_SP - sp;
+            sp += value;
 		}
 
 		// 회복 처리
@@ -343,6 +366,11 @@ namespace OperationBluehole.Content
 					sp += value;
 					break;
 			}
+
+            #region 전투기록 : 효과 수치 기록
+            if (battleInfo != null)
+                battleInfo.RecordAffect(this, type, (int)value);
+            #endregion
 		}
 
 		public bool EquipItem(ItemCode id)
