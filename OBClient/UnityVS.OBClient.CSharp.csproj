@@ -213,6 +213,7 @@
     <Compile Include="Assets\_Scripts\OBLogic\Util.cs" />
     <Compile Include="Assets\_Scripts\Object\Enemy.cs" />
     <Compile Include="Assets\_Scripts\Object\Explorer.cs" />
+    <Compile Include="Assets\_Scripts\Object\FollowingCam.cs" />
     <Compile Include="Assets\_Scripts\Object\HPBar.cs" />
     <Compile Include="Assets\_Scripts\Object\Hero.cs" />
     <Compile Include="Assets\_Scripts\Object\Mob.cs" />

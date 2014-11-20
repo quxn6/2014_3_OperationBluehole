@@ -51,7 +51,7 @@ public class LogExecuter : MonoBehaviour
 	{
 		playerParty = MapManager.Instance.PlayerParty;
 		if ( playerParty == null )
-			Debug.LogError( "Error (Log Executer) : There is No Player Party" );
+			Debug.LogError( "Error (Log Executer) : There is No Player Party" );		
 
 		mobList = MapManager.Instance.MobList;
 		if ( mobList == null )
@@ -69,14 +69,14 @@ public class LogExecuter : MonoBehaviour
 	}
 
 	// Warning!!! Dirty Code. We should use coroutine here
-	public void MoveCharacter( GameObject character , MoveDirection direction )
+	public void MoveCharacter( GameObject walker , MoveDirection direction )
 	{
-		IAnimatable animatable = (IAnimatable)character.GetComponentInChildren( typeof( IAnimatable ) );
+		IAnimatable animatable = (IAnimatable)walker.GetComponentInChildren( typeof( IAnimatable ) );
 		animatable.PlayWalk();
 
 		if ( prevMoveDirection == direction)
 		{
-			MoveOneBlock( character );			
+			MoveOneBlock( walker );			
 			return;
 		}
 
@@ -85,16 +85,17 @@ public class LogExecuter : MonoBehaviour
 		//character.transform.Translate( 0.0f , 0.0f , 1.0f , Space.Self );
 
 		// Move After Rotation
-		iTween.RotateTo( character , iTween.Hash(
+		iTween.RotateTo( walker , iTween.Hash(
 			"y" , GameConfig.CHARACTER_ROTATE_DEGREE * (float)direction ,
 			"time" , GameConfig.CHARACTER_MOVING_TIME ,
 			"islocal" , true ,
 			"easetype" , iTween.EaseType.linear ,
 			"oncomplete" , "MoveOneBlock" ,
 			"oncompletetarget" , gameObject ,
-			"oncompleteparams" , character 
+			"oncompleteparams" , walker
 			) );
 	}
+
 
 
 	private void MoveOneBlock( GameObject character )
