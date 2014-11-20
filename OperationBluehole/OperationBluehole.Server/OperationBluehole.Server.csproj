@@ -82,14 +82,15 @@
     </Compile>
     <Compile Include="Config.cs" />
     <Compile Include="CouchbaseManager.cs" />
-    <Compile Include="MatchingManager.cs" />
+    <Compile Include="Logic\MatchingManager.cs" />
     <Compile Include="Modules\CharacterModule.cs" />
     <Compile Include="Modules\MatchingModule.cs" />
     <Compile Include="Modules\TestModule.cs" />
     <Compile Include="Modules\UserModule.cs" />
-    <Compile Include="SimulationManger.cs" />
+    <Compile Include="Logic\SimulationManger.cs" />
     <Compile Include="TokenAuthBootstrapper.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

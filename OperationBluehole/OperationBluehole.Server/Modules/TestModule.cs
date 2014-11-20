@@ -81,7 +81,7 @@ namespace OperationBluehole.Server.Modules
 
             Get["/save_test_class"] = parameters =>
             {
-                var testData = new PlayerData
+                var testData = new PlayerData_temp
                 {
                     Id = "0",
                     Name = "test",
@@ -117,9 +117,18 @@ namespace OperationBluehole.Server.Modules
                 ContentsPrepare.Init();
 
                 Player[] player = { new Player(), new Player(), new Player() };
-                player[0].LoadPlayer(102);
-                player[1].LoadPlayer(103);
-                player[2].LoadPlayer(104);
+
+                var data = PlayerDataDatabase.GetPlayerData( "102" );
+                if ( data != null )
+                    player[0].LoadPlayer( data.ConvertToPlayerData() );
+
+                data = PlayerDataDatabase.GetPlayerData( "103" );
+                if ( data != null )
+                    player[1].LoadPlayer( data.ConvertToPlayerData() );
+
+                data = PlayerDataDatabase.GetPlayerData( "104" );
+                if ( data != null )
+                    player[2].LoadPlayer( data.ConvertToPlayerData() );
 
                 Party users = new Party(PartyType.PLAYER, 10);
                 foreach (Player p in player)
@@ -136,10 +145,10 @@ namespace OperationBluehole.Server.Modules
                 SimulationManger.Init();
                 MatchingManager.Init();
 
-                MatchingManager.RegisterPlayer(101, 0, new List<ulong>());
-                MatchingManager.RegisterPlayer(102, 0, new List<ulong>());
-                MatchingManager.RegisterPlayer(103, 0, new List<ulong>());
-                MatchingManager.RegisterPlayer(104, 0, new List<ulong>());
+                MatchingManager.RegisterPlayer( "101", 0 );
+                MatchingManager.RegisterPlayer( "102", 0 );
+                MatchingManager.RegisterPlayer( "103", 0 );
+                MatchingManager.RegisterPlayer( "104", 0 );
 
                 return "check";
             };
@@ -163,7 +172,10 @@ namespace OperationBluehole.Server.Modules
                     result = AccountInfoDatabase.SetAccountInfo(new AccountInfo("quxn6", "next!!@@##$$")); 
 
                 if (result)
-                    result = AccountInfoDatabase.SetAccountInfo(new AccountInfo("yksera", "next!!@@##$$")); 
+                    result = AccountInfoDatabase.SetAccountInfo(new AccountInfo("yksera", "next!!@@##$$"));
+
+                if ( result )
+                    result = AccountInfoDatabase.SetAccountInfo( new AccountInfo( "sm9", "next!!@@##$$" ) ); 
 
                 // user identity
                 if (result)
@@ -173,13 +185,16 @@ namespace OperationBluehole.Server.Modules
                     result = UserIdentityDatabase.SetUserIdentity(new UserIdentity { UserName = "quxn6", Claims = new List<string> { "admin", } }); 
 
                 if (result)
-                    result = UserIdentityDatabase.SetUserIdentity(new UserIdentity { UserName = "yksera", Claims = new List<string> { "admin", } }); 
+                    result = UserIdentityDatabase.SetUserIdentity(new UserIdentity { UserName = "yksera", Claims = new List<string> { "admin", } });
+
+                if ( result )
+                    result = UserIdentityDatabase.SetUserIdentity( new UserIdentity { UserName = "sm9", Claims = new List<string> { "admin", } } ); 
 
                 // player data
                 if (result)
-                    result = PlayerDataDatabase.SetPlayerData(new PlayerData
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerData_temp
                     {
-                        Id = "0",
+                        Id = "101",
                         Name = "wooq",
                         Exp = 4,
                         Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
@@ -191,9 +206,9 @@ namespace OperationBluehole.Server.Modules
                     });
 
                 if (result)
-                    result = PlayerDataDatabase.SetPlayerData(new PlayerData
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerData_temp
                     {
-                        Id = "1",
+                        Id = "102",
                         Name = "quxn6",
                         Exp = 4,
                         Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
@@ -205,9 +220,9 @@ namespace OperationBluehole.Server.Modules
                     });
 
                 if (result)
-                    result = PlayerDataDatabase.SetPlayerData(new PlayerData
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerData_temp
                     {
-                        Id = "2",
+                        Id = "103",
                         Name = "yksera",
                         Exp = 4,
                         Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
@@ -217,6 +232,20 @@ namespace OperationBluehole.Server.Modules
                         Equipment = new List<uint> { 2, 8, },
                         BattleStyle = 0,
                     });
+
+                if ( result )
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerData_temp
+                    {
+                        Id = "104",
+                        Name = "sm9",
+                        Exp = 0,
+                        Stat = new List<ushort> { 9, 9, 9, 9, 9, 9, 9, 9, },
+                        Skill = new List<ushort> { 0, 1, 2, },
+                        Inventory = new List<uint> { 2, 4, 6, 8, 10, },
+                        Consumable = new List<uint> { 4, 6, 10, },
+                        Equipment = new List<uint> { 2, 8, },
+                        BattleStyle = 0,
+                    } );
 
                 if (result)
                     return "done!";
@@ -255,7 +284,7 @@ namespace OperationBluehole.Server.Modules
                 this.RequiresAuthentication();
                 this.RequiresClaims(new[] { "admin" });
 
-                PlayerData playerData = PlayerDataDatabase.GetPlayerData(this.Context.CurrentUser.UserName);
+                var playerData = PlayerDataDatabase.GetPlayerData(this.Context.CurrentUser.UserName);
 
                 Console.WriteLine("Character Info");
                 Console.WriteLine("name : " + playerData.Name + " / Id : " + playerData.Id);

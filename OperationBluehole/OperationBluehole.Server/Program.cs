@@ -16,6 +16,10 @@
 
             using (var host = new NancyHost(config, uri))
             {
+                // matching 시작
+                SimulationManger.Init();
+                MatchingManager.Init();
+
                 host.Start();
 
                 Console.WriteLine("Your application is running on " + uri);

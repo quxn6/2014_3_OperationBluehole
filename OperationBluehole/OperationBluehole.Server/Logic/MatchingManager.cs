@@ -15,14 +15,14 @@ namespace OperationBluehole.Server
         public Int64 regTime;
         public ushort level;
         public int difficulty;
-        public List<Tuple<Player, int, List<ulong>>> members;
+        public List<Tuple<Player, int, List<string>>> members;
     }
 
     public static class MatchingManager
     {
-        static ConcurrentQueue<Tuple<Player,int,List<ulong>>> waitingPlayers; // Tuple<플레이어, 추가난이도, 차단리스트, 종료코드>
+        static ConcurrentQueue<Tuple<Player,int,List<string>>> waitingPlayers; // Tuple<플레이어, 추가난이도, 차단리스트, 종료코드>
         
-        static SynchronizedCollection<ulong> deregisterWaitingPlayers;
+        static SynchronizedCollection<string> deregisterWaitingPlayers;
         static SynchronizedCollection<MatchingData> waitingParties;
         
         static ConcurrentQueue<MatchingData> matchedParties;
@@ -30,15 +30,18 @@ namespace OperationBluehole.Server
         static List<Thread> matchPlayerThreads;
         static List<Thread> matchPartyThreads;
         
-        public static void RegisterPlayer( ulong playerId, int difficulty, List<ulong> banPlayerIds )
+        public static void RegisterPlayer( string playerId, int difficulty )
         {
             Player newPlayer = new Player();
-            newPlayer.LoadPlayer(playerId);
 
-            waitingPlayers.Enqueue(new Tuple<Player, int, List<ulong>>(newPlayer, difficulty, banPlayerIds));
+            var playerData = PlayerDataDatabase.GetPlayerData( playerId );
+            Debug.Assert( playerData != null, "player data is null : " + playerId );
+
+            newPlayer.LoadPlayer( playerData.ConvertToPlayerData() );
+            waitingPlayers.Enqueue( new Tuple<Player, int, List<string>>( newPlayer, difficulty, playerData.BanList ) );
         }
 
-        public static void DeregisterPlayer(ulong playerId)
+        public static void DeregisterPlayer(string playerId)
         {
             deregisterWaitingPlayers.Add(playerId);
 
@@ -58,9 +61,9 @@ namespace OperationBluehole.Server
 
         public static void Init()
         {
-            waitingPlayers = new ConcurrentQueue<Tuple<Player, int, List<ulong>>>();
+            waitingPlayers = new ConcurrentQueue<Tuple<Player, int, List<string>>>();
             
-            deregisterWaitingPlayers = new SynchronizedCollection<ulong>();
+            deregisterWaitingPlayers = new SynchronizedCollection<string>();
             waitingParties = new SynchronizedCollection<MatchingData>();
 
             matchedParties = new ConcurrentQueue<MatchingData>();
@@ -84,7 +87,7 @@ namespace OperationBluehole.Server
 
         static void MatchPlayer()
         {
-            Tuple<Player, int, List<ulong>> player;
+            Tuple<Player, int, List<string>> player;
             while (true)
             {
                 if (waitingPlayers.TryDequeue(out player))
@@ -115,7 +118,7 @@ namespace OperationBluehole.Server
                     {
                         MatchingData newMd = new MatchingData();
                         newMd.lockObj = new Object();
-                        newMd.members = new List<Tuple<Player, int, List<ulong>>>();
+                        newMd.members = new List<Tuple<Player, int, List<string>>>();
                         newMd.members.Add(player);
                         newMd.level = player.Item1.baseStats[(int)StatType.Lev];
                         newMd.difficulty = player.Item2;

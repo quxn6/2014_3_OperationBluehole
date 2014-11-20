@@ -11,6 +11,8 @@ using Couchbase.Extensions;
 using Enyim.Caching.Memcached;
 using Newtonsoft.Json;
 
+using OperationBluehole.Content;
+
 namespace OperationBluehole.Server
 {
     public class AccountInfo
@@ -42,7 +44,7 @@ namespace OperationBluehole.Server
         */ 
     }
 
-    public class PlayerData
+    public class PlayerData_temp
     {
         [JsonProperty("id")]
         // public ulong Id { get; set; }
@@ -74,6 +76,9 @@ namespace OperationBluehole.Server
 
         [JsonProperty("battleStyle")]
         public byte BattleStyle { get; set; }
+
+        [JsonProperty( "banList" )]
+        public List<string> BanList { get; set; }
     }
 
     public class ResultTable
@@ -82,20 +87,20 @@ namespace OperationBluehole.Server
         public string PlayerId { get; set; }
 
         [JsonProperty( "unread" )]
-        public ulong UnreadId { get; set; }
+        public long UnreadId { get; set; }
 
         [JsonProperty( "read" )]
-        public List<ulong> ReadId { get; set; }
+        public List<long> ReadId { get; set; }
     }
 
     public class SimulationResult
     {
         [JsonProperty("id")]
-        public ulong Id { get; set; }
+        public long Id { get; set; }
 
         // 참가한 player id 목록
-        [JsonProperty("player")]
-        public List<string> PlayerList { get; set; }
+        [JsonProperty("playerData")]
+        public List<PlayerData> PlayerList { get; set; }
 
         // 맵 크기
         [JsonProperty( "mapSize" )]
@@ -107,7 +112,7 @@ namespace OperationBluehole.Server
 
         // 시뮬레이션에 사용한 random seed 값
         [JsonProperty("seed")]
-        public uint Seed { get; set; }
+        public int Seed { get; set; }
     }
 
     public static class CouchbaseManager
@@ -295,12 +300,12 @@ namespace OperationBluehole.Server
         public const string PREFIX = "PlayerData ";
 
         // public static PlayerData GetPlayerData(ulong playerId)
-        public static PlayerData GetPlayerData(string playerId)
+        public static PlayerData_temp GetPlayerData( string playerId )
         {
-            return CouchbaseManager.Client.GetJson<PlayerData>(PREFIX + playerId);
+            return CouchbaseManager.Client.GetJson<PlayerData_temp>( PREFIX + playerId );
         }
 
-        public static bool SetPlayerData(PlayerData data)
+        public static bool SetPlayerData( PlayerData_temp data )
         {
             // return CouchbaseManager.Client.StoreJson(StoreMode.Set, PlayerData.PREFIX + data.Id, data);
             return CouchbaseManager.Client.StoreJson(StoreMode.Set, PREFIX + data.Name, data);
@@ -326,7 +331,7 @@ namespace OperationBluehole.Server
     {
         public const string PREFIX = "SimulationResult ";
 
-        public static SimulationResult GetSimulationResult( ulong resultIdx )
+        public static SimulationResult GetSimulationResult( long resultIdx )
         {
             return CouchbaseManager.Client.GetJson<SimulationResult>( PREFIX + resultIdx );
         }

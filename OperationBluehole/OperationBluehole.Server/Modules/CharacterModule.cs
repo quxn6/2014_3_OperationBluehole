@@ -19,7 +19,7 @@ namespace OperationBluehole.Server.Modules
         class GameResultBaseData
         {
             public int mapSize;
-            public uint randomSeed;
+            public int randomSeed;
             public List<PlayerData> playerList = new List<PlayerData>();
         }
 
@@ -48,18 +48,12 @@ namespace OperationBluehole.Server.Modules
                 baseData.mapSize = result.MapSize;
                 baseData.randomSeed = result.Seed;
 
-                result.PlayerList.ForEach( each =>
-                {
-                    PlayerData data = PlayerDataDatabase.GetPlayerData( each );
-
-                    if ( data != null )
-                        baseData.playerList.Add( data );
-                } );
+                result.PlayerList.ForEach( each => baseData.playerList.Add( each ) );
 
                 // 읽은 애들은 삭제하자
                 // 일단은 놔둠
                 resultTable.ReadId.Add( resultTable.UnreadId );
-                resultTable.UnreadId = 0;   // default value
+                resultTable.UnreadId = -1;   // default value
 
                 if ( ResultTableDatabase.SetResultTable( resultTable ) )
                     return "error"; // 유저한데 에러를 던질 필요는 없는데...
