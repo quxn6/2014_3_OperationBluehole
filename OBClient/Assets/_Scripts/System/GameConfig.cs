@@ -39,8 +39,8 @@ static class GameConfig
 
 	// In Dungeon Constants
 	public const float MINIMAL_UNIT_SIZE = 1.0f;
-	public const float CHARACTER_MOVING_TIME = 0.5f;
-	public const float CHARACTER_TURNING_TIME = 0.2f;
+	public const float CHARACTER_MOVING_TIME = 0.4f;
+	public const float CHARACTER_TURNING_TIME = 0.1f;
 	public const float CHARACTER_ROTATE_DEGREE = 90.0f;
 
 	// Camera Mode
