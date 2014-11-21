@@ -5,31 +5,94 @@ using System.Web;
 
 namespace OperationBluehole.Server.Modules
 {
+    using Nancy;
+    using Nancy.ModelBinding;
+    using Nancy.Security;
+    using Nancy.Authentication.Token;
+
+    using OperationBluehole.Content;
+
     // 가입, 로그인 등 사용자 인증 작업을 처리
-    public class UserModule
+    public class UserModule : NancyModule
     {
-        // 가입
-        // 이메일, 비밀번호, 
+        public UserModule( ITokenizer tokenizer )
+            : base("/user")
+        {
+            // 가입
+            // 이메일, 비밀번호, 
+            Post["/signin"] = parameters =>
+            {
+                var client = CouchbaseManager.Client;
 
-        // 로그인
-        // 이메일과 비밀번호를 전송받아서
-        // 저장된 값과 비교해보고
-        // 같으면 쿠키 발급
+                string userId = Request.Form.userId;
+                string password = Request.Form.password;
+                string playerName = Request.Form.playername;
 
-        // 인증
-        // 기본적으로 쿠키를 발급하자
-        // 사용자의 모든 요청에 대해서 쿠키를 확인하고
-        // 만약 쿠키가 유효하지 않다면 로그인을 하게 만든다
-        // 쿠키값을 확인하면 플레이어의 id를 알 수 있게 한다
-        // 
+                if ( AccountInfoDatabase.SetAccountInfo( new AccountInfo( userId, password ) ) )
+                {
+                    UserIdentityDatabase.SetUserIdentity( new UserIdentity { UserName = userId, Claims = new List<string> { "user", } } );
+                    
+                    PlayerDataDatabase.SetPlayerData( new PlayerDataSource
+                    {
+                        PlayerId = userId,
+                        Name = playerName,
+                        Exp = 0,
+                        Stat = new List<ushort> { 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+                        Skill = new List<ushort> { },
+                        Inventory = new List<uint> { },
+                        Consumable = new List<uint> { },
+                        Equipment = new List<uint> { },
+                        BattleStyle = (byte)BattleStyle.AGGRESSIVE,
+                        BanList = new List<string> { },
+                    } );
+                    
+                    ResultTableDatabase.SetResultTable( new ResultTable
+                    {
+                        PlayerId = userId,
+                        ReadId = new List<long> { },
+                        UnreadId = -1
+                    } );
 
-        // 확인할 것들
-        // 쿠키 생성
-        // 쿠키 확인
-        // 
+                    return "success";
+                }
 
-        // 디비 저장 방식
-        // 유저 - 메일 주소, 암호화 된 비밀번호, 캐릭터 id, user id, ban list
-        // 캐릭터 - 캐릭터 id, 캐릭터들 정보, user id도 알아야 하려나
+                return "fail";
+            };
+
+            // 로그인
+            // 이메일과 비밀번호를 전송받아서
+            // 저장된 값과 비교해보고
+            // 같으면 쿠키 발급
+            Post["/login"] = parameters =>
+            {
+                var userName = (string)this.Request.Form.UserName;
+                var password = (string)this.Request.Form.Password;
+
+                var userIdentity = UserIdentityDatabase.ValidateUser( userName, password );
+
+                if ( userIdentity == null )
+                {
+                    return HttpStatusCode.Unauthorized;
+                }
+
+                var token = tokenizer.Tokenize( userIdentity, Context );
+
+                return new
+                {
+                    Token = token,
+                };
+            };
+
+            // 탈퇴
+            // 는 없다. 
+
+            // 로그인 상태 확인
+            Post["/valid_session"] = parameters =>
+            {
+                this.RequiresAuthentication();
+
+                return "valid";
+            };
+        }
     }
 }

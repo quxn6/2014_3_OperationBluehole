@@ -253,7 +253,7 @@ namespace OperationBluehole.Server
 
         public static bool SetAccountInfo(AccountInfo info )
         {
-            return CouchbaseManager.Client.StoreJson(StoreMode.Set, PREFIX + info.AccountName, info);
+            return CouchbaseManager.Client.StoreJson(StoreMode.Add, PREFIX + info.AccountName, info);
         }
     }
 
