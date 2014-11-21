@@ -44,11 +44,10 @@ namespace OperationBluehole.Server
         */ 
     }
 
-    public class PlayerData_temp
+    public class PlayerDataSource
     {
-        [JsonProperty("id")]
-        // public ulong Id { get; set; }
-        public string Id { get; set; }
+        [JsonProperty( "playerId" )]
+        public string PlayerId { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -299,16 +298,14 @@ namespace OperationBluehole.Server
     {
         public const string PREFIX = "PlayerData ";
 
-        // public static PlayerData GetPlayerData(ulong playerId)
-        public static PlayerData_temp GetPlayerData( string playerId )
+        public static PlayerDataSource GetPlayerData( string playerId )
         {
-            return CouchbaseManager.Client.GetJson<PlayerData_temp>( PREFIX + playerId );
+            return CouchbaseManager.Client.GetJson<PlayerDataSource>( PREFIX + playerId );
         }
 
-        public static bool SetPlayerData( PlayerData_temp data )
+        public static bool SetPlayerData( PlayerDataSource data )
         {
-            // return CouchbaseManager.Client.StoreJson(StoreMode.Set, PlayerData.PREFIX + data.Id, data);
-            return CouchbaseManager.Client.StoreJson(StoreMode.Set, PREFIX + data.Name, data);
+            return CouchbaseManager.Client.StoreJson(StoreMode.Set, PREFIX + data.PlayerId, data);
         }
     }
 

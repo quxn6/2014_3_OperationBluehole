@@ -38,6 +38,9 @@ namespace OperationBluehole.Server
             Debug.Assert( playerData != null, "player data is null : " + playerId );
 
             newPlayer.LoadPlayer( playerData.ConvertToPlayerData() );
+
+            Console.WriteLine( "player id : " + newPlayer.pId );
+
             waitingPlayers.Enqueue( new Tuple<Player, int, List<string>>( newPlayer, difficulty, playerData.BanList ) );
         }
 
@@ -83,6 +86,8 @@ namespace OperationBluehole.Server
                 newThread.Start();
                 matchPlayerThreads.Add(newThread);
             }
+
+            Console.WriteLine( "matching manager is started" );
         }
 
         static void MatchPlayer()

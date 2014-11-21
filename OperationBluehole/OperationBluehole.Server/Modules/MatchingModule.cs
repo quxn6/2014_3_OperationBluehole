@@ -6,6 +6,7 @@ using System.Web;
 namespace OperationBluehole.Server.Module
 {
     using Nancy;
+    using Nancy.ModelBinding;
     using Nancy.Security;
     using Nancy.Authentication.Token;
 
@@ -17,19 +18,18 @@ namespace OperationBluehole.Server.Module
         {
             Post["/register"] = parameters =>
             {
-                // var difficulty = this.Bind<int>();
-                int difficulty = Request.Form.difficulty;
-
                 // 일단 해당 유저의 id를 확인하고
                 this.RequiresAuthentication();
+                // this.RequiresClaims( new[] { "admin" } );
+
+                // var difficulty = this.Bind<int>( "difficulty" );
+                // int difficulty = this.Bind();
+                int difficulty = Request.Form.difficulty;
 
                 var resultTable = ResultTableDatabase.GetResultTable( this.Context.CurrentUser.UserName );
 
-                if ( resultTable == null )
-                    return "nothing";
-
-                // 해당 시뮬레이션 데이터를 가져온다
-                var result = SimulationResultDatabase.GetSimulationResult( resultTable.UnreadId );
+                if ( resultTable != null && resultTable.UnreadId != -1  )
+                    return "not prepared";
 
                 MatchingManager.RegisterPlayer( this.Context.CurrentUser.UserName, difficulty );    // 리스트는 나중에 플레이어 데이터에 만들어서 추가할 것
 

@@ -34,7 +34,7 @@ namespace OperationBluehole.Server.Modules
 
                 var resultTable = ResultTableDatabase.GetResultTable( this.Context.CurrentUser.UserName );
 
-                if ( resultTable == null )
+                if ( resultTable == null || resultTable.UnreadId == -1 )
                     return "nothing";
 
                 // 해당 시뮬레이션 데이터를 가져온다
