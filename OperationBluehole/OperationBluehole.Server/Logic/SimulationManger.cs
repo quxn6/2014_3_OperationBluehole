@@ -32,6 +32,8 @@ namespace OperationBluehole.Server
                 newThread.Start();
                 simulationThreads.Add(newThread);
             }
+
+            Console.WriteLine("simulation manager is started");
         }
 
         public static void RegisterParty(Party party)
@@ -46,6 +48,8 @@ namespace OperationBluehole.Server
             {
                 if (waitingParties.TryDequeue(out party))
                 {
+                    Console.WriteLine( "start to simulation" );
+
                     SimulationResult result = new SimulationResult();
                     
                     long currentIdx = Interlocked.Increment( ref resultIdx );
@@ -55,6 +59,7 @@ namespace OperationBluehole.Server
                     result.Seed = random.Next();
 
                     // result에 사용될 사용자 정보 기록
+                    result.PlayerList = new List<PlayerData>();
                     party.characters.ForEach( each =>
                     {
                         var player = (Player)each;
@@ -67,6 +72,7 @@ namespace OperationBluehole.Server
                     var res = newMaster.Start();
 
                     // save the result data in DB
+                    result.CheckedPlayer = new List<ulong>();
                     Debug.Assert( SimulationResultDatabase.SetSimulationResult( result ) );
 
                     party.characters.ForEach( each =>
@@ -85,6 +91,7 @@ namespace OperationBluehole.Server
                         Debug.Assert( ResultTableDatabase.SetResultTable( resultTable ), "fail to save the result table - ID : " + resultTable.PlayerId );
                     } );
 
+                    Console.WriteLine( "simulation ended" );
                 }
                 else
                     Thread.Yield();

@@ -36,27 +36,27 @@ namespace OperationBluehole.Server.Modules
                     { "exp", 4 },
                     { "stat", new List<ushort>
                         {
-                            1, 1, 1, 1, 1, 1, 1, 1,
+                            0, 1, 5, 5, 5, 5, 5, 5, 5,
                         }
                     },
                     { "skil", new List<ushort>
                         {
-                            0, 1, 2,
+                            (ushort)SkillId.Punch,
                         }
                     },
                     { "inventory", new List<uint>
                         {
-                            2, 4, 6, 8, 10,
+                            
                         }
                     },
                     { "items", new List<uint>
                         {
-                            4, 6, 10,
+                            
                         }
                     },
                     { "equipment", new List<uint>
                         {
-                            2, 8,
+                            
                         }
                     },
                     { "battle style", 0 },
@@ -81,9 +81,9 @@ namespace OperationBluehole.Server.Modules
 
             Get["/save_test_class"] = parameters =>
             {
-                var testData = new PlayerData_temp
+                var testData = new PlayerDataSource
                 {
-                    Id = "0",
+                    PlayerId = "0",
                     Name = "test",
                     Exp = 4,
                     Stat = new List<ushort> {1, 1, 1, 1, 1, 1, 1, 1,},
@@ -103,7 +103,7 @@ namespace OperationBluehole.Server.Modules
 
                 string result = "";
 
-                result += "id" + savedData.Id;
+                result += "id" + savedData.PlayerId;
                 result += "name" + savedData.Name;
                 result += "Exp" + savedData.Exp;
                 result += "stat";
@@ -192,59 +192,95 @@ namespace OperationBluehole.Server.Modules
 
                 // player data
                 if (result)
-                    result = PlayerDataDatabase.SetPlayerData( new PlayerData_temp
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerDataSource
                     {
-                        Id = "101",
+                        PlayerId = "wooq",
                         Name = "wooq",
                         Exp = 4,
-                        Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
-                        Skill = new List<ushort> { 0, 1, 2, },
-                        Inventory = new List<uint> { 2, 4, 6, 8, 10, },
-                        Consumable = new List<uint> { 4, 6, 10, },
-                        Equipment = new List<uint> { 2, 8, },
-                        BattleStyle = 0,
-                    });
-
-                if (result)
-                    result = PlayerDataDatabase.SetPlayerData( new PlayerData_temp
-                    {
-                        Id = "102",
-                        Name = "quxn6",
-                        Exp = 4,
-                        Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
-                        Skill = new List<ushort> { 0, 1, 2, },
-                        Inventory = new List<uint> { 2, 4, 6, 8, 10, },
-                        Consumable = new List<uint> { 4, 6, 10, },
-                        Equipment = new List<uint> { 2, 8, },
-                        BattleStyle = 0,
-                    });
-
-                if (result)
-                    result = PlayerDataDatabase.SetPlayerData( new PlayerData_temp
-                    {
-                        Id = "103",
-                        Name = "yksera",
-                        Exp = 4,
-                        Stat = new List<ushort> { 1, 1, 1, 1, 1, 1, 1, 1, },
-                        Skill = new List<ushort> { 0, 1, 2, },
-                        Inventory = new List<uint> { 2, 4, 6, 8, 10, },
-                        Consumable = new List<uint> { 4, 6, 10, },
-                        Equipment = new List<uint> { 2, 8, },
-                        BattleStyle = 0,
-                    });
+                        Stat = new List<ushort> { 0, 1, 5, 5, 5, 5, 5, 5, 5, },
+                        Skill = new List<ushort> { (ushort)SkillId.Punch, },
+                        Inventory = new List<uint> { },
+                        Consumable = new List<uint> { },
+                        Equipment = new List<uint> { },
+                        BattleStyle = (byte)BattleStyle.AGGRESSIVE,
+                        BanList = new List<string> { },
+                    } );
 
                 if ( result )
-                    result = PlayerDataDatabase.SetPlayerData( new PlayerData_temp
+                    result = ResultTableDatabase.SetResultTable( new ResultTable 
                     {
-                        Id = "104",
+                        PlayerId = "wooq", 
+                        ReadId = new List<long> { }, 
+                        UnreadId = -1 
+                    } );
+
+                if (result)
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerDataSource
+                    {
+                        PlayerId = "quxn6",
+                        Name = "quxn6",
+                        Exp = 4,
+                        Stat = new List<ushort> { 0, 3, 5, 5, 5, 15, 5, 5, 5, },
+                        Skill = new List<ushort> { (ushort)SkillId.Punch, (ushort)SkillId.MagicArrow, (ushort)SkillId.Heal, },
+                        Inventory = new List<uint> { (uint)ItemCode.MpPotion_S },
+                        Consumable = new List<uint> { (uint)ItemCode.MpPotion_S },
+                        Equipment = new List<uint> {},
+                        BattleStyle = (byte)BattleStyle.DEFENSIVE,
+                        BanList = new List<string> { },
+                    } );
+
+                if ( result )
+                    result = ResultTableDatabase.SetResultTable( new ResultTable
+                    {
+                        PlayerId = "quxn6",
+                        ReadId = new List<long> { },
+                        UnreadId = -1
+                    } );
+
+                if (result)
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerDataSource
+                    {
+                        PlayerId = "yksera",
+                        Name = "yksera",
+                        Exp = 4,
+                        Stat = new List<ushort> { 0, 3, 15, 5, 5, 5, 5, 5, 5, },
+                        Skill = new List<ushort> { (ushort)SkillId.Slash, },
+                        Inventory = new List<uint> { (uint)ItemCode.HpPotion_S, (uint)ItemCode.HpPotion_S, (uint)ItemCode.Sword_Test, },
+                        Consumable = new List<uint> { (uint)ItemCode.HpPotion_S, (uint)ItemCode.HpPotion_S, },
+                        Equipment = new List<uint> { (uint)ItemCode.Sword_Test, },
+                        BattleStyle = (byte)BattleStyle.AGGRESSIVE,
+                        BanList = new List<string> { },
+                    } );
+
+                if ( result )
+                    result = ResultTableDatabase.SetResultTable( new ResultTable
+                    {
+                        PlayerId = "yksera",
+                        ReadId = new List<long> { },
+                        UnreadId = -1
+                    } );
+
+                if ( result )
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerDataSource
+                    {
+                        PlayerId = "sm9",
                         Name = "sm9",
                         Exp = 0,
-                        Stat = new List<ushort> { 9, 9, 9, 9, 9, 9, 9, 9, },
-                        Skill = new List<ushort> { 0, 1, 2, },
-                        Inventory = new List<uint> { 2, 4, 6, 8, 10, },
-                        Consumable = new List<uint> { 4, 6, 10, },
-                        Equipment = new List<uint> { 2, 8, },
-                        BattleStyle = 0,
+                        Stat = new List<ushort> { 0, 3, 10, 10, 5, 5, 5, 5, 5, },
+                        Skill = new List<ushort> { (ushort)SkillId.Punch, (ushort)SkillId.Heal, },
+                        Inventory = new List<uint> { (uint)ItemCode.MpPotion_S, },
+                        Consumable = new List<uint> { (uint)ItemCode.MpPotion_S, },
+                        Equipment = new List<uint> {},
+                        BattleStyle = (byte)BattleStyle.AGGRESSIVE,
+                        BanList = new List<string> { },
+                    } );
+
+                if ( result )
+                    result = ResultTableDatabase.SetResultTable( new ResultTable
+                    {
+                        PlayerId = "sm9",
+                        ReadId = new List<long> { },
+                        UnreadId = -1
                     } );
 
                 if (result)
@@ -287,7 +323,7 @@ namespace OperationBluehole.Server.Modules
                 var playerData = PlayerDataDatabase.GetPlayerData(this.Context.CurrentUser.UserName);
 
                 Console.WriteLine("Character Info");
-                Console.WriteLine("name : " + playerData.Name + " / Id : " + playerData.Id);
+                Console.WriteLine("name : " + playerData.Name + " / Id : " + playerData.PlayerId);
                 Console.WriteLine("Lev : " + playerData.Stat[(int)StatType.Lev] + " / Exp : " + playerData.Exp);
 
                 return "Yay! You are authorized!";

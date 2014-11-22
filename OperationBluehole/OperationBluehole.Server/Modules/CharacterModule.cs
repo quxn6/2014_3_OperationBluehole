@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
@@ -34,7 +35,7 @@ namespace OperationBluehole.Server.Modules
 
                 var resultTable = ResultTableDatabase.GetResultTable( this.Context.CurrentUser.UserName );
 
-                if ( resultTable == null )
+                if ( resultTable == null || resultTable.UnreadId == -1 )
                     return "nothing";
 
                 // 해당 시뮬레이션 데이터를 가져온다
@@ -55,8 +56,7 @@ namespace OperationBluehole.Server.Modules
                 resultTable.ReadId.Add( resultTable.UnreadId );
                 resultTable.UnreadId = -1;   // default value
 
-                if ( ResultTableDatabase.SetResultTable( resultTable ) )
-                    return "error"; // 유저한데 에러를 던질 필요는 없는데...
+                Debug.Assert( ResultTableDatabase.SetResultTable( resultTable ) );
 
                 // 전송한다
                 return JsonConvert.SerializeObject( baseData ); ;

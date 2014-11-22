@@ -7,6 +7,7 @@ namespace OperationBluehole.Content
 {
 	public struct PlayerData
 	{
+        public string pId;
 		public String name;
 		public uint exp;
 		public ushort[] stats;
@@ -17,6 +18,7 @@ namespace OperationBluehole.Content
 		public BattleStyle battleStyle;
 
 		public PlayerData(
+            string pId,
 			String name,
 			uint exp,
 			ushort statLev,
@@ -33,6 +35,7 @@ namespace OperationBluehole.Content
 			BattleStyle battleStyle
 			)
 		{
+            this.pId = pId;
 			this.name = name;
 			this.exp = exp;
 			this.stats = new ushort[8];
@@ -64,6 +67,7 @@ namespace OperationBluehole.Content
 
 		public bool LoadPlayer( PlayerData data )
 		{
+            this.pId = data.pId;
 			this.name = data.name;
 			this.exp = data.exp;
 			this.baseStats[(int)StatType.Lev] = data.stats[(int)StatType.Lev];
