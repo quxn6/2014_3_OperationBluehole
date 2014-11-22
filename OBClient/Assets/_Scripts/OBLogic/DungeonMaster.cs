@@ -81,7 +81,7 @@ namespace OperationBluehole.Content
             return true;
         }
 
-        public MapObject[,] GetMapInfo() { return dungeon.map; }
+		public MapObject[,] GetMapInfo() { return dungeon.map; }
 		public char[] GetDungeonMap() { return dungeon.PrintOutMAP(); }
 
         public uint Start()
@@ -154,6 +154,10 @@ namespace OperationBluehole.Content
             Party tempMob = TempMobGenerator();
 
             Battle newBattle = new Battle( random, users, tempMob );
+            #region 전투기록 : 전투기록 설정
+            if(record != null)
+                newBattle.battleInfo = new BattleInfo(); 
+            #endregion
             newBattle.StartBattle();
 
             if ( newBattle.battleResult == PartyIndex.USERS )
@@ -172,8 +176,9 @@ namespace OperationBluehole.Content
             Console.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
             // Console.ReadLine();
 
-            #region 결과 기록
-            record.battleLog.Add( new GameRecord.BattleInfo() );
+            #region 전투기록 : 결과 기록
+            if (record != null)
+                record.battleLog.Add( newBattle.battleInfo.turnInfos );
             #endregion
         }
 

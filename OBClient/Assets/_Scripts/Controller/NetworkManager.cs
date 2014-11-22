@@ -21,7 +21,7 @@ public class NetworkManager : MonoBehaviour
 	}
 
 	// dungeon map ///
-	public void RequestMapInfo()
+	public void RequestReplayInfo()
 	{
 		StartCoroutine( DummyMapInfoResponse() );
 	}
@@ -29,79 +29,36 @@ public class NetworkManager : MonoBehaviour
 	IEnumerator DummyMapInfoResponse()
 	{
 		yield return new WaitForSeconds( 0.1f );
-		HandleMapInfo();
+		HandleReplayInfo();
 	}
 
-	// warning!!! logreader should do this
-	OperationBluehole.Content.DungeonMaster newMaster;
-	public OperationBluehole.Content.DungeonMaster NewMaster	{
-		get { return newMaster; }
-	}
 
-	public void HandleMapInfo()
-	{		
+	public void HandleReplayInfo()
+	{
 		// Init
 		OperationBluehole.Content.ContentsPrepare.Init();
 
-		// test data
+		///////////// test data /////////////
+		OperationBluehole.Content.PlayerData data = new OperationBluehole.Content.PlayerData();
 		OperationBluehole.Content.Player[] player = { new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() };
-		player[0].LoadPlayer( 102 );
-		player[1].LoadPlayer( 103 );
-		player[2].LoadPlayer( 104 );
+		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 102 , out data ) )
+			player[0].LoadPlayer( data );
 
-		OperationBluehole.Content.Party users = new OperationBluehole.Content.Party( OperationBluehole.Content.PartyType.PLAYER , 10 );
+		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 103 , out data ) )
+			player[1].LoadPlayer( data );
+
+		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 104 , out data ) )
+			player[2].LoadPlayer( data );
+
+		OperationBluehole.Content.Party DummyParty = new OperationBluehole.Content.Party( OperationBluehole.Content.PartyType.PLAYER , 10 );
 		foreach ( OperationBluehole.Content.Player p in player )
-			users.AddCharacter( p );
+			DummyParty.AddCharacter( p );
 
-		newMaster = new OperationBluehole.Content.DungeonMaster();
-		newMaster.Init( 60 , 4 , users );
-		
-		//sceneManager.GetComponent<Loading>().LoadMap( new Dungeon( dungeonMap , size ) );
-		sceneManager.GetComponent<Loading>().LoadMap( new Dungeon( newMaster.GetDungeonMap() , size ) );
+		int dummySize = 60;
+		int dummySeed = 3;
 
-		newMaster.Start();
+		///////////////////////////////////////
 
-		//foreach( var each in newMaster.record.pathfinding )
-        
-		for ( int i = 0 ; i < newMaster.record.pathfinding.Count-1; ++i)
-		{
-			//Console.WriteLine( "x : " + each.x + " / y : " + each.y );
-			//PlayerMoveQueue playerMove = new PlayerMoveQueue( LogExecuter.Instance.MoveCharacter );
-
-			//playerMove( MapManager.Instance.PlayerParty , ComputeDirection( newMaster.record.pathfinding[i] , newMaster.record.pathfinding[i + 1] ) );			
-			LogExecuter.Instance.MoveLog.Enqueue( ComputeDirection( newMaster.record.pathfinding[i] , newMaster.record.pathfinding[i + 1] ) );
-		}   
-	}
-
-	private MoveDirection ComputeDirection(OperationBluehole.Content.Int2D currentPos, OperationBluehole.Content.Int2D nextPos)
-	{
-		int xDiff = nextPos.x - currentPos.x ;
-		if ( xDiff != 0 )
-		{
-			if ( xDiff > 0)
-			{
-				return MoveDirection.RIGHT;
-			}
-			else
-			{
-				return MoveDirection.LEFT;
-			}
-		}
-
-		int yDiff = nextPos.y - currentPos.y;
-		if ( yDiff != 0)
-		{
-			
-			if ( yDiff > 0)
-			{
-				return MoveDirection.UP;
-			}
-			else
-			{
-				return MoveDirection.DOWN;
-			}
-		}
-
-		return MoveDirection.STAY;
+		LogGenerator.Instance.GenerateLog( dummySize, dummySeed, DummyParty );
 	}
 }

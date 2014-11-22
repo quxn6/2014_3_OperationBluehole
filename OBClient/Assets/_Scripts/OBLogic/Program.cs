@@ -7,16 +7,23 @@ namespace OperationBluehole.Content
 {
     class Program
     {
-        static public void Main(string[] args)
+        static void Main(string[] args)
         {
             // 전투 로직 초기화
             ContentsPrepare.Init();
 
             // 던전 테스트--------
             Player[] player = { new Player(), new Player(), new Player() };
-            player[0].LoadPlayer( 102 );
-            player[1].LoadPlayer( 103 );
-            player[2].LoadPlayer( 104 );
+
+            PlayerData data = new PlayerData();
+            if ( TestData.playerList.TryGetValue( 102, out data ) )
+                player[0].LoadPlayer( data );
+
+            if ( TestData.playerList.TryGetValue( 103, out data ) )
+                player[1].LoadPlayer( data );
+
+            if ( TestData.playerList.TryGetValue( 104, out data ) )
+                player[2].LoadPlayer( data );
 
             Party users = new Party( PartyType.PLAYER, 10 );
             foreach ( Player p in player )

@@ -69,6 +69,8 @@ namespace OperationBluehole.Content
 		private Party ally, enemy;
         private RandomGenerator random;
 
+        public BattleInfo battleInfo;
+
         public BattleAI( RandomGenerator random, short randomLevel, Character player, Party ally, Party enemy )
 		{
 // 			decisions = new short[(int)ActionType.ActionTypeCount];
@@ -80,6 +82,8 @@ namespace OperationBluehole.Content
 			this.player = player;
 			this.ally = ally;
 			this.enemy = enemy;
+
+            this.battleInfo = null;
 		}
 
 		public bool Act(){
@@ -104,7 +108,13 @@ namespace OperationBluehole.Content
 					if (skillCnt > 0)
 					{
 						var resSkill = resSkills.ElementAt(random.Next(0, skillCnt - 1));
-						SkillManager.table[resSkill].Act(random, player, res.targets);
+
+                        #region 전투기록 : 스킬 사용 기록
+                        if (battleInfo != null)
+                            battleInfo.RecordAction(this.player, resSkill, ItemCode.None, res.targets); 
+                        #endregion
+
+                        SkillManager.table[resSkill].Act(random, player, res.targets);
 
 						ResetDecisions();
 						return true;
@@ -120,7 +130,13 @@ namespace OperationBluehole.Content
 					int itemCnt = resItems.Count();
 					if (itemCnt > 0)
 					{
-						var resItem = resItems.ElementAt(random.Next(0, itemCnt - 1));
+                        var resItem = resItems.ElementAt(random.Next(0, itemCnt - 1));
+
+                        #region 전투기록 : 아이템 사용 기록
+                        if (battleInfo != null)
+                            battleInfo.RecordAction(this.player, SkillId.None, resItem, res.targets); 
+                        #endregion
+
 						((Consumable)ItemManager.table[resItem]).UseItem(random, player, res.targets);
 
 						ResetDecisions();
@@ -130,6 +146,10 @@ namespace OperationBluehole.Content
 			}
 
 			// 아무 것도 할 수 없었다면 false 리턴하여 턴 종료
+            #region 전투기록 : 행동하지 않음 기록   // 기록할 필요가 있을까...?
+            if (battleInfo != null)
+                battleInfo.RecordAction(this.player, SkillId.None, ItemCode.None, null);
+            #endregion
 			ResetDecisions();
 			return false;
 		}

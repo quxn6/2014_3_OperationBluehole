@@ -10,7 +10,7 @@ public class Loading : MonoBehaviour
 	{
 		replayButton.SetActive( false );
 		loadingUI.GetComponent<TweenAlpha>().enabled = false;		
-		NetworkManager.Instance.RequestMapInfo();		
+		NetworkManager.Instance.RequestReplayInfo();		
 	}
 
 	public void LoadMap(Dungeon dungeonMap)

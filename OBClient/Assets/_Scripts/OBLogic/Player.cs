@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
-	struct PlayerData
+	public struct PlayerData
 	{
 		public String name;
 		public uint exp;
@@ -53,21 +53,17 @@ namespace OperationBluehole.Content
 
 	public class Player : Character
 	{
-		public ulong pId { get; private set; }
+		public string pId { get; private set; }
 		public uint exp { get; private set; }
 
 		public Player()
 		{
-			pId = 0;
+			pId = "";
 			exp = 0;
 		}
 
-		public bool LoadPlayer(ulong playerId)
+		public bool LoadPlayer( PlayerData data )
 		{
-			PlayerData data;
-			if (!TestData.playerList.TryGetValue(playerId, out data))
-				return false;
-
 			this.name = data.name;
 			this.exp = data.exp;
 			this.baseStats[(int)StatType.Lev] = data.stats[(int)StatType.Lev];

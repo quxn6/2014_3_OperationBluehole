@@ -5,13 +5,13 @@ using System.Collections.Generic;
 // raw data for map
 public struct Dungeon
 {
-	public char[] dungeonMap;
+	public char[] mapArray;
 	public int size;
 
 	public Dungeon( char[] dungeonMap , int size )
 	{
 		//this.dungeonMap = dungeonMap.ToCharArray();
-		this.dungeonMap = dungeonMap;
+		this.mapArray = dungeonMap;
 		this.size = size;
 	}
 }
@@ -79,6 +79,11 @@ public class DataManager : MonoBehaviour
 {
 	public UIAtlas atlasSet = null;
 
+	// real data
+	private OperationBluehole.Content.Party userParty;
+	private List<OperationBluehole.Content.Party> mobPartyList;
+	private List<OperationBluehole.Content.Item> itemList;
+
 	private List<EnemyGroup> enemyGroupList;
 	public List<EnemyGroup> EnemyGroupList
 	{
@@ -108,6 +113,13 @@ public class DataManager : MonoBehaviour
 		instance = this;
 		enemyGroupList = new List<EnemyGroup>();
 		heroList = new List<CharacterData>();
+	}
+
+	public void InitReplayData(OperationBluehole.Content.Party userParty, List<OperationBluehole.Content.Party> mobPartyList, List<OperationBluehole.Content.Item> itemList)
+	{
+		this.userParty = userParty;
+		this.mobPartyList = mobPartyList;
+		this.itemList = itemList;
 	}
 
 	// Get data from Logic( or server )

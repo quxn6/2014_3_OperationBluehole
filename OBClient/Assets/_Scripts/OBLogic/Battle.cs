@@ -19,6 +19,8 @@ namespace OperationBluehole.Content
         public PartyIndex battleResult { get; private set; }
         private RandomGenerator random;
 
+        public BattleInfo battleInfo;
+
         public Battle( RandomGenerator random, Party party1, Party party2 )
 		{
 			this.random = random;
@@ -29,13 +31,25 @@ namespace OperationBluehole.Content
 
 			curTurn = 1;
             battleResult = PartyIndex.NONE;
+
+            this.battleInfo = null;
 		}
 
 		public void StartBattle()
-		{
+        {
+            #region 전투기록 : 캐릭터들에 전투기록 설정
+            if (battleInfo != null)
+            {
+                foreach (var chr in party[(int)PartyIndex.USERS].characters)
+                    chr.battleInfo = battleInfo;
+                foreach (var chr in party[(int)PartyIndex.MOBS].characters)
+                    chr.battleInfo = battleInfo;
+            }
+            #endregion
+
             while ( battleResult == PartyIndex.NONE )
 			{
-				// 전투상 모든 캐릭터들에 턴행동 후 전멸 체크
+                // 전투상 모든 캐릭터들에 턴행동 후 전멸 체크
                 foreach ( Character i in party[(int)PartyIndex.USERS].characters )
 				{
 					if (i.hp > 0)
@@ -64,7 +78,12 @@ namespace OperationBluehole.Content
 				return;
 			}
 
-			if (isUserParty)
+            #region 전투기록 : 턴 기록
+            if (battleInfo != null)
+                battleInfo.SetTurn(curTurn); 
+            #endregion
+
+            if (isUserParty)
                 turnCharacter.BattleTurnAction( random, party[(int)PartyIndex.USERS], party[(int)PartyIndex.MOBS] );
 			else
                 turnCharacter.BattleTurnAction( random, party[(int)PartyIndex.MOBS], party[(int)PartyIndex.USERS] );

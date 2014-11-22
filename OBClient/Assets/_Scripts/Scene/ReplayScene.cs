@@ -20,7 +20,7 @@ public class ReplayScene : MonoBehaviour
 		if ( GUI.Button( new Rect( 10 , 130 , 100 , 50 ) , "MoveCharacter" ) )
 		{
 			//LogExecuter.Instance.MoveCharacter( MapManager.Instance.PlayerParty, (MoveDirection)UnityEngine.Random.Range( 1 , 5 ) );
-			LogExecuter.Instance.PlayLog();
+			LogExecuter.Instance.PlayMapLog();
 		}
 
 		if ( GUI.Button( new Rect( 10 , 190 , 100 , 50 ) , "Player attack" ) )

@@ -495,9 +495,10 @@ namespace OperationBluehole.Content
         #region FOR DEBUG
         public char[] PrintOutMAP()
         {
-            char[] visualizer = { '#', ' ', 'X', 'I', 'M', 'P' };
+			// emptySpace, tile, wall, Item, Mob, Player, Exit, Mob on the Item
+			char[] visualizer = { '#' , ' ' , 'X' , 'I' , 'M' , 'P' , 'O' , 'T' };
 
-            Console.Clear();
+            //Console.Clear();
 			char[] dungeonMap = new char[size * size];
             for ( int i = 0; i < size; ++i )
             {
@@ -506,10 +507,11 @@ namespace OperationBluehole.Content
                     if ( j == ringPosition.x && i == ringPosition.y )
                     {
                         Console.Write( 'O' );
-						dungeonMap[size * i + j] = 'O';
+						dungeonMap[size * i + j] = visualizer[6];
                         continue;
                     }
 
+					bool mobFlag = false;
                     switch ( map[i, j].objectType )
                     {
                         case MapObjectType.VOID:
@@ -525,6 +527,7 @@ namespace OperationBluehole.Content
                             {
 								if ( map[i , j].party.partyType == PartyType.MOB )
 								{
+									mobFlag = true;
 									Console.Write( visualizer[4] );
 									dungeonMap[size * i + j] = visualizer[4];
 								}
@@ -536,8 +539,8 @@ namespace OperationBluehole.Content
                             }
                             else if ( map[i, j].gameObject != null )
 							{
-								Console.Write( visualizer[3] );
-								dungeonMap[size * i + j] = visualizer[3];		
+								Console.Write( mobFlag? visualizer[7] : visualizer[3] );
+								dungeonMap[size * i + j] = mobFlag ? visualizer[7] : visualizer[3];		
 							}                                
                             else
 							{

@@ -2,13 +2,34 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum LogType
+{
+	Move,
+	Battle,
+	Loot,
+	Win,
+	Fail,
+}
+
 public enum MoveDirection
 {
-	STAY = 0 ,
-	RIGHT = 1 ,
-	DOWN = 2 ,
-	LEFT = 3 ,
-	UP = 4 ,
+	Stay = 0 ,
+	Right = 1 ,
+	Down = 2 ,
+	Left = 3 ,
+	Up = 4 ,
+}
+
+public struct LogInfo
+{
+	public LogType logType;
+	public int logContent;
+
+	public LogInfo ( LogType logType, int logContent)
+	{
+		this.logType = logType;
+		this.logContent = logContent;
+	}
 }
 
 //delegate void CharacterController(GameObject character);
@@ -16,13 +37,13 @@ public enum MoveDirection
 
 public class LogExecuter : MonoBehaviour
 {
-	private GameObject playerParty = null;
-	private List<GameObject> mobList = null;
-	private Queue<MoveDirection> moveLog;
-	public Queue<MoveDirection> MoveLog
+// 	private GameObject playerParty = null;
+// 	private List<GameObject> mobList = null;
+	private Queue<LogInfo> replayLog;
+	public Queue<LogInfo> ReplayLog
 	{
-		get { return moveLog; }
-		set { moveLog = value; }
+		get { return replayLog; }
+		set { replayLog = value; }
 	}
 
 	static private LogExecuter instance;
@@ -31,7 +52,7 @@ public class LogExecuter : MonoBehaviour
 		get { return instance; }
 	}
 
-	private MoveDirection prevMoveDirection = MoveDirection.STAY;
+	private MoveDirection prevMoveDirection = MoveDirection.Stay;
 
 	void Awake()
 	{
@@ -42,30 +63,72 @@ public class LogExecuter : MonoBehaviour
 		}
 
 		instance = this;
-		mobList = new List<GameObject>();
-		moveLog = new Queue<MoveDirection>();
+		replayLog = new Queue<LogInfo>();
 	}
 
 	// init variables
 	public void InitLogExecuter()
 	{
-		playerParty = MapManager.Instance.PlayerParty;
-		if ( playerParty == null )
-			Debug.LogError( "Error (Log Executer) : There is No Player Party" );		
-
-		mobList = MapManager.Instance.MobList;
-		if ( mobList == null )
-			Debug.LogError( "Error (Log Executer) : There is No Mob List" );
+// 		playerParty = MapManager.Instance.PlayerParty;
+// 		if ( playerParty == null )
+// 			Debug.LogError( "Error (Log Executer) : There is No Player Party" );		
+// 
+// 		mobList = MapManager.Instance.MobList;
+// 		if ( mobList == null )
+// 			Debug.LogError( "Error (Log Executer) : There is No Mob List" );
 	}
 
-	public void PlayLog()
+	public void PlayMapLog()
 	{
-		MoveCharacter( playerParty , moveLog.Dequeue() );
+		LogInfo logInfo = replayLog.Dequeue();		
+		switch( logInfo.logType )
+		{
+			case LogType.Move :
+				MoveCharacter( MapManager.Instance.PlayerParty , (MoveDirection)logInfo.logContent );
+				break;
+			case LogType.Battle :
+				int dummyMobIndex = 1;
+				PlayBattleLog(dummyMobIndex);
+
+				// If we win the battle, deactivate mob
+				MapManager.Instance.MobList[dummyMobIndex].SetActive( false );
+				break;
+			case LogType.Loot :
+				int dummyItemIndex = 1;
+				LootItem( dummyItemIndex );
+				MapManager.Instance.ItemList[dummyItemIndex].SetActive( false );
+				break;
+			case LogType.Win:
+				break;
+			case LogType.Fail:
+				break;
+		}
+
+		
+	}
+
+	private void Fail()
+	{
+		// show result popup
+	}
+
+	private void Clear()
+	{
+		// show result popup
+	}
+
+	private void LootItem(int index)
+	{
+		// show popup what is in the item box
+		Debug.Log( index + "th item box opened" );
+		
+		// after few second or tap popup, Play log again
+		PlayMapLog();
 	}
 
 	public void MoveCharacter( MoveDirection direction )
 	{
-		MoveCharacter( playerParty , direction );
+		MoveCharacter( MapManager.Instance.PlayerParty , direction );
 	}
 
 	// Warning!!! Dirty Code. We should use coroutine here
@@ -96,25 +159,32 @@ public class LogExecuter : MonoBehaviour
 			) );
 	}
 
-
-
 	private void MoveOneBlock( GameObject character )
-	{			
+	{
 		iTween.MoveAdd( character , iTween.Hash(
 				"z" , GameConfig.MINIMAL_UNIT_SIZE ,
 				"time" , GameConfig.CHARACTER_MOVING_TIME ,
 				"islocal" , true ,
 				"easetype" , iTween.EaseType.linear ,
-				"oncomplete" , "MoveCharacter" ,
-				"oncompletetarget" , gameObject ,
-				"oncompleteparams" , moveLog.Dequeue()
+				"oncomplete" , "PlayMapLog" ,
+				"oncompletetarget" , gameObject		
 				) );
+// 		iTween.MoveAdd( character , iTween.Hash(
+// 				"z" , GameConfig.MINIMAL_UNIT_SIZE ,
+// 				"time" , GameConfig.CHARACTER_MOVING_TIME ,
+// 				"islocal" , true ,
+// 				"easetype" , iTween.EaseType.linear ,
+// 				"oncomplete" , "MoveCharacter" ,
+// 				"oncompletetarget" , gameObject ,
+// 				"oncompleteparams" , replayLog.Dequeue()
+// 				) );
 	}
 
-	public void DoBattle( int targetMobId )
+	public void PlayBattleLog( int targetMobId )
 	{
-		// Debug.Log( "Start battle!! with" + mob );
-		BattleManager.Instance.StartBattle( targetMobId );
+		Debug.Log( "Start battle!! with" + targetMobId );
+		//BattleManager.Instance.StartBattle( targetMobId );
+		PlayMapLog();
 	}
 
 	public void MobAttackHero( int mobNumber , int heroNumber , float damage )

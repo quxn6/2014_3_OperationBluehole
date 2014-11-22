@@ -18,7 +18,7 @@ public class FollowingCam : MonoBehaviour
 
 	void Update()
 	{
-		if ( initFlag)
+		if ( initFlag )
 		{
 			transform.position = followingObject.transform.position + followingPosition;
 			transform.eulerAngles = /*followingObject.transform.eulerAngles +*/ followingRotation;

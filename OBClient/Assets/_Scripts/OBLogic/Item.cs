@@ -24,6 +24,7 @@ namespace OperationBluehole.Content
     // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
     public enum EquipType : ushort
 	{
+        None = 0x0,
 		Head = 0x1,
 		Body = 0x2,
 		LHand = 0x4,
@@ -34,12 +35,12 @@ namespace OperationBluehole.Content
     // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
     public enum WeaponType : uint
 	{
-		None		= 0x0,
-		Sword		= 0x1,
-		Bow			= 0x2,
-		Axe			= 0x4,
-		Staff		= 0x8,
-		Shield		= 0x10,
+		None		= 0x1,
+		Sword		= 0x2,
+        Bow         = 0x4,
+        Axe         = 0x8,
+        Staff       = 0x10,
+        Shield      = 0x20,
 		All			= 0xffffffff
 	}
 
