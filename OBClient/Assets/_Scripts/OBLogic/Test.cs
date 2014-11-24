@@ -14,8 +14,9 @@ namespace OperationBluehole.Content
 			TestData.playerList = new Dictionary<ulong, PlayerData>();
 
 			TestData.playerList.Add(101, new PlayerData
-			(
-				"TestPlayer101",
+            (
+                "TestPlayer101",
+                "TestPlayer101",
 				0,
 				1,
 				5,
@@ -41,7 +42,8 @@ namespace OperationBluehole.Content
 
 			TestData.playerList.Add(102, new PlayerData
 			(
-				"TestPlayer102",
+                "TestPlayer102",
+                "TestPlayer102",
 				0,
 				3,
 				5,
@@ -69,7 +71,8 @@ namespace OperationBluehole.Content
 
 			TestData.playerList.Add(103, new PlayerData
 			(
-				"TestPlayer103",
+                "TestPlayer103",
+                "TestPlayer103",
 				0,
 				3,
 				15,
@@ -96,7 +99,8 @@ namespace OperationBluehole.Content
 
 			TestData.playerList.Add(104, new PlayerData
 			(
-				"TestPlayer104",
+                "TestPlayer104",
+                "TestPlayer104",
 				0,
 				3,
 				10,

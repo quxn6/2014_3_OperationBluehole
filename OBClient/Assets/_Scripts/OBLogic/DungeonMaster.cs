@@ -82,7 +82,7 @@ namespace OperationBluehole.Content
         }
 
 		public MapObject[,] GetMapInfo() { return dungeon.map; }
-		public char[] GetDungeonMap() { return dungeon.PrintOutMAP(); }
+		public char[,] GetDungeonMap() { return dungeon.PrintOutMAP(); }
 
         public uint Start()
         {

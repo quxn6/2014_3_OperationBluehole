@@ -16,6 +16,7 @@ namespace OperationBluehole.Content
 		Skeleton_Warrior,
 		Skeleton_Soldier,
 		Skeleton_Mage,
+		Length,
 	}
 
 	class Mob : Character
@@ -25,6 +26,7 @@ namespace OperationBluehole.Content
 		public readonly int rewardExp;
 		public readonly int rewardGold;
 		public readonly Item rewardItem;
+		public readonly MobType mobType;
 
 		public Mob(MobData data)
 		{
@@ -36,6 +38,7 @@ namespace OperationBluehole.Content
 			this.rewardExp = data.rewardExp;
 			this.rewardGold = data.rewardGold;
 			this.rewardItem = data.rewardItem;
+			this.mobType = data.mobType;
 
 			CalcStat();
 		}
@@ -52,6 +55,7 @@ namespace OperationBluehole.Content
 		public int rewardExp;
 		public int rewardGold;
 		public Item rewardItem;
+		public MobType mobType;
 	}
 
 	struct MobTypeData

@@ -2,20 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 
-// raw data for map
-public struct Dungeon
-{
-	public char[] mapArray;
-	public int size;
-
-	public Dungeon( char[] dungeonMap , int size )
-	{
-		//this.dungeonMap = dungeonMap.ToCharArray();
-		this.mapArray = dungeonMap;
-		this.size = size;
-	}
-}
-
 public struct CharacterData
 {
 	public float hp;
@@ -80,9 +66,12 @@ public class DataManager : MonoBehaviour
 	public UIAtlas atlasSet = null;
 
 	// real data
-	private OperationBluehole.Content.Party userParty;
-	private List<OperationBluehole.Content.Party> mobPartyList;
-	private List<OperationBluehole.Content.Item> itemList;
+	public OperationBluehole.Content.Party UserParty { get; private set; }
+	public List<OperationBluehole.Content.Party> MobPartyList{ get; private set; }
+	public List<OperationBluehole.Content.Item> ItemList{ get; private set; }
+
+	public Queue<OperationBluehole.Content.Party> EncounteredMobPartyList { get; set; }
+	public List<OperationBluehole.Content.Item> LootedItemList { get; set; }
 
 	private List<EnemyGroup> enemyGroupList;
 	public List<EnemyGroup> EnemyGroupList
@@ -111,17 +100,19 @@ public class DataManager : MonoBehaviour
 		}
 
 		instance = this;
+
 		enemyGroupList = new List<EnemyGroup>();
 		heroList = new List<CharacterData>();
+		EncounteredMobPartyList = new Queue<OperationBluehole.Content.Party>();
 	}
 
-	public void InitReplayData(OperationBluehole.Content.Party userParty, List<OperationBluehole.Content.Party> mobPartyList, List<OperationBluehole.Content.Item> itemList)
+	public void SetReplayMapData(OperationBluehole.Content.Party userParty, List<OperationBluehole.Content.Party> mobPartyList, List<OperationBluehole.Content.Item> itemList)
 	{
-		this.userParty = userParty;
-		this.mobPartyList = mobPartyList;
-		this.itemList = itemList;
+		this.UserParty = userParty;
+		this.MobPartyList = mobPartyList;
+		this.ItemList = itemList;
 	}
-
+	
 	// Get data from Logic( or server )
 	public void InitEnemyDataList()
 	{

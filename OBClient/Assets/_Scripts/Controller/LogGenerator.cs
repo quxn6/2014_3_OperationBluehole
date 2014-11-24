@@ -35,6 +35,9 @@ public class LogGenerator : MonoBehaviour
 		// Generate Dungeon Map
 		dungeonMaster.Init( size , seed , userParty );
 
+		// Set object data
+		DataManager.Instance.SetReplayMapData( userParty , dungeonMaster.mobs , dungeonMaster.items);
+
 		// Get Dungeon Map(we generated) and Load on Client
 		sceneManager.GetComponent<Loading>().LoadMap( new Dungeon( dungeonMaster.GetDungeonMap() , size ) );
 
@@ -48,14 +51,18 @@ public class LogGenerator : MonoBehaviour
 	// Sort Logtype using path infomation and write log queue 
 	private void WriteLog()
 	{
+		// Set Looted Item Data
+		DataManager.Instance.LootedItemList = dungeonMaster.record.lootedItems;
+
+		// Set Encountered Mob Data
 		char positionInfo = '\0';
 		for ( int i = 0 ; i < dungeonMaster.record.pathfinding.Count - 1 ; ++i )
 		{
 			// check what is on the next step
-			int nextPosition = 
-				dungeonMaster.record.pathfinding[i+1].y * MapManager.Instance.InstanceDungeon.size 
-				+ dungeonMaster.record.pathfinding[i+1].x;
-			positionInfo = MapManager.Instance.InstanceDungeon.mapArray[nextPosition] ;
+			int xPos = dungeonMaster.record.pathfinding[i + 1].x;
+			int yPos = dungeonMaster.record.pathfinding[i + 1].y;
+			//int nextPosition = xPos * MapManager.Instance.InstanceDungeon.size + yPos;
+			positionInfo = MapManager.Instance.InstanceDungeon.mapArray2D[yPos , xPos];
 
 			// Generate Log and push in the queue
 			LogExecuter.Instance.ReplayLog.Enqueue( MakeMoveLog( i ) );
@@ -63,22 +70,27 @@ public class LogGenerator : MonoBehaviour
 			switch ( positionInfo )
 			{
 				case 'M': // start battle					
-					LogExecuter.Instance.ReplayLog.Enqueue( MakeBattleLog() );
+					LogExecuter.Instance.ReplayLog.Enqueue( MakeBattleLog( dungeonMaster.GetMapObject( xPos , yPos ).party ) );
 					break;
 				case 'I': // loot item					
 					LogExecuter.Instance.ReplayLog.Enqueue( MakeLootLog() );
 					break;
 				case 'T': // mob on the item, do two things
-					LogExecuter.Instance.ReplayLog.Enqueue( MakeBattleLog() );
+					LogExecuter.Instance.ReplayLog.Enqueue( MakeBattleLog( dungeonMaster.GetMapObject( xPos , yPos ).party ) );
 					LogExecuter.Instance.ReplayLog.Enqueue( MakeLootLog() );
 					break;
 				case 'O': // find exit
 					LogExecuter.Instance.ReplayLog.Enqueue( MakeWinLog() );
 					break;
+				case ' ': // just move
+					break;
+				default:
+					Debug.LogError( "We can't go there" );
+					break;
 			}
 
 			// Clear Used Map Data 
-			MapManager.Instance.InstanceDungeon.mapArray[nextPosition] = ' ';
+			MapManager.Instance.InstanceDungeon.mapArray2D[yPos , xPos] = ' ';
 		}
 
 		// Check dungeon had cleared
@@ -98,18 +110,19 @@ public class LogGenerator : MonoBehaviour
 	{
 		return new LogInfo( LogType.Win , 0 );
 	}
-	
+
 	private LogInfo MakeLootLog()
 	{
 		return new LogInfo( LogType.Loot , lootLogIndex++ );
 	}
 
-	private LogInfo MakeBattleLog()
+	private LogInfo MakeBattleLog( OperationBluehole.Content.Party mobParty )
 	{
+		DataManager.Instance.EncounteredMobPartyList.Enqueue( mobParty );
 		return new LogInfo( LogType.Battle , battleLogIndex++ );
 	}
 
-	private LogInfo MakeMoveLog(int index)
+	private LogInfo MakeMoveLog( int index )
 	{
 		return new LogInfo(
 				LogType.Move ,

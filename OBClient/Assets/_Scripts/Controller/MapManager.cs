@@ -2,7 +2,22 @@
 using System.Collections;
 using System.Collections.Generic;
 
+// raw data for map
+public struct Dungeon
+{
+	public char[,] mapArray2D;
+	public int size;
+
+	public Dungeon( char[,] dungeonMap , int size )
+	{
+		//this.dungeonMap = dungeonMap.ToCharArray();
+		this.mapArray2D = dungeonMap;
+		this.size = size;
+	}
+}
+
 // dungeon creator, do object placement
+// i : vertical , j : horizontal
 public class MapManager : MonoBehaviour
 {
 	static private bool isInitialized = false;
@@ -12,7 +27,7 @@ public class MapManager : MonoBehaviour
 	public GameObject emptySpacePrefab;
 	public GameObject itemBoxPrefab;
 	public GameObject floorPrefab;
-	public GameObject[] mobPrefab;
+	public GameObject[] mobPrefab;	
 
 	//private char[] currentMapInfo;
 	private Dungeon instanceDungeon;
@@ -28,11 +43,7 @@ public class MapManager : MonoBehaviour
 		get { return playerParty; }
 	}
 
-	private List<GameObject> mobList;
-	public List<GameObject> MobList
-	{
-		get { return mobList; }
-	}
+	public Dictionary<int , GameObject> MobList { get; private set; }
 
 	private List<GameObject> itemList;
 	public List<GameObject> ItemList
@@ -55,7 +66,7 @@ public class MapManager : MonoBehaviour
 		}
 
 		instance = this;
-		mobList = new List<GameObject>();
+		MobList = new Dictionary<int , GameObject>();
 		itemList = new List<GameObject>();
 	}
 
@@ -74,7 +85,7 @@ public class MapManager : MonoBehaviour
 		LgsObjectPoolManager.Instance.CreateObjectPool( itemBoxPrefab.name , itemBoxPrefab , 128 );
 		LgsObjectPoolManager.Instance.CreateObjectPool( floorPrefab.name , floorPrefab , 1 );
 
-		for ( int i = 1 ; i < mobPrefab.Length ; ++i )
+		for ( int i = 0 ; i < mobPrefab.Length ; ++i )
 		{
 			string typeName = ( (MobType)i ).ToString();
 			LgsObjectPoolManager.Instance.CreateObjectPool( typeName , mobPrefab[i] , 32 );
@@ -89,7 +100,7 @@ public class MapManager : MonoBehaviour
 	{
 		// Load map data from server
 		instanceDungeon = dungeonMap;
-		instanceDungeon.mapArray = (char[])dungeonMap.mapArray.Clone();
+		instanceDungeon.mapArray2D = (char[,])dungeonMap.mapArray2D.Clone();
 
 		// Put Game object on compatible coordinate of the map 
 		GameObject floor = LgsObjectPoolManager.Instance.ObjectPools[floorPrefab.name].PullObject();
@@ -97,60 +108,66 @@ public class MapManager : MonoBehaviour
 		floor.transform.rotation = Quaternion.Euler( 90.0f , 0.0f , 0.0f );
 		floor.transform.localScale = new Vector3( (float)instanceDungeon.size , (float)instanceDungeon.size , 1.0f );
 
-		for ( int i = 0 ; i < instanceDungeon.mapArray.Length ; ++i )
+		for ( int i = 0 ; i < instanceDungeon.size; ++i )
 		{
-			switch ( instanceDungeon.mapArray[i] )
+			for ( int j = 0 ; j < instanceDungeon.size ; ++j )
 			{
-				case '#':
-					InstantiateObject( emptySpacePrefab.name , i );
-					break;
-				case 'X':
-					InstantiateObject( wallPrefab.name , i );
-					break;
-				case 'P':
-					playerParty = InstantiateObject( playerPrefab.name , i );
-					EnvironmentManager.Instance.PutCamera( playerParty , CameraMode.THIRD_PERSON );
-					break;
-				case 'I':
-					InstanceItem( i );
-					break;
-				case 'M':
-					InstanceMob( i );
-					break;
-				case 'O':
-					// exit object
-					break;
-				case 'T': // Mob on the item
-					InstantiateObject( itemBoxPrefab.name , i );
-					InstanceMob( i );
-					break;
+				switch ( instanceDungeon.mapArray2D[i,j] )
+				{
+					case '#':
+						InstantiateObject( emptySpacePrefab.name , i, j );
+						break;
+					case 'X':
+						InstantiateObject( wallPrefab.name , i, j );
+						break;
+					case 'P':
+						playerParty = InstantiateObject( playerPrefab.name , i, j );
+						EnvironmentManager.Instance.PutCamera( playerParty , CameraMode.THIRD_PERSON );
+						break;
+					case 'I':
+						InstanceItem( i,j );
+						break;
+					case 'M':
+						InstanceMob( i,j );
+						break;
+					case 'O':
+						// exit object
+						break;
+					case 'T': // Mob on the item
+						InstantiateObject( itemBoxPrefab.name , i, j );
+						InstanceMob( i,j );
+						break;
+				}
 			}
 		}
 	}
 
-	private void InstanceItem( int i )
+	private void InstanceItem( int i, int j )
 	{
 		int itemId = itemList.Count;
-		itemList.Add( InstantiateObject( itemBoxPrefab.name , i ) );
+		itemList.Add( InstantiateObject( itemBoxPrefab.name , i, j ) );
 	}
 
-	private void InstanceMob( int i )
+	private int mobIterator = 0;
+	private void InstanceMob( int i, int j )
 	{
 		// Mob Model in the dungeon will be first mob in the Mob Group;
-		int mobId = mobList.Count;
-		MobType newMobType = DataManager.Instance.EnemyGroupList[mobId].enemies[0].mobType;
-		GameObject mobInstance = InstantiateObject( newMobType.ToString() , i );
+		int mobId = MobList.Count;
+		//MobType newMobType = DataManager.Instance.EnemyGroupList[mobId].enemies[0].mobType;		
+		OperationBluehole.Content.MobType newMobType = ( (OperationBluehole.Content.Mob)DataManager.Instance.MobPartyList[mobIterator++].characters[0] ).mobType;
+		GameObject mobInstance = InstantiateObject( newMobType.ToString() , i, j);
 		//mobInstance.GetComponent<Mob>().MobId = mobId;
-		mobList.Add( mobInstance );
+		MobList.Add( i * instanceDungeon.size + j , mobInstance);
+		//MobList.Add( mobInstance );
 	}
 
 	public void ClearAllMapObjects()
 	{
 		LgsObjectPoolManager.Instance.ResetAllObjectPools();
-		mobList.Clear();
+		MobList.Clear();
 	}
 
-	private GameObject InstantiateObject( string prefabObjectName , int instanceOrder )
+	private GameObject InstantiateObject( string prefabObjectName , int i, int j )
 	{
 		LgsObjectPool pool;
 		if ( !LgsObjectPoolManager.Instance.ObjectPools.TryGetValue( prefabObjectName , out pool ) )
@@ -159,7 +176,8 @@ public class MapManager : MonoBehaviour
 		}
 
 		GameObject instanceObject = LgsObjectPoolManager.Instance.ObjectPools[prefabObjectName].PullObject();
-		instanceObject.transform.Translate( (float)( instanceOrder % instanceDungeon.size ) , 0.0f , (float)( instanceOrder / instanceDungeon.size ) );		//instanceObject.transform.position = new Vector3( (float)( instanceOrder % instanceDungeon.size ) , 1.0f , (float)( instanceOrder / instanceDungeon.size ) );
+		//instanceObject.transform.Translate( (float)( x % instanceDungeon.size ) , 0.0f , (float)( x / instanceDungeon.size ) );		
+		instanceObject.transform.Translate( (float)j , 0.0f , (float)i);		
 		return instanceObject;
 	}
 

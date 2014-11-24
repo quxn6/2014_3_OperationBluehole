@@ -493,13 +493,13 @@ namespace OperationBluehole.Content
         public MapObject GetMapObject( int x, int y ) { return map[y, x]; }
 
         #region FOR DEBUG
-        public char[] PrintOutMAP()
+        public char[,] PrintOutMAP()
         {
 			// emptySpace, tile, wall, Item, Mob, Player, Exit, Mob on the Item
 			char[] visualizer = { '#' , ' ' , 'X' , 'I' , 'M' , 'P' , 'O' , 'T' };
 
             //Console.Clear();
-			char[] dungeonMap = new char[size * size];
+			char[,] dungeonMap = new char[size , size];
             for ( int i = 0; i < size; ++i )
             {
                 for ( int j = 0; j < size; ++j )
@@ -507,7 +507,7 @@ namespace OperationBluehole.Content
                     if ( j == ringPosition.x && i == ringPosition.y )
                     {
                         Console.Write( 'O' );
-						dungeonMap[size * i + j] = visualizer[6];
+						dungeonMap[i, j] = visualizer[6];
                         continue;
                     }
 
@@ -516,11 +516,11 @@ namespace OperationBluehole.Content
                     {
                         case MapObjectType.VOID:
                             Console.Write( visualizer[0] );
-							dungeonMap[size * i + j] = visualizer[0];
+							dungeonMap[i, j] = visualizer[0];
                             break;
                         case MapObjectType.WALL:
                             Console.Write( visualizer[2] );
-							dungeonMap[size * i + j] = visualizer[2];
+							dungeonMap[i, j] = visualizer[2];
                             break;
                         default:	
                             if ( map[i, j].party != null )
@@ -529,23 +529,23 @@ namespace OperationBluehole.Content
 								{
 									mobFlag = true;
 									Console.Write( visualizer[4] );
-									dungeonMap[size * i + j] = visualizer[4];
+									dungeonMap[i, j] = visualizer[4];
 								}
 								else
 								{
 									Console.Write( visualizer[5] );
-									dungeonMap[size * i + j] = visualizer[5];		
+									dungeonMap[i, j] = visualizer[5];		
 								}
                             }
                             else if ( map[i, j].gameObject != null )
 							{
 								Console.Write( mobFlag? visualizer[7] : visualizer[3] );
-								dungeonMap[size * i + j] = mobFlag ? visualizer[7] : visualizer[3];		
+								dungeonMap[i, j] = mobFlag ? visualizer[7] : visualizer[3];		
 							}                                
                             else
 							{
 								Console.Write( visualizer[1] );
-								dungeonMap[size * i + j] = visualizer[1];		
+								dungeonMap[i, j] = visualizer[1];		
 							}
                                 
                             break;

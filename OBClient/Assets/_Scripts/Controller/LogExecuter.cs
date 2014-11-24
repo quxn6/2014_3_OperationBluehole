@@ -37,8 +37,8 @@ public struct LogInfo
 
 public class LogExecuter : MonoBehaviour
 {
-// 	private GameObject playerParty = null;
-// 	private List<GameObject> mobList = null;
+	private MoveDirection prevMoveDirection = MoveDirection.Stay;
+
 	private Queue<LogInfo> replayLog;
 	public Queue<LogInfo> ReplayLog
 	{
@@ -51,8 +51,6 @@ public class LogExecuter : MonoBehaviour
 	{
 		get { return instance; }
 	}
-
-	private MoveDirection prevMoveDirection = MoveDirection.Stay;
 
 	void Awake()
 	{
@@ -103,8 +101,6 @@ public class LogExecuter : MonoBehaviour
 			case LogType.Fail:
 				break;
 		}
-
-		
 	}
 
 	private void Fail()
@@ -162,22 +158,13 @@ public class LogExecuter : MonoBehaviour
 	private void MoveOneBlock( GameObject character )
 	{
 		iTween.MoveAdd( character , iTween.Hash(
-				"z" , GameConfig.MINIMAL_UNIT_SIZE ,
-				"time" , GameConfig.CHARACTER_MOVING_TIME ,
-				"islocal" , true ,
-				"easetype" , iTween.EaseType.linear ,
-				"oncomplete" , "PlayMapLog" ,
-				"oncompletetarget" , gameObject		
-				) );
-// 		iTween.MoveAdd( character , iTween.Hash(
-// 				"z" , GameConfig.MINIMAL_UNIT_SIZE ,
-// 				"time" , GameConfig.CHARACTER_MOVING_TIME ,
-// 				"islocal" , true ,
-// 				"easetype" , iTween.EaseType.linear ,
-// 				"oncomplete" , "MoveCharacter" ,
-// 				"oncompletetarget" , gameObject ,
-// 				"oncompleteparams" , replayLog.Dequeue()
-// 				) );
+			"z" , GameConfig.MINIMAL_UNIT_SIZE ,
+			"time" , GameConfig.CHARACTER_MOVING_TIME ,
+			"islocal" , true ,
+			"easetype" , iTween.EaseType.linear ,
+			"oncomplete" , "PlayMapLog" ,
+			"oncompletetarget" , gameObject
+			) );
 	}
 
 	public void PlayBattleLog( int targetMobId )
