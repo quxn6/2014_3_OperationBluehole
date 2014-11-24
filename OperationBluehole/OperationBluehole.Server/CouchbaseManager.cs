@@ -61,9 +61,15 @@ namespace OperationBluehole.Server
         [JsonProperty("skill")]
         public List<ushort> Skill { get; set; }
 
+        [JsonProperty( "gold" )]
+        public uint Gold { get; set; }
+
         // 전체 인벤토리
         [JsonProperty("inventory")]
         public List<uint> Inventory { get; set; }
+
+        [JsonProperty( "token" )]
+        public List<ItemToken> Token { get; set; }
 
         // 장착한 장비
         [JsonProperty("equipment")]

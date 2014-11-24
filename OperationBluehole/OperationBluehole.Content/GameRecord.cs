@@ -22,8 +22,8 @@ namespace OperationBluehole.Content
 
         // 전리품
         public List<Item> lootedItems = new List<Item>();
-        public int lootedGold = 0;
-        public int lootedExp = 0;
+        public uint lootedGold = 0;
+        public uint lootedExp = 0;
     }
 
     public struct TurnInfo
