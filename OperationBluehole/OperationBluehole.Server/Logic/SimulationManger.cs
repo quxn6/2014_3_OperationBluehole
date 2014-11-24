@@ -81,7 +81,13 @@ namespace OperationBluehole.Server
 
                         // update player data
                         var playerData = PlayerDataDatabase.GetPlayerData( id );
-                        // ...
+                        
+                        // 크게 할 일은 경험치 추가, 골드 추가, 아이템토큰 추가
+                        playerData.Gold += newMaster.record.lootedGold;
+                        playerData.Exp += newMaster.record.lootedExp;
+                        newMaster.record.lootedItems.ForEach( eachItem => { playerData.Token.Add( (ItemToken)eachItem ); } );
+
+                        PlayerDataDatabase.SetPlayerData( playerData );
 
                         // update result table
                         var resultTable = ResultTableDatabase.GetResultTable( id );

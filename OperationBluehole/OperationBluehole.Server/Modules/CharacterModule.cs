@@ -28,7 +28,7 @@ namespace OperationBluehole.Server.Modules
             : base( "/character" )
         {
             // 시뮬레이션 결과 요청
-            Get["/result"] = parameters =>
+            Get["/simulation_result"] = parameters =>
             {
                 // 일단 해당 유저의 id를 확인하고, 시뮬레이션 결과가 있는지 확인한다
                 this.RequiresAuthentication();
@@ -60,6 +60,18 @@ namespace OperationBluehole.Server.Modules
 
                 // 전송한다
                 return JsonConvert.SerializeObject( baseData ); ;
+            };
+
+            Get["/update"] = parameters =>
+            {
+                // 캐릭터의 최신 정보 받기
+                // PlayerDataSource를 보낸다
+                return "levelup";
+            };
+
+            Get["/levelup"] = parameters =>
+            {
+                return "levelup";
             };
         }
     }
