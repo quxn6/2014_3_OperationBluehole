@@ -23,8 +23,8 @@ namespace OperationBluehole.Content
 	{
 		// 보상 리스트가 있어야 한다
 		// 경험치와 골드와 아이템(지금은 일단 토큰만 준다)
-		public readonly int rewardExp;
-		public readonly int rewardGold;
+		public readonly uint rewardExp;
+		public readonly uint rewardGold;
 		public readonly Item rewardItem;
 		public readonly MobType mobType;
 
@@ -52,8 +52,8 @@ namespace OperationBluehole.Content
 		public List<ItemCode> items;
 		public List<ItemCode> equipments;
 		public BattleStyle battleStyle;
-		public int rewardExp;
-		public int rewardGold;
+		public uint rewardExp;
+		public uint rewardGold;
 		public Item rewardItem;
 		public MobType mobType;
 	}
@@ -109,8 +109,8 @@ namespace OperationBluehole.Content
 			ushort[] stats = new ushort[(int)StatType.StatCount];
 			{
 				stats[(int)StatType.Lev] = level;
-				
-				int totalStat = level * 3 + 27;
+
+                int totalStat = Character.GetTotalStatsAtLevel(level);
 				ushort[] statRate = mobTypeDataTable[mobType].statRate;
 
 				int[] statBlock = new int[statRate.Sum(i => i) + 1];
@@ -143,8 +143,8 @@ namespace OperationBluehole.Content
 			newData.equipments = mobTypeDataTable[mobType].equipments;
 			newData.battleStyle = mobTypeDataTable[mobType].battleStyles[random.Next(mobTypeDataTable[mobType].battleStyles.Length-1)];
 
-			newData.rewardExp = level * Config.MOB_REWARD_EXP_WEIGHT;
-			newData.rewardGold = level * Config.MOB_REWARD_GOLD_WEIGHT;
+			newData.rewardExp = (uint)level * Config.MOB_REWARD_EXP_WEIGHT;
+            newData.rewardGold = (uint)level * Config.MOB_REWARD_GOLD_WEIGHT;
 
 			if (random.Next(Config.MOB_REWARD_ITEM_CHANCE_MAX) < mobTypeDataTable[mobType].tokenDropChance)
 				newData.rewardItem = new ItemToken(

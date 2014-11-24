@@ -466,5 +466,11 @@ namespace OperationBluehole.Content
 
             return true;
         }
+
+        public static int GetTotalStatsAtLevel(ushort level)
+        {
+            int totalStat = (level - 1) * Config.BONUS_STAT_PER_LEVEL + Config.CHARACTER_BASE_STATS.Skip(1).Take(6).Sum(i => i);
+            return totalStat;
+        }
 	}
 }

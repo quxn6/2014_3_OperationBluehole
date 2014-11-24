@@ -22,9 +22,12 @@ namespace OperationBluehole.Content
 
         // Character
 		public const int MAX_CHARACTER_SP = 100;
-		public static readonly ushort[] CHARACTER_BASE_STATS = { 1, 5, 5, 5, 5, 5, 5, 5 };
+		public static readonly ushort[] CHARACTER_BASE_STATS = { 1, 5, 5, 5, 5, 5, 5, 5 }; // Lev, Str, Dex, Int, Con, Agi, Wis, Mov
 		public const short BATTLE_AI_RANDOM_LEVEL = 100;
 		public const uint BATTLE_DEFENDED_MIN_DAMAGE = 1;
+        public const int BONUS_STAT_PER_LEVEL = 3;
+        public const int GET_SKILL_PER_LEVEL_UP = 3;
+        public const int MAX_CARRY_ITEMS = 5;
 
 		// Mob
         public const int MOB_REWARD_EXP_WEIGHT = 10;
