@@ -55,6 +55,9 @@ namespace OperationBluehole.Server
         [JsonProperty("exp")]
         public uint Exp { get; set; }
 
+        [JsonProperty( "unused stat points" )]
+        public ushort StatPoints { get; set; }
+
         [JsonProperty("stat")]
         public List<ushort> Stat { get; set; }
 

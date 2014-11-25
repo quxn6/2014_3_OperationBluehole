@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
-    static class Config
+    public static class Config
     {
         // Battle
 
@@ -28,6 +28,13 @@ namespace OperationBluehole.Content
         public const int BONUS_STAT_PER_LEVEL = 3;
         public const int GET_SKILL_PER_LEVEL_UP = 3;
         public const int MAX_CARRY_ITEMS = 5;
+        public const uint REQUIRED_EXP_WEIGHT = 10;
+        public const ushort BONUS_SKILL_POINTS_EACH_LEVELUP = 4;
+
+        public static uint GetExpRequired( ushort currentLevel )
+        {
+            return currentLevel * REQUIRED_EXP_WEIGHT;
+        }
 
 		// Mob
         public const int MOB_REWARD_EXP_WEIGHT = 10;

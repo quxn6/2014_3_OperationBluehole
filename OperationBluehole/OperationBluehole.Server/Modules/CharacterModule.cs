@@ -66,12 +66,52 @@ namespace OperationBluehole.Server.Modules
             {
                 // 캐릭터의 최신 정보 받기
                 // PlayerDataSource를 보낸다
-                return "levelup";
+                return "data";
             };
 
             Get["/levelup"] = parameters =>
             {
-                return "levelup";
+                // 일단 해당 유저의 id를 확인하고
+                this.RequiresAuthentication();
+
+                PlayerDataSource playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
+
+                uint expRequired = Content.Config.GetExpRequired( playerData.Stat[(int)StatType.Lev] );
+                if ( playerData.Exp >= expRequired )
+                {
+                    playerData.Exp -= expRequired;
+                    ++playerData.Stat[(int)StatType.Lev];
+
+                    playerData.StatPoints += Content.Config.BONUS_SKILL_POINTS_EACH_LEVELUP;
+
+                    Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
+
+                    return "levelup";
+                }
+
+                return "need more exp";
+            };
+
+            Post["/increase_stat"] = parameters =>
+            {
+                // 일단 해당 유저의 id를 확인하고
+                this.RequiresAuthentication();
+
+                int stat = Request.Form.stat;
+
+                PlayerDataSource playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
+
+                if ( playerData.StatPoints <= 0 )
+                    return "no point";
+
+                if ( stat <= (int)StatType.Lev || stat >= (int)StatType.StatCount )
+                    return "wrong stat";
+
+                ++playerData.Stat[stat];
+
+                Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
+
+                return "increased";
             };
         }
     }
