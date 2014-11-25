@@ -15,6 +15,60 @@ namespace OperationBluehole.Server.Modules
 
     // 플레이어의 캐릭터를 조작( 장비 설정이나 능력치 배분과 같은... )
 
+    private class ClientPlayerData
+    {
+        public string Name { get; set; }
+
+        public uint Exp { get; set; }
+        public ushort StatPoints { get; set; }
+        public List<ushort> Stat { get; set; }
+        public List<ushort> Skill { get; set; }
+
+        public uint Gold { get; set; }
+        public List<uint> Inventory { get; set; }
+        public List<ItemToken> Token { get; set; }
+
+        public List<uint> Equipment { get; set; }
+        public List<uint> Consumable { get; set; }
+
+        public byte BattleStyle { get; set; }
+
+        public List<string> BanList { get; set; }
+
+        public ClientPlayerData( PlayerDataSource source )
+        {
+            this.Name = source.Name;
+
+            this.Exp = source.Exp;
+            this.StatPoints = source.StatPoints;
+
+            this.Stat = new List<ushort>();
+            source.Stat.ForEach( each => this.Stat.Add( each ) );
+
+            this.Skill = new List<ushort>();
+            source.Stat.ForEach( each => this.Skill.Add( each ) );
+
+            this.Gold = source.Gold;
+
+            this.Inventory = new List<uint>();
+            source.Inventory.ForEach( each => this.Inventory.Add( each ) );
+
+            this.Token = new List<ItemToken>();
+            source.Token.ForEach( each => this.Token.Add( each ) );
+
+            this.Equipment = new List<uint>();
+            source.Equipment.ForEach( each => this.Equipment.Add( each ) );
+
+            this.Consumable = new List<uint>();
+            source.Consumable.ForEach( each => this.Consumable.Add( each ) );
+
+            this.BattleStyle = source.BattleStyle;
+
+            this.BanList = new List<string>();
+            source.BanList.ForEach( each => this.BanList.Add( each ) );
+        }
+    }
+
     public class CharacterModule : NancyModule
     {
         class GameResultBaseData
@@ -66,7 +120,13 @@ namespace OperationBluehole.Server.Modules
             {
                 // 캐릭터의 최신 정보 받기
                 // PlayerDataSource를 보낸다
-                return "data";
+
+                // 일단 해당 유저의 id를 확인하고
+                this.RequiresAuthentication();
+
+                PlayerDataSource playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
+
+                return JsonConvert.SerializeObject( new ClientPlayerData( playerData ) ); ;
             };
 
             Get["/levelup"] = parameters =>
