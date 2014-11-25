@@ -151,9 +151,9 @@ namespace OperationBluehole.Content
             // Console.ReadLine();
 
             // 임시 몹 사용
-            Party tempMob = TempMobGenerator();
+            //Party tempMob = TempMobGenerator();
 
-            Battle newBattle = new Battle( random, users, tempMob );
+            Battle newBattle = new Battle( random, users, mob );
             #region 전투기록 : 전투기록 설정
             if(record != null)
                 newBattle.battleInfo = new BattleInfo(); 
