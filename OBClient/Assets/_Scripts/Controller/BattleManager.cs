@@ -19,7 +19,8 @@ public class BattleManager : MonoBehaviour
 		set { enemyInstanceList = value; }
 	}
 
-	private EnemyGroup enemyGroupData;
+	//private EnemyGroup enemyGroupData;
+	private OperationBluehole.Content.Party enemyGroupData;
 
 	//static private bool isInitialized = false;
 
@@ -54,10 +55,10 @@ public class BattleManager : MonoBehaviour
 	public void EndBattle()
 	{
 		//LgsObjectPoolManager.Instance.ObjectPools[enemyPrefab.name].ResetPool();
-		for ( int i = 0 ; i < enemyGroupData.enemies.Length ; ++i )
+		for ( int i = 0 ; i < enemyGroupData.characters.Count; ++i )
 		{
 			//Destroy( enemyInstanceList[i].GetComponent<Enemy>() );
-			LgsObjectPoolManager.Instance.ObjectPools[( enemyGroupData.enemies[i].mobType ).ToString()]
+			LgsObjectPoolManager.Instance.ObjectPools[( ((OperationBluehole.Content.Mob)enemyGroupData.characters[i]).mobType ).ToString()]
 				.PushObject( enemyInstanceList[i] );
 
 			// deactivate mob HP Bar
@@ -75,7 +76,7 @@ public class BattleManager : MonoBehaviour
 	// Get Enemy Group Data from data manager class
 	private void InitBattleObjects( int mobId )
 	{
-		enemyGroupData = DataManager.Instance.EnemyGroupList[mobId];
+		enemyGroupData = DataManager.Instance.MobPartyList[mobId];
 		// 		// Create object pool in first battle
 		// 		if ( isInitialized )
 		// 			return;
@@ -91,7 +92,7 @@ public class BattleManager : MonoBehaviour
 	private void LoadEnemyData()
 	{
 		// Load enemy count and check validation
-		int enemyCount = enemyGroupData.enemies.Length;
+		int enemyCount = enemyGroupData.characters.Count;
 		if ( enemyCount > mobPositions.Length )
 		{
 			Debug.LogError( "Error(battle area) : Two many enemies loaded. current " + enemyCount + ", it have to be LE " + mobPositions.Length );
@@ -102,9 +103,9 @@ public class BattleManager : MonoBehaviour
 		for ( int i = 0 ; i < enemyCount ; ++i )
 		{
 			// Instance enemy and set the status data
-			string mobTypeName = ( enemyGroupData.enemies[i].mobType ).ToString();
+			string mobTypeName = ( ((OperationBluehole.Content.Mob)enemyGroupData.characters[i]).mobType ).ToString();
 			enemyInstanceList[i] = LgsObjectPoolManager.Instance.ObjectPools[mobTypeName].PullObject();
-			enemyInstanceList[i].GetComponent<Mob>().InitMob( enemyGroupData.enemies[i].characterData );
+			enemyInstanceList[i].GetComponent<Mob>().InitMob( (OperationBluehole.Content.Mob)enemyGroupData.characters[i] );
 			mobHpBar[i].GetComponent<HPBar>().InitHpBar( EnemyInstanceList[i] );
 			//enemyInstanceList[i].AddComponent( "Enemy" );
 			//enemyInstanceList[i].GetComponent<Enemy>().EnemyStat = enemyGroupData.enemies[i].characterData;
@@ -121,7 +122,7 @@ public class BattleManager : MonoBehaviour
 	private void LoadHeroData()
 	{
 		// Check hero count validation
-		int heroCount = DataManager.Instance.HeroList.Count;
+		int heroCount = DataManager.Instance.UserParty.characters.Count;
 
 		if ( heroCount != GameConfig.MAXIMUM_HERO_COUNT )
 			Debug.LogError( "Error(battle area) : We need " + GameConfig.MAXIMUM_HERO_COUNT + " heroes" );
@@ -129,7 +130,7 @@ public class BattleManager : MonoBehaviour
 		// Set status of heroes and set UI values
 		for ( int i = 0 ; i < heroCount ; ++i )
 		{
-			heroStatus[i].GetComponent<Hero>().HeroStat = DataManager.Instance.HeroList[i];
+			heroStatus[i].GetComponent<Hero>().HeroStat = DataManager.Instance.UserParty.characters[i];
 		}
 
 		// Move camera on predetermined position in battle area

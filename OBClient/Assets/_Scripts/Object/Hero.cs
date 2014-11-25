@@ -9,14 +9,7 @@ public class Hero : MonoBehaviour
 	private GameObject mpUI = null;
 	private GameObject levelUI = null;
 
-	private CharacterData heroStat;
-	public CharacterData HeroStat
-	{
-		get { return heroStat; }
-		set { heroStat = value; }
-	}
-
-	private CharacterData currentStat;
+	private CharacterData heroData;
 
 	void Awake()
 	{
@@ -34,20 +27,27 @@ public class Hero : MonoBehaviour
 		InitHeroUI();
 	}
 
-	public void InitHeroUI()
-	{		
-		currentStat = heroStat;
+	public void InitHeroData( OperationBluehole.Content.Character characterStat )
+	{
+		heroData = new CharacterData(
+			characterStat.actualParams[(int)OperationBluehole.Content.ParamType.maxHp] ,
+			characterStat.actualParams[(int)OperationBluehole.Content.ParamType.maxMp] ,
+			characterStat.baseStats[(int)OperationBluehole.Content.StatType.Lev] ,
+			0 );
+	}
 
+	public void InitHeroUI()
+	{
 		faceUI.GetComponent<UISprite>().spriteName = DataManager.Instance.atlasSet.spriteList[0].name;
-		hpUI.GetComponent<UISprite>().fillAmount = currentStat.hp / heroStat.hp;
-		mpUI.GetComponent<UISprite>().fillAmount = currentStat.mp / heroStat.mp;
-		levelUI.GetComponent<UILabel>().text = heroStat.level.ToString();
+		hpUI.GetComponent<UISprite>().fillAmount = heroData.currentHp / heroData.maxHp;
+		mpUI.GetComponent<UISprite>().fillAmount = heroData.currentMp / heroData.maxMp;
+		levelUI.GetComponent<UILabel>().text = heroData.level.ToString();
 	}
 
 	public void BeAttacked(float damage)
 	{
-		currentStat.hp -= damage;
-		hpUI.GetComponent<UISprite>().fillAmount = currentStat.hp / heroStat.hp;
+		heroData.currentHp -= damage;
+		hpUI.GetComponent<UISprite>().fillAmount = heroData.currentHp / heroData.currentHp;
 	}
 
 	public void BeKilled()

@@ -30,10 +30,16 @@ public class LogGenerator : MonoBehaviour
 		dungeonMaster = new OperationBluehole.Content.DungeonMaster();
 	}
 
+	OperationBluehole.Content.DungeonMaster tmpMaster = new OperationBluehole.Content.DungeonMaster();
 	public void GenerateLog( int size , int seed , OperationBluehole.Content.Party userParty )
 	{
 		// Generate Dungeon Map
 		dungeonMaster.Init( size , seed , userParty );
+
+		//////// warning!!!! ////////////////////
+		// We should create deep copy method for MapObject. for now, just generate another dungeon.
+		tmpMaster.Init( size , seed , userParty );
+		/////////////////////////////////////////
 
 		// Set object data
 		DataManager.Instance.SetReplayMapData( userParty , dungeonMaster.mobs , dungeonMaster.items);
@@ -70,13 +76,13 @@ public class LogGenerator : MonoBehaviour
 			switch ( positionInfo )
 			{
 				case 'M': // start battle					
-					LogExecuter.Instance.ReplayLog.Enqueue( MakeBattleLog( dungeonMaster.GetMapObject( xPos , yPos ).party ) );
+					LogExecuter.Instance.ReplayLog.Enqueue( MakeBattleLog( tmpMaster.GetMapObject( xPos , yPos ).party ) );
 					break;
 				case 'I': // loot item					
 					LogExecuter.Instance.ReplayLog.Enqueue( MakeLootLog() );
 					break;
 				case 'T': // mob on the item, do two things
-					LogExecuter.Instance.ReplayLog.Enqueue( MakeBattleLog( dungeonMaster.GetMapObject( xPos , yPos ).party ) );
+					LogExecuter.Instance.ReplayLog.Enqueue( MakeBattleLog( tmpMaster.GetMapObject( xPos , yPos ).party ) );
 					LogExecuter.Instance.ReplayLog.Enqueue( MakeLootLog() );
 					break;
 				case 'O': // find exit
@@ -118,7 +124,7 @@ public class LogGenerator : MonoBehaviour
 
 	private LogInfo MakeBattleLog( OperationBluehole.Content.Party mobParty )
 	{
-		DataManager.Instance.EncounteredMobPartyList.Enqueue( mobParty );
+		DataManager.Instance.EncounteredMobPartyList.Add( mobParty );
 		return new LogInfo( LogType.Battle , battleLogIndex++ );
 	}
 

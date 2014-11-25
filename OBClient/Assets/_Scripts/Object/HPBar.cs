@@ -38,7 +38,7 @@ public class HPBar : MonoBehaviour
 		transform.position = new Vector3( menuPosition.x , menuPosition.y - 0.1f, 0.0f );
 
 		// set value of hp
-		hpValueUI.value = followingMobInfo.CurrentStat.hp / followingMobInfo.EnemyStat.hp;
+		hpValueUI.value = followingMobInfo.MobData.currentHp / followingMobInfo.MobData.maxHp;
 	}
 
 	void OnDeactivate()

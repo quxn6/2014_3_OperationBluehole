@@ -27,7 +27,7 @@ public class MapManager : MonoBehaviour
 	public GameObject emptySpacePrefab;
 	public GameObject itemBoxPrefab;
 	public GameObject floorPrefab;
-	public GameObject[] mobPrefab;	
+	public GameObject[] mobPrefab;
 
 	//private char[] currentMapInfo;
 	private Dungeon instanceDungeon;
@@ -43,13 +43,8 @@ public class MapManager : MonoBehaviour
 		get { return playerParty; }
 	}
 
-	public Dictionary<int , GameObject> MobList { get; private set; }
-
-	private List<GameObject> itemList;
-	public List<GameObject> ItemList
-	{
-		get { return itemList; }
-	}
+	public Dictionary<int , GameObject> MobDictionary { get; private set; }
+	public Dictionary<int , GameObject> ItemDictionary { get; private set; }
 
 	static private MapManager instance;
 	static public MapManager Instance
@@ -66,8 +61,8 @@ public class MapManager : MonoBehaviour
 		}
 
 		instance = this;
-		MobList = new Dictionary<int , GameObject>();
-		itemList = new List<GameObject>();
+		MobDictionary = new Dictionary<int , GameObject>();
+		ItemDictionary = new Dictionary<int , GameObject>();
 	}
 
 	// initialize objectpool only one time
@@ -108,66 +103,65 @@ public class MapManager : MonoBehaviour
 		floor.transform.rotation = Quaternion.Euler( 90.0f , 0.0f , 0.0f );
 		floor.transform.localScale = new Vector3( (float)instanceDungeon.size , (float)instanceDungeon.size , 1.0f );
 
-		for ( int i = 0 ; i < instanceDungeon.size; ++i )
+		for ( int i = 0 ; i < instanceDungeon.size ; ++i )
 		{
 			for ( int j = 0 ; j < instanceDungeon.size ; ++j )
 			{
-				switch ( instanceDungeon.mapArray2D[i,j] )
+				switch ( instanceDungeon.mapArray2D[i , j] )
 				{
 					case '#':
-						InstantiateObject( emptySpacePrefab.name , i, j );
+						InstantiateObject( emptySpacePrefab.name , i , j );
 						break;
 					case 'X':
-						InstantiateObject( wallPrefab.name , i, j );
+						InstantiateObject( wallPrefab.name , i , j );
 						break;
 					case 'P':
-						playerParty = InstantiateObject( playerPrefab.name , i, j );
+						playerParty = InstantiateObject( playerPrefab.name , i , j );
 						EnvironmentManager.Instance.PutCamera( playerParty , CameraMode.THIRD_PERSON );
 						break;
 					case 'I':
-						InstanceItem( i,j );
+						InstanceItem( i , j );
 						break;
 					case 'M':
-						InstanceMob( i,j );
+						InstanceMob( i , j );
 						break;
 					case 'O':
 						// exit object
 						break;
 					case 'T': // Mob on the item
-						InstantiateObject( itemBoxPrefab.name , i, j );
-						InstanceMob( i,j );
+						InstantiateObject( itemBoxPrefab.name , i , j );
+						InstanceMob( i , j );
 						break;
 				}
 			}
 		}
 	}
 
-	private void InstanceItem( int i, int j )
+	private void InstanceItem( int i , int j )
 	{
-		int itemId = itemList.Count;
-		itemList.Add( InstantiateObject( itemBoxPrefab.name , i, j ) );
+		int itemId = ItemDictionary.Count;
+		ItemDictionary.Add( i*instanceDungeon.size + j, InstantiateObject( itemBoxPrefab.name , i , j ) );
 	}
 
 	private int mobIterator = 0;
-	private void InstanceMob( int i, int j )
+	private void InstanceMob( int i , int j )
 	{
 		// Mob Model in the dungeon will be first mob in the Mob Group;
-		int mobId = MobList.Count;
+		int mobId = MobDictionary.Count;
 		//MobType newMobType = DataManager.Instance.EnemyGroupList[mobId].enemies[0].mobType;		
 		OperationBluehole.Content.MobType newMobType = ( (OperationBluehole.Content.Mob)DataManager.Instance.MobPartyList[mobIterator++].characters[0] ).mobType;
-		GameObject mobInstance = InstantiateObject( newMobType.ToString() , i, j);
-		//mobInstance.GetComponent<Mob>().MobId = mobId;
-		MobList.Add( i * instanceDungeon.size + j , mobInstance);
+		GameObject mobInstance = InstantiateObject( newMobType.ToString() , i , j );
+		MobDictionary.Add( i * instanceDungeon.size + j , mobInstance );
 		//MobList.Add( mobInstance );
 	}
 
 	public void ClearAllMapObjects()
 	{
 		LgsObjectPoolManager.Instance.ResetAllObjectPools();
-		MobList.Clear();
+		MobDictionary.Clear();
 	}
 
-	private GameObject InstantiateObject( string prefabObjectName , int i, int j )
+	private GameObject InstantiateObject( string prefabObjectName , int i , int j )
 	{
 		LgsObjectPool pool;
 		if ( !LgsObjectPoolManager.Instance.ObjectPools.TryGetValue( prefabObjectName , out pool ) )
@@ -177,7 +171,7 @@ public class MapManager : MonoBehaviour
 
 		GameObject instanceObject = LgsObjectPoolManager.Instance.ObjectPools[prefabObjectName].PullObject();
 		//instanceObject.transform.Translate( (float)( x % instanceDungeon.size ) , 0.0f , (float)( x / instanceDungeon.size ) );		
-		instanceObject.transform.Translate( (float)j , 0.0f , (float)i);		
+		instanceObject.transform.Translate( (float)j , 0.0f , (float)i );
 		return instanceObject;
 	}
 

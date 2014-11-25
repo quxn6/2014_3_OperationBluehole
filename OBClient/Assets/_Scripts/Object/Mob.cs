@@ -3,21 +3,12 @@ using System.Collections;
 
 public class Mob : MonoBehaviour
 {
-// 	private int mobId = -1;
-// 	public int MobId
-// 	{
-// 		get { return mobId; }
-// 		set { mobId = value; }
-// 	}
+	private CharacterData mobData;
+	public CharacterData MobData
+	{
+		get { return mobData; }	
+	}	
 
-	private CharacterData enemyStat;	public CharacterData EnemyStat
-	{
-		get { return enemyStat; }
-	}
-	private CharacterData currentStat;	public CharacterData CurrentStat
-	{
-		get { return currentStat; }
-	}
 	private IAnimatable animatable;
 
 	void Awake()
@@ -30,15 +21,18 @@ public class Mob : MonoBehaviour
 		animatable.PlayIdle();
 	}
 
-	public void InitMob(CharacterData enemyStat)
+	public void InitMobData(OperationBluehole.Content.Mob enemyStat)
 	{
-		this.enemyStat = enemyStat;
-		currentStat = enemyStat;
+		mobData = new CharacterData(
+			enemyStat.actualParams[(int)OperationBluehole.Content.ParamType.maxHp] ,
+			enemyStat.actualParams[(int)OperationBluehole.Content.ParamType.maxMp] ,
+			enemyStat.baseStats[(int)OperationBluehole.Content.StatType.Lev] ,
+			0 );
 	}
 
 	public void BeAttacked( float damage )
 	{
-		currentStat.hp -= damage;
+		mobData.currentHp -= damage;
 	}
 
 	public bool IsAnimationPlaying()

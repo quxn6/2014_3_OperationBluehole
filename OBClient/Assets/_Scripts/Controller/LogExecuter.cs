@@ -32,19 +32,12 @@ public struct LogInfo
 	}
 }
 
-//delegate void CharacterController(GameObject character);
-//delegate void PlayerMoveQueue(GameObject character, MoveDirection direction);
-
 public class LogExecuter : MonoBehaviour
 {
 	private MoveDirection prevMoveDirection = MoveDirection.Stay;
 
-	private Queue<LogInfo> replayLog;
-	public Queue<LogInfo> ReplayLog
-	{
-		get { return replayLog; }
-		set { replayLog = value; }
-	}
+	public Queue<LogInfo> ReplayLog { get; private set; }
+	//private List<List<Turn>>
 
 	static private LogExecuter instance;
 	static public LogExecuter Instance
@@ -61,7 +54,7 @@ public class LogExecuter : MonoBehaviour
 		}
 
 		instance = this;
-		replayLog = new Queue<LogInfo>();
+		ReplayLog = new Queue<LogInfo>();
 	}
 
 	// init variables
@@ -76,25 +69,22 @@ public class LogExecuter : MonoBehaviour
 // 			Debug.LogError( "Error (Log Executer) : There is No Mob List" );
 	}
 
+	
+
 	public void PlayMapLog()
 	{
-		LogInfo logInfo = replayLog.Dequeue();		
+		LogInfo logInfo = ReplayLog.Dequeue();		
 		switch( logInfo.logType )
 		{
 			case LogType.Move :
 				MoveCharacter( MapManager.Instance.PlayerParty , (MoveDirection)logInfo.logContent );
 				break;
 			case LogType.Battle :
-				int dummyMobIndex = 1;
-				PlayBattleLog(dummyMobIndex);
-
-				// If we win the battle, deactivate mob
-				MapManager.Instance.MobList[dummyMobIndex].SetActive( false );
+				PlayBattleLog();
 				break;
 			case LogType.Loot :
-				int dummyItemIndex = 1;
-				LootItem( dummyItemIndex );
-				MapManager.Instance.ItemList[dummyItemIndex].SetActive( false );
+				LootItem();
+				//MapManager.Instance.ItemList[dummyItemIndex].SetActive( false );
 				break;
 			case LogType.Win:
 				break;
@@ -113,10 +103,23 @@ public class LogExecuter : MonoBehaviour
 		// show result popup
 	}
 
-	private void LootItem(int index)
+	private int lootedItemIterator = 0;
+	private void LootItem()
 	{
 		// show popup what is in the item box
-		Debug.Log( index + "th item box opened" );
+		var item = DataManager.Instance.LootedItemList[lootedItemIterator];
+		Debug.Log( "Get Item " + item.code );
+
+		// warning!!! : after user check popup, user tap popup and remove Itembox on map
+		int itemIndex = item.position.y * MapManager.Instance.InstanceDungeon.size + item.position.x;
+		GameObject itemInstance = null;
+		if (!MapManager.Instance.ItemDictionary.TryGetValue( itemIndex , out itemInstance ))
+		{
+			Debug.LogError( "Error : Item list index is not exist" );
+		}
+
+		itemInstance.SetActive( false );
+		++lootedItemIterator;
 		
 		// after few second or tap popup, Play log again
 		PlayMapLog();
@@ -167,11 +170,33 @@ public class LogExecuter : MonoBehaviour
 			) );
 	}
 
-	public void PlayBattleLog( int targetMobId )
+	private int battleLogIterator = 0;
+	public void PlayBattleLog()
 	{
-		Debug.Log( "Start battle!! with" + targetMobId );
-		//BattleManager.Instance.StartBattle( targetMobId );
+		Debug.Log( "Start battle!! with " + battleLogIterator + "th mob Party." );
+
+		var mobParty = DataManager.Instance.EncounteredMobPartyList[battleLogIterator];
+		if ( mobParty == null )
+			Debug.LogError( "Error : There is no battle log" );
+
+		//BattleManager.Instance.StartBattle()
+
+		BattleManager.Instance.StartBattle( battleLogIterator );
 		PlayMapLog();
+	}
+
+	public void EndBattle(OperationBluehole.Content.Party mobParty )
+	{
+		int mobIndex = mobParty.position.y * MapManager.Instance.InstanceDungeon.size + mobParty.position.x;
+		GameObject mobInstance = null;
+		if ( !MapManager.Instance.MobDictionary.TryGetValue( mobIndex , out mobInstance ) )
+		{
+			Debug.LogError( "Error : Mob list index is not exist" );
+		}
+
+		// If we win the battle, deactivate mob
+		mobInstance.SetActive( false );
+		++battleLogIterator;
 	}
 
 	public void MobAttackHero( int mobNumber , int heroNumber , float damage )
