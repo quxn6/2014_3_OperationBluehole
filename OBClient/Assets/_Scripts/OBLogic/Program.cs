@@ -40,11 +40,11 @@ namespace OperationBluehole.Content
             Console.WriteLine( "turn : " + newMaster.Start() );
 
             // 시뮬레이션 결과 확인
-            foreach( var each in newMaster.record.pathfinding )
-            {
-                Console.WriteLine( "x : " + each.x + " / y : " + each.y );
-            }
-
+//             foreach( var each in newMaster.record.pathfinding )
+//             {
+//                 Console.WriteLine( "x : " + each.x + " / y : " + each.y );
+//             }
+// 
             // ------------------
 
             Console.ReadLine();

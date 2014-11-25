@@ -19,7 +19,7 @@ namespace OperationBluehole.Content
 		Length,
 	}
 
-	class Mob : Character
+	public class Mob : Character
 	{
 		// 보상 리스트가 있어야 한다
 		// 경험치와 골드와 아이템(지금은 일단 토큰만 준다)
