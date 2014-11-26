@@ -7,7 +7,8 @@ namespace OperationBluehole.Content
 {
     public struct TargetAffected
     {
-        public Character target;
+		public PartyType targetType;
+        public int targetIdx;
         public GaugeType gaugeType;
         public int value;
     }
@@ -30,7 +31,8 @@ namespace OperationBluehole.Content
     {
         public int turn;
         public byte inTurnSeq; // 동일 턴 행동시 순서 표시용 // 사실 리스트 순서가 있으니 필요 없을지도... 혹시나 싶어서 넣어봄
-        public Character src;
+		public PartyType srcType;
+        public int srcIdx;
         public SkillId skillId;
         public ItemCode itemCode;
         public List<TargetAffected> targets; // 대상별 적용 수치
@@ -43,12 +45,14 @@ namespace OperationBluehole.Content
         public byte curInTurnSeq { get; private set; }
         private TurnInfo curTurnInfo;
         private byte curAffectCount;
+		private Party[] parties;
 
-        public BattleInfo()
+        public BattleInfo(Party[] party)
         {
             turnInfos = new List<TurnInfo>();
             curTurn = 0;
             curInTurnSeq = 0;
+			this.parties = party;
         }
 
         // 현재 턴 설정
@@ -73,7 +77,8 @@ namespace OperationBluehole.Content
         // 행동 기록
         public void RecordAction(Character src, SkillId skillId, ItemCode itemCode, List<Character> targets)
         {
-            curTurnInfo.src = src;
+			if (!FindCharacterIdx(src, out curTurnInfo.srcType, out curTurnInfo.srcIdx))
+				return;
             curTurnInfo.skillId = skillId;
             curTurnInfo.itemCode = itemCode;
             curTurnInfo.targets = new List<TargetAffected>();
@@ -88,7 +93,8 @@ namespace OperationBluehole.Content
             foreach (var target in targets)
             {
                 var tta = new TargetAffected();
-                tta.target = target;
+				if (!FindCharacterIdx(target, out tta.targetType, out tta.targetIdx))
+					return;
                 curTurnInfo.targets.Add(tta);
             }
         }
@@ -96,7 +102,11 @@ namespace OperationBluehole.Content
         // 각 타겟에 적용된 수치 기록
         public void RecordAffect(Character target, GaugeType gaugeType, int value)
         {
-            var targetAffect = curTurnInfo.targets.First(chr => chr.target == target);
+			int targetIdx;
+			PartyType targetType;
+			if (!FindCharacterIdx(target, out targetType, out targetIdx))
+				return;
+			var targetAffect = curTurnInfo.targets.First(chr => chr.targetIdx == targetIdx);
             targetAffect.gaugeType = gaugeType;
             targetAffect.value = value;
             ++curAffectCount;
@@ -107,5 +117,22 @@ namespace OperationBluehole.Content
                 curAffectCount = 0;
             }
         }
+
+		bool FindCharacterIdx(Character src, out PartyType srcType, out int srcIdx)
+		{
+			foreach (var party in this.parties)
+			{
+				int res = party.characters.IndexOf(src);
+				if (res >= 0)
+				{
+					srcIdx = res;
+					srcType = party.partyType;
+					return true;
+				}
+			}
+			srcIdx = -1;
+			srcType = PartyType.NONE;
+			return false;
+		}
     }
 }
