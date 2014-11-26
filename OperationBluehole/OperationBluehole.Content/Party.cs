@@ -9,6 +9,7 @@ namespace OperationBluehole.Content
     // 서버에서 쓰려니 네임스페이스가 달라서 일단 public을 붙임.
     public enum PartyType
     {
+		NONE = -1,
         PLAYER,
         MOB
     }
