@@ -19,10 +19,7 @@ public class BattleManager : MonoBehaviour
 		set { enemyInstanceList = value; }
 	}
 
-	//private EnemyGroup enemyGroupData;
 	private OperationBluehole.Content.Party enemyGroupData;
-
-	//static private bool isInitialized = false;
 
 	static private BattleManager instance;
 	static public BattleManager Instance
@@ -42,7 +39,7 @@ public class BattleManager : MonoBehaviour
 	}
 
 	// Move Camera, enemy and heroes status UI
-	public void StartBattle( int targetMobId )
+	public void AssignBattleArea( int targetMobId )
 	{
 		InitBattleObjects( targetMobId );
 		LoadEnemyData();
@@ -52,13 +49,13 @@ public class BattleManager : MonoBehaviour
 	}
 
 	// Clear battle area and turn back main camera to dungeon
-	public void EndBattle()
+	public void CleanBattleArea()
 	{
 		//LgsObjectPoolManager.Instance.ObjectPools[enemyPrefab.name].ResetPool();
-		for ( int i = 0 ; i < enemyGroupData.characters.Count; ++i )
+		for ( int i = 0 ; i < enemyGroupData.characters.Count ; ++i )
 		{
 			//Destroy( enemyInstanceList[i].GetComponent<Enemy>() );
-			LgsObjectPoolManager.Instance.ObjectPools[( ((OperationBluehole.Content.Mob)enemyGroupData.characters[i]).mobType ).ToString()]
+			LgsObjectPoolManager.Instance.ObjectPools[( ( (OperationBluehole.Content.Mob)enemyGroupData.characters[i] ).mobType ).ToString()]
 				.PushObject( enemyInstanceList[i] );
 
 			// deactivate mob HP Bar
@@ -103,9 +100,9 @@ public class BattleManager : MonoBehaviour
 		for ( int i = 0 ; i < enemyCount ; ++i )
 		{
 			// Instance enemy and set the status data
-			string mobTypeName = ( ((OperationBluehole.Content.Mob)enemyGroupData.characters[i]).mobType ).ToString();
+			string mobTypeName = ( ( (OperationBluehole.Content.Mob)enemyGroupData.characters[i] ).mobType ).ToString();
 			enemyInstanceList[i] = LgsObjectPoolManager.Instance.ObjectPools[mobTypeName].PullObject();
-			enemyInstanceList[i].GetComponent<Mob>().InitMob( (OperationBluehole.Content.Mob)enemyGroupData.characters[i] );
+			enemyInstanceList[i].GetComponent<Mob>().InitMobData( (OperationBluehole.Content.Mob)enemyGroupData.characters[i] );
 			mobHpBar[i].GetComponent<HPBar>().InitHpBar( EnemyInstanceList[i] );
 			//enemyInstanceList[i].AddComponent( "Enemy" );
 			//enemyInstanceList[i].GetComponent<Enemy>().EnemyStat = enemyGroupData.enemies[i].characterData;
@@ -124,13 +121,13 @@ public class BattleManager : MonoBehaviour
 		// Check hero count validation
 		int heroCount = DataManager.Instance.UserParty.characters.Count;
 
-		if ( heroCount != GameConfig.MAXIMUM_HERO_COUNT )
-			Debug.LogError( "Error(battle area) : We need " + GameConfig.MAXIMUM_HERO_COUNT + " heroes" );
+// 		if ( heroCount != GameConfig.MAXIMUM_HERO_COUNT )
+// 			Debug.LogError( "Error(battle area) : We need " + GameConfig.MAXIMUM_HERO_COUNT + " heroes" );
 
 		// Set status of heroes and set UI values
 		for ( int i = 0 ; i < heroCount ; ++i )
 		{
-			heroStatus[i].GetComponent<Hero>().HeroStat = DataManager.Instance.UserParty.characters[i];
+			heroStatus[i].GetComponent<Hero>().InitHeroData( DataManager.Instance.UserParty.characters[i] );
 		}
 
 		// Move camera on predetermined position in battle area

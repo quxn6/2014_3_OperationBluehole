@@ -37,7 +37,7 @@ public class LogExecuter : MonoBehaviour
 	private MoveDirection prevMoveDirection = MoveDirection.Stay;
 
 	public Queue<LogInfo> ReplayLog { get; private set; }
-	//private List<List<Turn>>
+	public List<List<OperationBluehole.Content.TurnInfo>> BattleLog {get; set;}
 
 	static private LogExecuter instance;
 	static public LogExecuter Instance
@@ -57,19 +57,11 @@ public class LogExecuter : MonoBehaviour
 		ReplayLog = new Queue<LogInfo>();
 	}
 
-	// init variables
-	public void InitLogExecuter()
+	// init battle log for each battle
+	public void InitLogExecuter(List<List<OperationBluehole.Content.TurnInfo>> battleLog)
 	{
-// 		playerParty = MapManager.Instance.PlayerParty;
-// 		if ( playerParty == null )
-// 			Debug.LogError( "Error (Log Executer) : There is No Player Party" );		
-// 
-// 		mobList = MapManager.Instance.MobList;
-// 		if ( mobList == null )
-// 			Debug.LogError( "Error (Log Executer) : There is No Mob List" );
+		this.BattleLog = battleLog;
 	}
-
-	
 
 	public void PlayMapLog()
 	{
@@ -179,10 +171,25 @@ public class LogExecuter : MonoBehaviour
 		if ( mobParty == null )
 			Debug.LogError( "Error : There is no battle log" );
 
-		//BattleManager.Instance.StartBattle()
+		BattleManager.Instance.AssignBattleArea( battleLogIterator );
+		PlayBattleLog();
+	}
 
-		BattleManager.Instance.StartBattle( battleLogIterator );
-		PlayMapLog();
+	IEnumerator PlayBattleLog2()
+	{
+		Debug.Log( "Start battle!! with " + battleLogIterator + "th mob Party." );
+
+		var mobParty = DataManager.Instance.EncounteredMobPartyList[battleLogIterator];
+		if ( mobParty == null )
+		{
+			Debug.LogError( "Error : There is no battle log" );
+		}			
+
+		BattleManager.Instance.AssignBattleArea( battleLogIterator );
+
+		yield return null;
+
+		
 	}
 
 	public void EndBattle(OperationBluehole.Content.Party mobParty )
@@ -197,6 +204,8 @@ public class LogExecuter : MonoBehaviour
 		// If we win the battle, deactivate mob
 		mobInstance.SetActive( false );
 		++battleLogIterator;
+		BattleManager.Instance.CleanBattleArea();
+		PlayMapLog();
 	}
 
 	public void MobAttackHero( int mobNumber , int heroNumber , float damage )

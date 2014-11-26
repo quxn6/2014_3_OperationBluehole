@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
-	enum MobType : uint
+	public enum MobType : uint
 	{
 		Dummy	= 0,
 		Demon,
@@ -19,7 +19,7 @@ namespace OperationBluehole.Content
 		Length,
 	}
 
-	class Mob : Character
+	public class Mob : Character
 	{
 		// 보상 리스트가 있어야 한다
 		// 경험치와 골드와 아이템(지금은 일단 토큰만 준다)
@@ -44,7 +44,7 @@ namespace OperationBluehole.Content
 		}
 	}
 
-	struct MobData
+	public  struct MobData
 	{
 		public String name;
 		public ushort[] stats;

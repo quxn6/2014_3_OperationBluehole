@@ -15,11 +15,8 @@ public class Loading : MonoBehaviour
 
 	public void LoadMap(Dungeon dungeonMap)
 	{
-		DataManager.Instance.InitEnemyDataList();
-		DataManager.Instance.InitUserDataList();
 		MapManager.Instance.InitMapObjects();
-		MapManager.Instance.PutMapObjects( dungeonMap );
-		LogExecuter.Instance.InitLogExecuter();
+		MapManager.Instance.PutMapObjects( dungeonMap );		
 		replayButton.SetActive( true );
 	}
 

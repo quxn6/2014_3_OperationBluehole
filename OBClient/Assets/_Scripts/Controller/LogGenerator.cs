@@ -37,7 +37,7 @@ public class LogGenerator : MonoBehaviour
 		dungeonMaster.Init( size , seed , userParty );
 
 		//////// warning!!!! ////////////////////
-		// We should create deep copy method for MapObject. for now, just generate another dungeon.
+		// We should create deep copy method for MapObject. for now, just generate another dungeon with same seed.
 		tmpMaster.Init( size , seed , userParty );
 		/////////////////////////////////////////
 
@@ -60,7 +60,10 @@ public class LogGenerator : MonoBehaviour
 		// Set Looted Item Data
 		DataManager.Instance.LootedItemList = dungeonMaster.record.lootedItems;
 
-		// Set Encountered Mob Data
+		// Set Battle Log for each battle
+		LogExecuter.Instance.BattleLog = dungeonMaster.record.battleLog;
+
+		// Set Replay Log for each turn
 		char positionInfo = '\0';
 		for ( int i = 0 ; i < dungeonMaster.record.pathfinding.Count - 1 ; ++i )
 		{
@@ -91,7 +94,7 @@ public class LogGenerator : MonoBehaviour
 				case ' ': // just move
 					break;
 				default:
-					Debug.LogError( "We can't go there" );
+					//Debug.LogError( "We can't go there" );
 					break;
 			}
 
@@ -122,6 +125,7 @@ public class LogGenerator : MonoBehaviour
 		return new LogInfo( LogType.Loot , lootLogIndex++ );
 	}
 
+	// Set Encountered Mob Data
 	private LogInfo MakeBattleLog( OperationBluehole.Content.Party mobParty )
 	{
 		DataManager.Instance.EncounteredMobPartyList.Add( mobParty );

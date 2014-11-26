@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
-	enum MobType : uint
+	public enum MobType : uint
 	{
 		Dummy	= 0,
 		Demon,
@@ -44,7 +44,7 @@ namespace OperationBluehole.Content
 		}
 	}
 
-	struct MobData
+	public  struct MobData
 	{
 		public String name;
 		public ushort[] stats;

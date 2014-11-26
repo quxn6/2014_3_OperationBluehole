@@ -9,12 +9,12 @@ public class ReplayScene : MonoBehaviour
 	{
 		if ( GUI.Button( new Rect( 10 , 10 , 100 , 50 ) , "Init Battle Part" ) )
 		{
-			BattleManager.Instance.StartBattle( 1 );
+			BattleManager.Instance.AssignBattleArea( 1 );
 		}
 
 		if ( GUI.Button( new Rect( 10 , 70 , 100 , 50 ) , "End Battle" ) )
 		{
-			BattleManager.Instance.EndBattle();
+			BattleManager.Instance.CleanBattleArea();
 		}
 
 		if ( GUI.Button( new Rect( 10 , 130 , 100 , 50 ) , "MoveCharacter" ) )
