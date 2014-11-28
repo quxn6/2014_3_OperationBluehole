@@ -7,7 +7,9 @@ public class Hero : MonoBehaviour
 	private GameObject faceUI = null;
 	private GameObject hpUI = null;
 	private GameObject mpUI = null;
+	private GameObject spUI = null;
 	private GameObject levelUI = null;
+	
 
 	private CharacterData heroData;
 
@@ -16,8 +18,8 @@ public class Hero : MonoBehaviour
 		faceUI = GameObject.Find( gameObject.name +"Icon BG/Face" );
 		hpUI = GameObject.Find( gameObject.name + "Icon BG/HP" );
 		mpUI = GameObject.Find( gameObject.name + "Icon BG/MP" );
+		spUI = GameObject.Find( gameObject.name + "Icon BG/Face/SP" );
 		levelUI = GameObject.Find( gameObject.name + "Level/Label" );
-		//levelUI.GetComponent<UILabel>().text = gameObject.name;
 	}
 
 	// Set hero UI value with character data
@@ -32,22 +34,61 @@ public class Hero : MonoBehaviour
 		heroData = new CharacterData(
 			characterStat.actualParams[(int)OperationBluehole.Content.ParamType.maxHp] ,
 			characterStat.actualParams[(int)OperationBluehole.Content.ParamType.maxMp] ,
-			characterStat.baseStats[(int)OperationBluehole.Content.StatType.Lev] ,
-			0 );
+			0 ,
+			characterStat.actualParams[(int)OperationBluehole.Content.ParamType.spRegn] ,
+			characterStat.baseStats[(int)OperationBluehole.Content.StatType.Lev] );
 	}
 
 	public void InitHeroUI()
 	{
+		faceUI.GetComponent<UISprite>().color = GameConfig.DEFALUT_HERO_COLOR;
 		faceUI.GetComponent<UISprite>().spriteName = DataManager.Instance.atlasSet.spriteList[0].name;
 		hpUI.GetComponent<UISprite>().fillAmount = heroData.currentHp / heroData.maxHp;
 		mpUI.GetComponent<UISprite>().fillAmount = heroData.currentMp / heroData.maxMp;
 		levelUI.GetComponent<UILabel>().text = heroData.level.ToString();
 	}
 
-	public void BeAttacked(float damage)
+	// At proper data type apply positive value, and update UI
+	public void UpdateCharacterData(OperationBluehole.Content.GaugeType dataType, float value)
 	{
-		heroData.currentHp -= damage;
-		hpUI.GetComponent<UISprite>().fillAmount = heroData.currentHp / heroData.currentHp;
+		switch (dataType)
+		{
+			case OperationBluehole.Content.GaugeType.Hp:
+				heroData.currentHp += value;
+				hpUI.GetComponent<UISprite>().fillAmount = heroData.currentHp / heroData.maxHp;
+				break;
+			case OperationBluehole.Content.GaugeType.Mp:
+				heroData.currentMp += value;
+				mpUI.GetComponent<UISprite>().fillAmount = heroData.currentMp / heroData.maxMp;
+				break;
+			case OperationBluehole.Content.GaugeType.Sp:
+				heroData.sp += value;
+				spUI.GetComponent<UISprite>().fillAmount = heroData.sp / OperationBluehole.Content.Config.MAX_CHARACTER_SP;
+				break;
+		}
+		
+		if ( heroData.currentHp <= 0)
+		{
+			BeKilled();
+		}
+	}
+
+	public IEnumerator Attack()
+	{
+		// Some animation for attack
+		yield return new WaitForSeconds( 0.1f );
+	}
+
+	public void BeAttacked()
+	{
+		StartCoroutine( ChangeUIColorForSeconds( GameConfig.UI_COLOR_CHANGED_TIME , GameConfig.BEATTACKED_HERO_COLOR ) );
+	}
+
+	IEnumerator ChangeUIColorForSeconds(float seconds, Color color)
+	{
+		faceUI.GetComponent<UISprite>().color = color;
+		yield return new WaitForSeconds( seconds );
+		faceUI.GetComponent<UISprite>().color = GameConfig.DEFALUT_HERO_COLOR;
 	}
 
 	public void BeKilled()

@@ -4,14 +4,15 @@ using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour
 {
-	public GameObject battleUI = null;
-	public GameObject mobHpBarUI = null;
-
-	public GameObject playerPosition = null;
-	public GameObject[] mobPositions = null;
+	// hero ui & camera position
+	public GameObject playerPosition = null;	
+	public GameObject battleUI = null;	
 	public GameObject[] heroStatus = null;
-	public GameObject[] mobHpBar = null;
 
+	// mob position, instance & mob hp UI
+	public GameObject[] mobPositions = null;
+	public GameObject mobHpBarRoot = null;
+	public GameObject[] mobHpBar = null;	
 	private GameObject[] enemyInstanceList;
 	public GameObject[] EnemyInstanceList
 	{
@@ -45,7 +46,7 @@ public class BattleManager : MonoBehaviour
 		LoadEnemyData();
 		LoadHeroData();
 		battleUI.SetActive( true );
-		mobHpBarUI.SetActive( true );
+		mobHpBarRoot.SetActive( true );
 	}
 
 	// Clear battle area and turn back main camera to dungeon
@@ -64,7 +65,7 @@ public class BattleManager : MonoBehaviour
 
 		// Battle Area UI deactivate
 		battleUI.SetActive( false );
-		mobHpBarUI.SetActive( false );
+		mobHpBarRoot.SetActive( false );
 
 		// move camera to dungeon
 		EnvironmentManager.Instance.PutCamera( MapManager.Instance.PlayerParty , CameraMode.THIRD_PERSON );

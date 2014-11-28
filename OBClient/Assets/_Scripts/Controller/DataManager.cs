@@ -9,15 +9,17 @@ public struct CharacterData
 	public float currentHp;
 	public float currentMp;
 	public float sp;
+	public float spRegen;
 	public int level;
 
-	public CharacterData( float hp , float mp , float sp , int level)
+	public CharacterData( float hp , float mp , float sp , float spRegen, int level)
 	{
 		this.maxHp = hp;
 		this.maxMp = mp;
 		this.currentHp = hp;
 		this.currentMp = mp;
 		this.sp = sp;
+		this.spRegen = spRegen;
 		this.level = level;
 	}
 }

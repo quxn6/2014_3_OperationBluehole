@@ -72,7 +72,7 @@ public class LogExecuter : MonoBehaviour
 				MoveCharacter( MapManager.Instance.PlayerParty , (MoveDirection)logInfo.logContent );
 				break;
 			case LogType.Battle :
-				PlayBattleLog();
+				StartCoroutine( PlayBattleLog() );
 				break;
 			case LogType.Loot :
 				LootItem();
@@ -163,19 +163,19 @@ public class LogExecuter : MonoBehaviour
 	}
 
 	private int battleLogIterator = 0;
-	public void PlayBattleLog()
-	{
-		Debug.Log( "Start battle!! with " + battleLogIterator + "th mob Party." );
+// 	public void PlayBattleLog()
+// 	{
+// 		Debug.Log( "Start battle!! with " + battleLogIterator + "th mob Party." );
+// 
+// 		var mobParty = DataManager.Instance.EncounteredMobPartyList[battleLogIterator];
+// 		if ( mobParty == null )
+// 			Debug.LogError( "Error : There is no battle log" );
+// 
+// 		BattleManager.Instance.AssignBattleArea( battleLogIterator );
+// 		//PlayBattleLog();
+// 	}
 
-		var mobParty = DataManager.Instance.EncounteredMobPartyList[battleLogIterator];
-		if ( mobParty == null )
-			Debug.LogError( "Error : There is no battle log" );
-
-		BattleManager.Instance.AssignBattleArea( battleLogIterator );
-		PlayBattleLog();
-	}
-
-	IEnumerator PlayBattleLog2()
+	IEnumerator PlayBattleLog()
 	{
 		Debug.Log( "Start battle!! with " + battleLogIterator + "th mob Party." );
 
@@ -188,8 +188,37 @@ public class LogExecuter : MonoBehaviour
 		BattleManager.Instance.AssignBattleArea( battleLogIterator );
 
 		yield return null;
-
 		
+		// Process battle continue
+		for ( int i = 0 ; i < BattleLog[battleLogIterator].Count; ++i)
+		{
+			yield return StartCoroutine( EachTurn( BattleLog[battleLogIterator][i] ) );
+		}
+
+		EndBattle(mobParty);
+	}
+	
+	IEnumerator EachTurn( OperationBluehole.Content.TurnInfo turnInfo )
+	{
+		// Do source job
+		GameObject source = (turnInfo.srcType == OperationBluehole.Content.PartyType.MOB)?
+			BattleManager.Instance.EnemyInstanceList[turnInfo.srcIdx] :
+			BattleManager.Instance.heroStatus[turnInfo.srcIdx];
+		
+		// Warning!!! We could be make base class(like character or something) for making Mob and Hero derived class
+		// Warning!!! For now, we only use just attack skill, which skill used 
+		switch( turnInfo.srcType)
+		{
+			case OperationBluehole.Content.PartyType.MOB :
+				yield return StartCoroutine( source.GetComponent<Mob>().Attack() );
+				break;			
+			case OperationBluehole.Content.PartyType.PLAYER:
+				yield return StartCoroutine( source.GetComponent<Hero>().Attack() );
+				break;
+		}
+
+		// Do target job
+		ApplyDamage( turnInfo.targets );
 	}
 
 	public void EndBattle(OperationBluehole.Content.Party mobParty )
@@ -208,50 +237,54 @@ public class LogExecuter : MonoBehaviour
 		PlayMapLog();
 	}
 
-	public void MobAttackHero( int mobNumber , int heroNumber , float damage )
+	// Iterate target's data and apply damage
+	// Damage in TargetAffected struct is positive value, so when we update target data, multiply (-) at its value.
+	private void ApplyDamage(List<OperationBluehole.Content.TargetAffected> targetDataList)
 	{
-		StopAllCoroutines();
-		StartCoroutine( MobAttackProcess(
-			BattleManager.Instance.EnemyInstanceList[mobNumber] ,
-			BattleManager.Instance.heroStatus[heroNumber] ,
-			damage
-			) );
-
-		// heroes ui get damage( on UI )
-	}
-
-	IEnumerator MobAttackProcess( GameObject mob , GameObject hero , float damage )
-	{
-		IAnimatable animatableMob = ( (IAnimatable)mob.GetComponent( typeof( IAnimatable ) ) );
-
-		// play attack animation
-		animatableMob.PlayWalk();
-		yield return new WaitForSeconds( GameConfig.MOB_ATTACKMOVING_TIME );
-		animatableMob.PlayAttack();
-
-		// after animation over, accept damage to hero
-		while ( mob.GetComponent<Mob>().IsAnimationPlaying() )
+		for ( int i = 0 ; i < targetDataList.Count; ++i)
 		{
-			yield return null;
+			// apply damage data & play animation for hit
+			switch ( targetDataList[i].targetType )
+			{
+				case OperationBluehole.Content.PartyType.MOB:					
+					Mob mob = BattleManager.Instance.EnemyInstanceList[targetDataList[i].targetIdx].GetComponent<Mob>();					
+					mob.UpdateCharacterData( targetDataList[i].gaugeType , -targetDataList[i].value );					
+					mob.BeAttacked();
+					break;
+				case OperationBluehole.Content.PartyType.PLAYER:
+					Hero hero = BattleManager.Instance.heroStatus[i].GetComponent<Hero>();
+					hero.UpdateCharacterData( targetDataList[i].gaugeType , -targetDataList[i].value );
+					hero.BeAttacked();
+					break;
+			}
 		}
+	}
+		
+	//public IEnumerator MobAttackHero( int mobNumber , int heroNumber , float damage )
+	public IEnumerator MobAttackHero( GameObject mob, GameObject hero )
+	{
+		// Do Attack Process
+		yield return StartCoroutine( mob.GetComponent<Mob>().Attack() );
+		
+		// heroes ui get damage( on UI )
+		//hero.GetComponent<Hero>().BeAttacked( damage );
 
-		hero.GetComponent<Hero>().BeAttacked( damage );
-		animatableMob.PlayIdle();
+		//PlayBattleLog();
 	}
 
-	public void HeroAttackMob( int mobNumber , int heroNumber , float damage )
+// 	public void HeroAttackMob( GameObject mob , GameObject hero )
+// 	{
+// 		mob.GetComponent<Mob>().BeAttacked( damage );
+// 	}
+
+	public void KillPlayer( GameObject hero)
 	{
-		BattleManager.Instance.EnemyInstanceList[mobNumber].GetComponent<Mob>().BeAttacked( damage );
+		hero.GetComponent<Hero>().BeKilled();
 	}
 
-	public void KillPlayer( int heroesNumber )
+	public void KillMob( GameObject mob )
 	{
-		BattleManager.Instance.heroStatus[heroesNumber].GetComponent<Hero>().BeKilled();
-	}
-
-	public void KillMob( int mobNumber )
-	{
-		( (IAnimatable)BattleManager.Instance.EnemyInstanceList[mobNumber].GetComponent( typeof( IAnimatable ) ) ).PlayDead();
+		( (IAnimatable)mob.GetComponent( typeof( IAnimatable ) ) ).PlayDead();
 	}
 
 }

@@ -156,7 +156,7 @@ namespace OperationBluehole.Content
             Battle newBattle = new Battle( random, users, mob );
             #region 전투기록 : 전투기록 설정
             if(record != null)
-                newBattle.battleInfo = new BattleInfo(); 
+                newBattle.battleInfo = new BattleInfo(newBattle.party); 
             #endregion
             newBattle.StartBattle();
 
