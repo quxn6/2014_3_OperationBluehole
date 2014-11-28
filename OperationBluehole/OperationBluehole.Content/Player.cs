@@ -5,21 +5,45 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
-	public struct PlayerData
+    using Newtonsoft.Json;
+
+	public class PlayerData
 	{
+        [JsonProperty( "playerId" )]
         public string pId;
-		public String name;
+
+        [JsonProperty( "name" )]
+        public string name;
+
+        [JsonProperty( "exp" )]
 		public uint exp;
+
+        [JsonProperty( "stat" )]
 		public ushort[] stats;
 
-		public List<SkillId> skills;
-		public List<ItemCode> items;
-		public List<ItemCode> equipments;
+        [JsonProperty( "skill" )]
+        public List<SkillId> skills;
+
+        [JsonProperty( "equipment" )]
+        public List<ItemCode> equipments;
+
+        [JsonProperty( "consumable" )]
+		public List<ItemCode> consumables;
+
+        [JsonProperty( "battleStyle" )]
 		public BattleStyle battleStyle;
+
+        [JsonProperty( "unused stat points" )]
+        public ushort StatPoints;
+
+        public PlayerData()
+        {
+
+        }
 
 		public PlayerData(
             string pId,
-			String name,
+			string name,
 			uint exp,
 			ushort statLev,
 			ushort statStr,
@@ -32,7 +56,8 @@ namespace OperationBluehole.Content
 			List<SkillId> skills,
 			List<ItemCode> items,
 			List<ItemCode> equipments,
-			BattleStyle battleStyle
+			BattleStyle battleStyle,
+            ushort statPoints = 0
 			)
 		{
             this.pId = pId;
@@ -48,16 +73,18 @@ namespace OperationBluehole.Content
 			this.stats[(int)StatType.Wis] = statWis;
 			this.stats[(int)StatType.Mov] = statMov;
 			this.skills = skills;
-			this.items = items;
+			this.consumables = items;
 			this.equipments = equipments;
 			this.battleStyle = battleStyle;
+            this.StatPoints = statPoints;
 		}
 	}
 
 	public class Player : Character
 	{
 		public string pId { get; private set; }
-		public uint exp { get; private set; }
+        public uint exp { get; private set; }
+        public ushort statPoints { get; private set; }
 
 		public Player()
 		{
@@ -80,8 +107,9 @@ namespace OperationBluehole.Content
 			this.baseStats[(int)StatType.Mov] = data.stats[(int)StatType.Mov];
 
 			this.skills = data.skills;
-			this.items = data.items;
+			this.items = data.consumables;
 			this.equipments = data.equipments;
+            this.statPoints = data.StatPoints;
 
 			CalcStat();
 

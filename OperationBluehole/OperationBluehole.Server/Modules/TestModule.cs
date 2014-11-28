@@ -27,93 +27,6 @@ namespace OperationBluehole.Server.Modules
                 return "default";
             };
 
-            Get["/dict_save"] = parameters =>
-            {
-                var playerData = new Dictionary<string, object>
-                {
-                    { "id", 0 },
-                    { "name", "quxn6" },
-                    { "exp", 4 },
-                    { "stat", new List<ushort>
-                        {
-                            0, 1, 5, 5, 5, 5, 5, 5, 5,
-                        }
-                    },
-                    { "skil", new List<ushort>
-                        {
-                            (ushort)SkillId.Punch,
-                        }
-                    },
-                    { "inventory", new List<uint>
-                        {
-                            
-                        }
-                    },
-                    { "items", new List<uint>
-                        {
-                            
-                        }
-                    },
-                    { "equipment", new List<uint>
-                        {
-                            
-                        }
-                    },
-                    { "battle style", 0 },
-                };
-
-                var client = CouchbaseManager.Client;
-                var result = client.StoreDictionary(StoreMode.Set, "testPlayer_0", playerData);
-
-                if (result.Item1) 
-                    return "success";
-                
-                return "fail";
-            };
-
-            Get["/dict_load"] = parameters =>
-            {
-                var client = CouchbaseManager.Client;
-                var dict = client.GetDictionary( "testPlayer_0" ).Item4["name"];
-
-                return dict.ToString();
-            };
-
-            Get["/save_test_class"] = parameters =>
-            {
-                var testData = new PlayerDataSource
-                {
-                    PlayerId = "0",
-                    Name = "test",
-                    Exp = 4,
-                    Stat = new List<ushort> {1, 1, 1, 1, 1, 1, 1, 1,},
-                    Skill = new List<ushort> {0, 1, 2,},
-                    Gold = 0,
-                    Inventory = new List<uint> {2, 4, 6, 8, 10,},
-                    Token = new List<ItemToken>(),
-                    Consumable = new List<uint> {4, 6, 10,},
-                    Equipment = new List<uint> {2, 8,}, 
-                    BattleStyle = 0,
-                };
-
-                return PlayerDataDatabase.SetPlayerData(testData);
-            };
-
-            Get["/load_test_class"] = parameters =>
-            {
-                var savedData = PlayerDataDatabase.GetPlayerData("test");
-
-                string result = "";
-
-                result += "id" + savedData.PlayerId;
-                result += "name" + savedData.Name;
-                result += "Exp" + savedData.Exp;
-                result += "stat";
-                savedData.Stat.ForEach(each => result += each + ",");
-
-                return result;
-            };
-            
             Get["/simulation"] = parameters =>
             {
                 ContentsPrepare.Init();
@@ -122,15 +35,15 @@ namespace OperationBluehole.Server.Modules
 
                 var data = PlayerDataDatabase.GetPlayerData( "102" );
                 if ( data != null )
-                    player[0].LoadPlayer( data.ConvertToPlayerData() );
+                    player[0].LoadPlayer( data );
 
                 data = PlayerDataDatabase.GetPlayerData( "103" );
                 if ( data != null )
-                    player[1].LoadPlayer( data.ConvertToPlayerData() );
+                    player[1].LoadPlayer( data );
 
                 data = PlayerDataDatabase.GetPlayerData( "104" );
                 if ( data != null )
-                    player[2].LoadPlayer( data.ConvertToPlayerData() );
+                    player[2].LoadPlayer( data );
 
                 Party users = new Party(PartyType.PLAYER, 10);
                 foreach (Player p in player)
@@ -192,22 +105,60 @@ namespace OperationBluehole.Server.Modules
                 if ( result )
                     result = UserIdentityDatabase.SetUserIdentity( new UserIdentity { UserName = "sm9", Claims = new List<string> { "admin", } } ); 
 
-                // player data
-                if (result)
-                    result = PlayerDataDatabase.SetPlayerData( new PlayerDataSource
+                // user data
+                if ( result )
+                    result = UserDataDatabase.SetUserData( new UserData 
                     {
-                        PlayerId = "wooq",
-                        Name = "wooq",
-                        Exp = 4,
-                        Stat = new List<ushort> { 0, 1, 5, 5, 5, 5, 5, 5, 5, },
-                        Skill = new List<ushort> { (ushort)SkillId.Punch, },
+                        UserId = "wooq",
                         Gold = 0,
                         Inventory = new List<uint> { },
                         Token = new List<ItemToken> { },
-                        Consumable = new List<uint> { },
-                        Equipment = new List<uint> { },
-                        BattleStyle = (byte)BattleStyle.AGGRESSIVE,
                         BanList = new List<string> { },
+                    } );
+
+                if ( result )
+                    result = UserDataDatabase.SetUserData( new UserData
+                    {
+                        UserId = "quxn6",
+                        Gold = 0,
+                        Inventory = new List<uint> { },
+                        Token = new List<ItemToken> { },
+                        BanList = new List<string> { },
+                    } );
+
+                if ( result )
+                    result = UserDataDatabase.SetUserData( new UserData
+                    {
+                        UserId = "yksera",
+                        Gold = 0,
+                        Inventory = new List<uint> { },
+                        Token = new List<ItemToken> { },
+                        BanList = new List<string> { },
+                    } );
+
+                if ( result )
+                    result = UserDataDatabase.SetUserData( new UserData
+                    {
+                        UserId = "sm9",
+                        Gold = 0,
+                        Inventory = new List<uint> { },
+                        Token = new List<ItemToken> { },
+                        BanList = new List<string> { },
+                    } );
+
+                // player data
+                if (result)
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerData
+                    {
+                        pId = "wooq",
+                        name = "wooq",
+                        exp = 4,
+                        stats = new ushort[] { 0, 1, 5, 5, 5, 5, 5, 5, 5, },
+                        skills = new List<SkillId> { SkillId.Punch, },
+                        equipments = new List<ItemCode> { },
+                        consumables = new List<ItemCode> { },
+                        battleStyle = BattleStyle.AGGRESSIVE,
+                        StatPoints = 0
                     } );
 
                 if ( result )
@@ -219,20 +170,17 @@ namespace OperationBluehole.Server.Modules
                     } );
 
                 if (result)
-                    result = PlayerDataDatabase.SetPlayerData( new PlayerDataSource
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerData
                     {
-                        PlayerId = "quxn6",
-                        Name = "quxn6",
-                        Exp = 4,
-                        Stat = new List<ushort> { 0, 3, 5, 5, 5, 15, 5, 5, 5, },
-                        Skill = new List<ushort> { (ushort)SkillId.Punch, (ushort)SkillId.MagicArrow, (ushort)SkillId.Heal, },
-                        Gold = 0,
-                        Inventory = new List<uint> { },
-                        Token = new List<ItemToken> { },
-                        Consumable = new List<uint> { (uint)ItemCode.MpPotion_S },
-                        Equipment = new List<uint> {},
-                        BattleStyle = (byte)BattleStyle.DEFENSIVE,
-                        BanList = new List<string> { },
+                        pId = "quxn6",
+                        name = "quxn6",
+                        exp = 4,
+                        stats = new ushort[] { 0, 3, 5, 5, 5, 15, 5, 5, 5, },
+                        skills = new List<SkillId> { SkillId.Punch, SkillId.MagicArrow, SkillId.Heal, },
+                        equipments = new List<ItemCode> { },
+                        consumables = new List<ItemCode> { ItemCode.MpPotion_S },
+                        battleStyle = BattleStyle.DEFENSIVE,
+                        StatPoints = 0
                     } );
 
                 if ( result )
@@ -244,20 +192,17 @@ namespace OperationBluehole.Server.Modules
                     } );
 
                 if (result)
-                    result = PlayerDataDatabase.SetPlayerData( new PlayerDataSource
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerData
                     {
-                        PlayerId = "yksera",
-                        Name = "yksera",
-                        Exp = 4,
-                        Stat = new List<ushort> { 0, 3, 15, 5, 5, 5, 5, 5, 5, },
-                        Skill = new List<ushort> { (ushort)SkillId.Slash, },
-                        Gold = 0,
-                        Inventory = new List<uint> { },
-                        Token = new List<ItemToken> { },
-                        Consumable = new List<uint> { (uint)ItemCode.HpPotion_S, (uint)ItemCode.HpPotion_S, },
-                        Equipment = new List<uint> { (uint)ItemCode.Sword_Test, },
-                        BattleStyle = (byte)BattleStyle.AGGRESSIVE,
-                        BanList = new List<string> { },
+                        pId = "yksera",
+                        name = "yksera",
+                        exp = 4,
+                        stats = new ushort[] { 0, 3, 15, 5, 5, 5, 5, 5, 5, },
+                        skills = new List<SkillId> { SkillId.Slash, },
+                        equipments = new List<ItemCode> { ItemCode.Sword_Test, },
+                        consumables = new List<ItemCode> { ItemCode.HpPotion_S, ItemCode.HpPotion_S, },
+                        battleStyle = BattleStyle.AGGRESSIVE,
+                        StatPoints = 0
                     } );
 
                 if ( result )
@@ -269,20 +214,17 @@ namespace OperationBluehole.Server.Modules
                     } );
 
                 if ( result )
-                    result = PlayerDataDatabase.SetPlayerData( new PlayerDataSource
+                    result = PlayerDataDatabase.SetPlayerData( new PlayerData
                     {
-                        PlayerId = "sm9",
-                        Name = "sm9",
-                        Exp = 0,
-                        Stat = new List<ushort> { 0, 3, 10, 10, 5, 5, 5, 5, 5, },
-                        Skill = new List<ushort> { (ushort)SkillId.Punch, (ushort)SkillId.Heal, },
-                        Gold = 0,
-                        Inventory = new List<uint> { },
-                        Token = new List<ItemToken> { },
-                        Consumable = new List<uint> { (uint)ItemCode.MpPotion_S, },
-                        Equipment = new List<uint> {},
-                        BattleStyle = (byte)BattleStyle.AGGRESSIVE,
-                        BanList = new List<string> { },
+                        pId = "sm9",
+                        name = "sm9",
+                        exp = 0,
+                        stats = new ushort[] { 0, 3, 10, 10, 5, 5, 5, 5, 5, },
+                        skills = new List<SkillId> { SkillId.Punch, SkillId.Heal, },
+                        equipments = new List<ItemCode> { },
+                        consumables = new List<ItemCode> { ItemCode.MpPotion_S, },
+                        battleStyle = BattleStyle.AGGRESSIVE,
+                        StatPoints = 0
                     } );
 
                 if ( result )
@@ -333,8 +275,8 @@ namespace OperationBluehole.Server.Modules
                 var playerData = PlayerDataDatabase.GetPlayerData(this.Context.CurrentUser.UserName);
 
                 Console.WriteLine("Character Info");
-                Console.WriteLine("name : " + playerData.Name + " / Id : " + playerData.PlayerId);
-                Console.WriteLine("Lev : " + playerData.Stat[(int)StatType.Lev] + " / Exp : " + playerData.Exp);
+                Console.WriteLine("name : " + playerData.name + " / Id : " + playerData.pId);
+                Console.WriteLine("Lev : " + playerData.stats[(int)StatType.Lev] + " / Exp : " + playerData.exp);
 
                 return "Yay! You are authorized!";
             };

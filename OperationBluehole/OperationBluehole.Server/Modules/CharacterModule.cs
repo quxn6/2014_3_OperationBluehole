@@ -15,7 +15,7 @@ namespace OperationBluehole.Server.Modules
 
     // 플레이어의 캐릭터를 조작( 장비 설정이나 능력치 배분과 같은... )
 
-    private class ClientPlayerData
+    internal class ClientPlayerData
     {
         public string Name { get; set; }
 
@@ -35,37 +35,40 @@ namespace OperationBluehole.Server.Modules
 
         public List<string> BanList { get; set; }
 
-        public ClientPlayerData( PlayerDataSource source )
+        public ClientPlayerData( PlayerData playerData, UserData userData )
         {
-            this.Name = source.Name;
+            // player data
+            this.Name = playerData.name;
 
-            this.Exp = source.Exp;
-            this.StatPoints = source.StatPoints;
+            this.Exp = playerData.exp;
+            this.StatPoints = playerData.StatPoints;
 
             this.Stat = new List<ushort>();
-            source.Stat.ForEach( each => this.Stat.Add( each ) );
+            for ( int i = 0; i < (int)StatType.StatCount; ++i )
+                this.Stat.Add( playerData.stats[i] );
 
             this.Skill = new List<ushort>();
-            source.Stat.ForEach( each => this.Skill.Add( each ) );
-
-            this.Gold = source.Gold;
-
-            this.Inventory = new List<uint>();
-            source.Inventory.ForEach( each => this.Inventory.Add( each ) );
-
-            this.Token = new List<ItemToken>();
-            source.Token.ForEach( each => this.Token.Add( each ) );
+            playerData.skills.ForEach( each => this.Skill.Add( (ushort)each ) );
 
             this.Equipment = new List<uint>();
-            source.Equipment.ForEach( each => this.Equipment.Add( each ) );
+            playerData.equipments.ForEach( each => this.Equipment.Add( (uint)each ) );
 
             this.Consumable = new List<uint>();
-            source.Consumable.ForEach( each => this.Consumable.Add( each ) );
+            playerData.consumables.ForEach( each => this.Consumable.Add( (uint)each ) );
 
-            this.BattleStyle = source.BattleStyle;
+            this.BattleStyle = (byte)playerData.battleStyle;
+
+            // user data
+            this.Gold = userData.Gold;
+
+            this.Token = new List<ItemToken>();
+            userData.Token.ForEach( each => this.Token.Add( each ) );
+
+            this.Inventory = new List<uint>();
+            userData.Inventory.ForEach( each => this.Inventory.Add( each ) );
 
             this.BanList = new List<string>();
-            source.BanList.ForEach( each => this.BanList.Add( each ) );
+            userData.BanList.ForEach( each => this.BanList.Add( each ) );
         }
     }
 
@@ -124,9 +127,10 @@ namespace OperationBluehole.Server.Modules
                 // 일단 해당 유저의 id를 확인하고
                 this.RequiresAuthentication();
 
-                PlayerDataSource playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
+                PlayerData playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
+                UserData userData = UserDataDatabase.GetUserData( this.Context.CurrentUser.UserName );
 
-                return JsonConvert.SerializeObject( new ClientPlayerData( playerData ) ); ;
+                return JsonConvert.SerializeObject( new ClientPlayerData( playerData, userData ) ); ;
             };
 
             Get["/levelup"] = parameters =>
@@ -134,16 +138,17 @@ namespace OperationBluehole.Server.Modules
                 // 일단 해당 유저의 id를 확인하고
                 this.RequiresAuthentication();
 
-                PlayerDataSource playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
+                PlayerData playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
 
-                uint expRequired = Content.Config.GetExpRequired( playerData.Stat[(int)StatType.Lev] );
-                if ( playerData.Exp >= expRequired )
+                Debug.Assert( playerData != null );
+
+                Player player = new Player();
+                player.LoadPlayer( playerData );
+
+                if ( player.LevelUp( 1 ) )
                 {
-                    playerData.Exp -= expRequired;
-                    ++playerData.Stat[(int)StatType.Lev];
-
-                    playerData.StatPoints += Content.Config.BONUS_SKILL_POINTS_EACH_LEVELUP;
-
+                    // 
+                    
                     Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
 
                     return "levelup";
@@ -159,7 +164,7 @@ namespace OperationBluehole.Server.Modules
 
                 int stat = Request.Form.stat;
 
-                PlayerDataSource playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
+                PlayerData playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
 
                 if ( playerData.StatPoints <= 0 )
                     return "no point";
@@ -167,7 +172,7 @@ namespace OperationBluehole.Server.Modules
                 if ( stat <= (int)StatType.Lev || stat >= (int)StatType.StatCount )
                     return "wrong stat";
 
-                ++playerData.Stat[stat];
+                ++playerData.stats[stat];
 
                 Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
 
