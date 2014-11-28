@@ -44,46 +44,20 @@ namespace OperationBluehole.Server
         */ 
     }
 
-    public class PlayerDataSource
+    public class UserData
     {
-        [JsonProperty( "playerId" )]
-        public string PlayerId { get; set; }
-
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        [JsonProperty("exp")]
-        public uint Exp { get; set; }
-
-        [JsonProperty( "unused stat points" )]
-        public ushort StatPoints { get; set; }
-
-        [JsonProperty("stat")]
-        public List<ushort> Stat { get; set; }
-
-        [JsonProperty("skill")]
-        public List<ushort> Skill { get; set; }
+        [JsonProperty( "UserId" )]
+        public string UserId { get; set; }
 
         [JsonProperty( "gold" )]
         public uint Gold { get; set; }
 
         // 전체 인벤토리
-        [JsonProperty("inventory")]
+        [JsonProperty( "inventory" )]
         public List<uint> Inventory { get; set; }
 
         [JsonProperty( "token" )]
         public List<ItemToken> Token { get; set; }
-
-        // 장착한 장비
-        [JsonProperty("equipment")]
-        public List<uint> Equipment { get; set; }
-
-        // 장착한 소모품
-        [JsonProperty("consumable")]
-        public List<uint> Consumable { get; set; }
-
-        [JsonProperty("battleStyle")]
-        public byte BattleStyle { get; set; }
 
         [JsonProperty( "banList" )]
         public List<string> BanList { get; set; }
@@ -303,18 +277,33 @@ namespace OperationBluehole.Server
         // 일단은 후자로 구현하지만... 구리다...매우 구리다
     }
 
+    public static class UserDataDatabase
+    {
+        public const string PREFIX = "UserData ";
+
+        public static UserData GetUserData( string userId )
+        {
+            return CouchbaseManager.Client.GetJson<UserData>( PREFIX + userId );
+        }
+
+        public static bool SetUserData( UserData data )
+        {
+            return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + data.UserId, data );
+        }
+    }
+
     public static class PlayerDataDatabase
     {
         public const string PREFIX = "PlayerData ";
 
-        public static PlayerDataSource GetPlayerData( string playerId )
+        public static PlayerData GetPlayerData( string playerId )
         {
-            return CouchbaseManager.Client.GetJson<PlayerDataSource>( PREFIX + playerId );
+            return CouchbaseManager.Client.GetJson<PlayerData>( PREFIX + playerId );
         }
 
-        public static bool SetPlayerData( PlayerDataSource data )
+        public static bool SetPlayerData( PlayerData data )
         {
-            return CouchbaseManager.Client.StoreJson(StoreMode.Set, PREFIX + data.PlayerId, data);
+            return CouchbaseManager.Client.StoreJson(StoreMode.Set, PREFIX + data.pId, data);
         }
     }
 

@@ -37,11 +37,14 @@ namespace OperationBluehole.Server
             var playerData = PlayerDataDatabase.GetPlayerData( playerId );
             Debug.Assert( playerData != null, "player data is null : " + playerId );
 
-            newPlayer.LoadPlayer( playerData.ConvertToPlayerData() );
+            var userData = UserDataDatabase.GetUserData( playerId );
+            Debug.Assert( userData != null, "user data is null : " + playerId );
+
+            newPlayer.LoadPlayer( playerData );
 
             Console.WriteLine( "player id : " + newPlayer.pId );
 
-            waitingPlayers.Enqueue( new Tuple<Player, int, List<string>>( newPlayer, difficulty, playerData.BanList ) );
+            waitingPlayers.Enqueue( new Tuple<Player, int, List<string>>( newPlayer, difficulty, userData.BanList ) );
         }
 
         public static void DeregisterPlayer(string playerId)

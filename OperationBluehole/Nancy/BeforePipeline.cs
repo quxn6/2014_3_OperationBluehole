@@ -140,7 +140,7 @@
         {
             if (task == null)
             {
-                tcs.SetResult(default(Response));
+                tcs.SetResult( default( Response ) );
                 return;
             }
 

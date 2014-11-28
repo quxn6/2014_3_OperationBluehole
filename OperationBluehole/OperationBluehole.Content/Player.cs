@@ -5,21 +5,42 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
-	public struct PlayerData
+    using Newtonsoft.Json;
+
+	public class PlayerData
 	{
+        [JsonProperty( "playerId" )]
         public string pId;
-		public String name;
+
+        [JsonProperty( "name" )]
+        public string name;
+
+        [JsonProperty( "exp" )]
 		public uint exp;
+
+        [JsonProperty( "stat" )]
 		public ushort[] stats;
 
-		public List<SkillId> skills;
-		public List<ItemCode> items;
-		public List<ItemCode> equipments;
+        [JsonProperty( "skill" )]
+        public List<SkillId> skills;
+
+        [JsonProperty( "equipment" )]
+        public List<ItemCode> equipments;
+
+        [JsonProperty( "consumable" )]
+		public List<ItemCode> consumables;
+
+        [JsonProperty( "battleStyle" )]
 		public BattleStyle battleStyle;
+
+        public PlayerData()
+        {
+
+        }
 
 		public PlayerData(
             string pId,
-			String name,
+			string name,
 			uint exp,
 			ushort statLev,
 			ushort statStr,
@@ -48,16 +69,26 @@ namespace OperationBluehole.Content
 			this.stats[(int)StatType.Wis] = statWis;
 			this.stats[(int)StatType.Mov] = statMov;
 			this.skills = skills;
-			this.items = items;
+			this.consumables = items;
 			this.equipments = equipments;
 			this.battleStyle = battleStyle;
 		}
+
+        public void UpdateFromPlayer( Player player )
+        {
+            this.exp = player.exp;
+            this.stats = player.baseStats;
+            this.skills = player.skills;
+            this.consumables = player.items;
+            this.equipments = player.equipments;
+            this.battleStyle = player.battleStyle;
+        }
 	}
 
 	public class Player : Character
 	{
 		public string pId { get; private set; }
-		public uint exp { get; private set; }
+        public uint exp { get; private set; }
 
 		public Player()
 		{
@@ -80,7 +111,7 @@ namespace OperationBluehole.Content
 			this.baseStats[(int)StatType.Mov] = data.stats[(int)StatType.Mov];
 
 			this.skills = data.skills;
-			this.items = data.items;
+			this.items = data.consumables;
 			this.equipments = data.equipments;
 
 			CalcStat();
@@ -107,6 +138,7 @@ namespace OperationBluehole.Content
                     var learn = SkillManager.table.Keys.Where(i => !this.skills.Contains(i)).Skip(notHaveCnt).First();
                     this.skills.Add(learn);
                 }
+
                 return true;
             }
             else
@@ -161,6 +193,7 @@ namespace OperationBluehole.Content
             this.items.AddRange(inputItems);
             return true;
         }
+
         public bool CarryItem(ItemCode inputItem)
         {
             if (this.items.Count >= Config.MAX_CARRY_ITEMS)

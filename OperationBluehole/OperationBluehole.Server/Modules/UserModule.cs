@@ -30,20 +30,29 @@ namespace OperationBluehole.Server.Modules
 
                 if ( AccountInfoDatabase.SetAccountInfo( new AccountInfo( userId, password ) ) )
                 {
+                    // user identity
                     UserIdentityDatabase.SetUserIdentity( new UserIdentity { UserName = userId, Claims = new List<string> { "user", } } );
-                    
-                    PlayerDataDatabase.SetPlayerData( new PlayerDataSource
-                    {
-                        PlayerId = userId,
-                        Name = playerName,
-                        Exp = 0,
-                        Stat = new List<ushort> { 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-                        Skill = new List<ushort> { },
+
+                    // user data
+                    UserDataDatabase.SetUserData( new UserData {
+                        UserId = userId,
+                        Gold = 0,
                         Inventory = new List<uint> { },
-                        Consumable = new List<uint> { },
-                        Equipment = new List<uint> { },
-                        BattleStyle = (byte)BattleStyle.AGGRESSIVE,
+                        Token = new List<ItemToken> { },
                         BanList = new List<string> { },
+                    } );
+                    
+                    // player data
+                    PlayerDataDatabase.SetPlayerData( new PlayerData
+                    {
+                        pId = userId,
+                        name = playerName,
+                        exp = 0,
+                        stats = new ushort[] { 1, 5, 5, 5, 5, 5, 5, 5, },
+                        skills = new List<SkillId> { },
+                        consumables = new List<ItemCode> { },
+                        equipments = new List<ItemCode> { },
+                        battleStyle = BattleStyle.AGGRESSIVE,
                     } );
                     
                     ResultTableDatabase.SetResultTable( new ResultTable
