@@ -33,9 +33,6 @@ namespace OperationBluehole.Content
         [JsonProperty( "battleStyle" )]
 		public BattleStyle battleStyle;
 
-        [JsonProperty( "unused stat points" )]
-        public ushort StatPoints;
-
         public PlayerData()
         {
 
@@ -56,8 +53,7 @@ namespace OperationBluehole.Content
 			List<SkillId> skills,
 			List<ItemCode> items,
 			List<ItemCode> equipments,
-			BattleStyle battleStyle,
-            ushort statPoints = 0
+			BattleStyle battleStyle
 			)
 		{
             this.pId = pId;
@@ -76,15 +72,23 @@ namespace OperationBluehole.Content
 			this.consumables = items;
 			this.equipments = equipments;
 			this.battleStyle = battleStyle;
-            this.StatPoints = statPoints;
 		}
+
+        public void UpdateFromPlayer( Player player )
+        {
+            this.exp = player.exp;
+            this.stats = player.baseStats;
+            this.skills = player.skills;
+            this.consumables = player.items;
+            this.equipments = player.equipments;
+            this.battleStyle = player.battleStyle;
+        }
 	}
 
 	public class Player : Character
 	{
 		public string pId { get; private set; }
         public uint exp { get; private set; }
-        public ushort statPoints { get; private set; }
 
 		public Player()
 		{
@@ -109,7 +113,6 @@ namespace OperationBluehole.Content
 			this.skills = data.skills;
 			this.items = data.consumables;
 			this.equipments = data.equipments;
-            this.statPoints = data.StatPoints;
 
 			CalcStat();
 
@@ -135,6 +138,7 @@ namespace OperationBluehole.Content
                     var learn = SkillManager.table.Keys.Where(i => !this.skills.Contains(i)).Skip(notHaveCnt).First();
                     this.skills.Add(learn);
                 }
+
                 return true;
             }
             else
@@ -189,6 +193,7 @@ namespace OperationBluehole.Content
             this.items.AddRange(inputItems);
             return true;
         }
+
         public bool CarryItem(ItemCode inputItem)
         {
             if (this.items.Count >= Config.MAX_CARRY_ITEMS)

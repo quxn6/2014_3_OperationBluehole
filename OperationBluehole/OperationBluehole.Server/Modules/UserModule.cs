@@ -53,7 +53,6 @@ namespace OperationBluehole.Server.Modules
                         consumables = new List<ItemCode> { },
                         equipments = new List<ItemCode> { },
                         battleStyle = BattleStyle.AGGRESSIVE,
-                        StatPoints = 0
                     } );
                     
                     ResultTableDatabase.SetResultTable( new ResultTable

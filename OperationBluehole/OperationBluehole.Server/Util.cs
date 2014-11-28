@@ -33,8 +33,6 @@ namespace OperationBluehole.Server
 
             playerData.battleStyle = (BattleStyle)player.battleStyle;
 
-            playerData.StatPoints = player.statPoints;
-
             return playerData;
         }
     }

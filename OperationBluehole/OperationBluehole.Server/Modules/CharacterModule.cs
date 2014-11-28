@@ -41,7 +41,6 @@ namespace OperationBluehole.Server.Modules
             this.Name = playerData.name;
 
             this.Exp = playerData.exp;
-            this.StatPoints = playerData.StatPoints;
 
             this.Stat = new List<ushort>();
             for ( int i = 0; i < (int)StatType.StatCount; ++i )
@@ -122,7 +121,6 @@ namespace OperationBluehole.Server.Modules
             Get["/update"] = parameters =>
             {
                 // 캐릭터의 최신 정보 받기
-                // PlayerDataSource를 보낸다
 
                 // 일단 해당 유저의 id를 확인하고
                 this.RequiresAuthentication();
@@ -147,8 +145,9 @@ namespace OperationBluehole.Server.Modules
 
                 if ( player.LevelUp( 1 ) )
                 {
-                    // 
-                    
+                    // update playerData 
+                    playerData.UpdateFromPlayer( player );
+
                     Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
 
                     return "levelup";
@@ -166,13 +165,27 @@ namespace OperationBluehole.Server.Modules
 
                 PlayerData playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
 
-                if ( playerData.StatPoints <= 0 )
-                    return "no point";
+                Player player = new Player();
+                player.LoadPlayer( playerData );
 
-                if ( stat <= (int)StatType.Lev || stat >= (int)StatType.StatCount )
-                    return "wrong stat";
+                ushort[] request = this.Request.Form.stat; 
+                List<Tuple<StatType, ushort>> requestStats = new List<Tuple<StatType, ushort>>();
 
-                ++playerData.stats[stat];
+                for ( int i = (int)StatType.Str; i < (int)StatType.StatCount; ++i )
+                {
+                    if ( request[i] != 0 )
+                        requestStats.Add( new Tuple<StatType, ushort>( (StatType)i, request[i] ) );
+                }
+
+                if ( player.SetBonusStats( requestStats ) )
+                {
+                    // update playerData
+                    playerData.UpdateFromPlayer( player );
+
+                    Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
+
+                    return "stats changed";
+                }
 
                 Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
 

@@ -158,7 +158,6 @@ namespace OperationBluehole.Server.Modules
                         equipments = new List<ItemCode> { },
                         consumables = new List<ItemCode> { },
                         battleStyle = BattleStyle.AGGRESSIVE,
-                        StatPoints = 0
                     } );
 
                 if ( result )
@@ -180,7 +179,6 @@ namespace OperationBluehole.Server.Modules
                         equipments = new List<ItemCode> { },
                         consumables = new List<ItemCode> { ItemCode.MpPotion_S },
                         battleStyle = BattleStyle.DEFENSIVE,
-                        StatPoints = 0
                     } );
 
                 if ( result )
@@ -202,7 +200,6 @@ namespace OperationBluehole.Server.Modules
                         equipments = new List<ItemCode> { ItemCode.Sword_Test, },
                         consumables = new List<ItemCode> { ItemCode.HpPotion_S, ItemCode.HpPotion_S, },
                         battleStyle = BattleStyle.AGGRESSIVE,
-                        StatPoints = 0
                     } );
 
                 if ( result )
@@ -224,7 +221,6 @@ namespace OperationBluehole.Server.Modules
                         equipments = new List<ItemCode> { },
                         consumables = new List<ItemCode> { ItemCode.MpPotion_S, },
                         battleStyle = BattleStyle.AGGRESSIVE,
-                        StatPoints = 0
                     } );
 
                 if ( result )
