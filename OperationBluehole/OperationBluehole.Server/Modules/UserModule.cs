@@ -96,7 +96,7 @@ namespace OperationBluehole.Server.Modules
             // 는 없다. 
 
             // 로그인 상태 확인
-            Post["/valid_session"] = parameters =>
+            Get["/valid_session"] = parameters =>
             {
                 this.RequiresAuthentication();
 

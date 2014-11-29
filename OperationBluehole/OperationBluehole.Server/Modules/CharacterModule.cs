@@ -187,9 +187,7 @@ namespace OperationBluehole.Server.Modules
                     return "stats changed";
                 }
 
-                Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
-
-                return "increased";
+                return "failed";
             };
         }
     }
