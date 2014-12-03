@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
-    public struct TargetAffected
+    public class TargetAffected
     {
 		public PartyType targetType;
         public int targetIdx;
