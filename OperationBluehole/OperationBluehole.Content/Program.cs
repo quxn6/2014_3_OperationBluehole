@@ -13,7 +13,7 @@ namespace OperationBluehole.Content
             ContentsPrepare.Init();
 
             // 던전 테스트--------
-            Player[] player = { new Player(), new Player(), new Player() };
+            Player[] player = { new Player(), new Player(), new Player(), new Player() };
 
             PlayerData data = new PlayerData();
             if ( TestData.playerList.TryGetValue( 102, out data ) )
@@ -24,6 +24,9 @@ namespace OperationBluehole.Content
 
             if ( TestData.playerList.TryGetValue( 104, out data ) )
                 player[2].LoadPlayer( data );
+
+            if ( TestData.playerList.TryGetValue( 101, out data ) )
+                player[3].LoadPlayer( data );
 
             Party users = new Party( PartyType.PLAYER, 10 );
             foreach ( Player p in player )
