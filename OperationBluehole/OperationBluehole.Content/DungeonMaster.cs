@@ -101,7 +101,8 @@ namespace OperationBluehole.Content
                     break;
 
                 MoveDiretion direction = explorer.GetMoveDirection();
-                explorer.Move( direction );
+                if ( !explorer.Move( direction ) )
+                    break;
 
                 // 위에서 아이템도 먹고 몹도 처리했으면 실제로 맵에서의 좌표도 이동시킨다
                 dungeon.MovePlayer( explorer.position );
@@ -141,7 +142,7 @@ namespace OperationBluehole.Content
             return dungeon.zoneList[zoneId].items;
         }
 
-        internal void StartBattle( Party mob )
+        internal bool StartBattle( Party mob )
         {
             // explorer 좌표에 있는 몹을 읽어와서 전투 시작
             if ( mob.partyType != PartyType.MOB )
@@ -153,17 +154,25 @@ namespace OperationBluehole.Content
             // 임시 몹 사용
             //Party tempMob = TempMobGenerator();
 
+            // initialize hp, mp, sp
+            users.characters.ForEach( each => each.ResetHpMpSp() );
+
             Battle newBattle = new Battle( random, users, mob );
             #region 전투기록 : 전투기록 설정
             if(record != null)
                 newBattle.battleInfo = new BattleInfo(newBattle.party); 
             #endregion
             newBattle.StartBattle();
+            #region 전투기록 : 결과 기록
+            if (record != null)
+                record.battleLog.Add( newBattle.battleInfo.turnInfos );
+            #endregion
 
             if ( newBattle.battleResult == PartyIndex.USERS )
             {
                 // 전리품 챙겨라
-                mob.characters.ForEach( m => {
+                mob.characters.ForEach( m =>
+                {
                     Mob currentMob = (Mob)m;
                     record.lootedExp += currentMob.rewardExp;
                     record.lootedGold += currentMob.rewardGold;
@@ -171,15 +180,14 @@ namespace OperationBluehole.Content
                     if ( currentMob.rewardItem != null )
                         record.lootedItems.Add( currentMob.rewardItem );
                 } );
+
+                Console.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
+                // Console.ReadLine();
+
+                return true;
             }
 
-            Console.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
-            // Console.ReadLine();
-
-            #region 전투기록 : 결과 기록
-            if (record != null)
-                record.battleLog.Add( newBattle.battleInfo.turnInfos );
-            #endregion
+            return false;
         }
 
         internal void LootItem( Item item, int zoneId )
