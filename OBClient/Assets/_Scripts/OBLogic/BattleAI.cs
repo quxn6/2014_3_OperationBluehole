@@ -40,7 +40,7 @@ namespace OperationBluehole.Content
 		StyleP		= 10,
 	}
 
-	struct AIDecision{
+	class AIDecision{
 		public ActionType type;
 		public List<Character> targets;
 		public short value;		// 우선도 판단용 수치
@@ -275,19 +275,16 @@ namespace OperationBluehole.Content
 					break;
 			}
 			
-			AIDecision tmp;
 			foreach (var d in res)
 			{
-				tmp = d;
-				tmp.value += (short)AIConst.StyleP;
+				d.value += (short)AIConst.StyleP;
 			}
 		}
 
 		void Randomize()
 		{
-			decisions = decisions.ConvertAll(d =>{ 
+			decisions.ForEach(d =>{ 
 				d.value += (short)random.Next(0, randomLevel); 
-				return d;
 			});
 		}
 

@@ -1,0 +1,26 @@
+Zombie Boss Animation List
+
+0001-0005: bind pose
+0010-0033: backpedal (loop)
+0035-0086: bite
+0090-0169: die
+0175-0210: get hit from behind
+0215-0258: get hit from front
+0260-0303: get hit from left
+0305-0340: get hit from right
+0345-0392: idle (loop)
+0445-0484: jump
+0490-0569: pick up & eat
+0575-0638: roar
+0640-0654: run (loop)
+0700-0715: shuffle left (loop)
+0750-0765: shuffle right (loop)
+0800-0859: signal minions to attack
+0865-0928: slam ground
+0995-1142: spawn
+1145-1192: spew out minion (spawn minion)
+1195-1238: stomp ground
+1240-1263: strafe left (loop)
+1310-1333: strafe right (loop)
+1380-1479: throw something heavy
+1480-1503: walk (loop)

@@ -1,0 +1,26 @@
+Fat Zombie Animation List
+
+frame: 0060-0119 backpedal (loop)
+frame: 0185-0244 bite
+frame: 0250-0299 die
+frame: 0305-0339 get hit from behind
+frame: 0345-0379 get hit from front
+frame: 0385-0419 get hit from left
+frame: 0425-0459 get hit from right
+frame: 0539-0613 idle (loop)
+frame: 0695-0754 jump
+frame: 0760-0839 roar
+frame: 0845-0839 roll start
+frame: 0864-0875 roll (loop)
+frame: 0897-0971 roll end
+frame: 1004-1033 run (loop)
+frame: 1104-1143 shuffle left (loop)
+frame: 1229-1268 shuffle right (loop)
+frame: 1315-1394 slap belly
+frame: 1400-1494 spawn
+frame: 1500-1564 spawn ceiling
+frame: 1570-1639 stomp
+frame: 1704-1763 strafe left (loop)
+frame: 1889-1948 strafe right (loop)
+frame: 2015-2092 swipe
+frame: 2159-2218 walk (loop)

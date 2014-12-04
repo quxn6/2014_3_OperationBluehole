@@ -7,16 +7,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{56BF309D-F412-13E8-DA73-7BB984B803C4}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <AssemblyName>Assembly-CSharp</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <CompilerResponseFile></CompilerResponseFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,8 +46,15 @@
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Assets\Plugins\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Res\3DModels\LowpolyDungeonModularSystem\prefabs\Player\LockCursor.cs" />
+    <Compile Include="Assets\Res\3DModels\LowpolyDungeonModularSystem\prefabs\Player\MouseLook.cs" />
+    <Compile Include="Assets\Res\3DModels\LowpolyDungeonModularSystem\prefabs\Player\PlayerMovement.cs" />
+    <Compile Include="Assets\Res\3DModels\LowpolyDungeonModularSystem\prefabs\Player\ShadowBlob.cs" />
     <Compile Include="Assets\Util\NGUI\Examples\Scripts\InventorySystem\Game\EquipItems.cs" />
     <Compile Include="Assets\Util\NGUI\Examples\Scripts\InventorySystem\Game\EquipRandomItem.cs" />
     <Compile Include="Assets\Util\NGUI\Examples\Scripts\InventorySystem\Game\UICursor.cs" />
@@ -245,10 +250,23 @@
     <Compile Include="Assets\_Scripts\Util\Tuple2.cs" />
     <Compile Include="Assets\_Scripts\Util\Tuple3.cs" />
     <Compile Include="Assets\_Scripts\Util\Tuple4.cs" />
+    <None Include="Assets\Res\3DModels\Blade_NPC_ChibiPack\ReadMe_V1.1.txt" />
+    <None Include="Assets\Res\3DModels\Blade_NPC_ChibiPack\Shader\Toony-Basic.shader" />
+    <None Include="Assets\Res\3DModels\Blade_NPC_ChibiPack\Shader\Toony-BasicOutline.shader" />
+    <None Include="Assets\Res\3DModels\Blade_NPC_ChibiPack\Shader\Toony-Lighted.shader" />
+    <None Include="Assets\Res\3DModels\Blade_NPC_ChibiPack\Shader\Toony-LightedOutline.shader" />
+    <None Include="Assets\Res\3DModels\Blade_NPC_ChibiPack\Shader\Unlit_2Side.shader" />
     <None Include="Assets\Res\3DModels\Earthborn Troll\Shader\Alpha_Texture.shader" />
     <None Include="Assets\Res\3DModels\Earthborn Troll\Shader\DoubleSided-Light-Spec.shader" />
+    <None Include="Assets\Res\3DModels\LowpolyDungeonModularSystem\Standard Assets\Projectors\Guidelines.txt" />
+    <None Include="Assets\Res\3DModels\LowpolyDungeonModularSystem\Standard Assets\Projectors\Sources\Shaders\Projector Light.shader" />
+    <None Include="Assets\Res\3DModels\LowpolyDungeonModularSystem\Standard Assets\Projectors\Sources\Shaders\Projector Multiply.shader" />
     <None Include="Assets\Res\3DModels\SkeletonData\animations.txt" />
     <None Include="Assets\Res\3DModels\TinyOsborn\Documents\Readme.txt" />
+    <None Include="Assets\Res\3DModels\Zombie_Pack\Zombie_Commoner\_source\Animations(standalone)\zombie_commoner_animation_list.txt" />
+    <None Include="Assets\Res\3DModels\Zombie_Pack\Zombie_Fatty\_source\Animations(standalone)\fat_zombie_animation_list.txt" />
+    <None Include="Assets\Res\3DModels\Zombie_Pack\Zombie_King\_source\Animations(Standalone)\zombie_king_animation_list.txt" />
+    <None Include="Assets\Res\3DModels\Zombie_Pack\Zombie_Murderer\_source\Animations(Standalone)\zombie_murderer_animation_list.txt" />
     <None Include="Assets\Util\Mobile Cartoon GUI\Examples\Readme.txt" />
     <None Include="Assets\Util\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />
     <None Include="Assets\Util\NGUI\Examples\Atlases\Refractive\Refractive Font - Header.txt" />

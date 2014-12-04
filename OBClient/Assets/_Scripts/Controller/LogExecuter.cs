@@ -240,20 +240,21 @@ public class LogExecuter : MonoBehaviour
 	// Iterate target's data and apply damage
 	// Damage in TargetAffected struct is positive value, so when we update target data, multiply (-) at its value.
 	private void ApplyDamage(List<OperationBluehole.Content.TargetAffected> targetDataList)
-	{
+	{		
 		for ( int i = 0 ; i < targetDataList.Count; ++i)
 		{
+			Debug.Log( targetDataList[i].value );
 			// apply damage data & play animation for hit
 			switch ( targetDataList[i].targetType )
 			{
 				case OperationBluehole.Content.PartyType.MOB:					
 					Mob mob = BattleManager.Instance.EnemyInstanceList[targetDataList[i].targetIdx].GetComponent<Mob>();					
-					mob.UpdateCharacterData( targetDataList[i].gaugeType , -targetDataList[i].value );					
+					mob.UpdateCharacterData( targetDataList[i].gaugeType , targetDataList[i].value );					
 					mob.BeAttacked();
 					break;
 				case OperationBluehole.Content.PartyType.PLAYER:
 					Hero hero = BattleManager.Instance.heroStatus[i].GetComponent<Hero>();
-					hero.UpdateCharacterData( targetDataList[i].gaugeType , -targetDataList[i].value );
+					hero.UpdateCharacterData( targetDataList[i].gaugeType , targetDataList[i].value );
 					hero.BeAttacked();
 					break;
 			}

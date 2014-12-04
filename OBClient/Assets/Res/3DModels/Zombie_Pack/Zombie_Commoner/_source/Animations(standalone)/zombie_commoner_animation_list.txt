@@ -1,0 +1,22 @@
+Zombie Commoner Animation List
+
+0001-0005: bind
+0034-0058: backpedal (loop) 
+0085-0117: bite
+0144-0168: crawl (loop)
+0195-0217: die
+0220-0252: get hit from behind
+0255-0291: get hit from front
+0295-0323: get hit from left
+0325-0353: get hit from right
+0403-0451: idle (loop)
+0500-0540: jump
+0545-0605: roar
+0629-0648: run (loop)
+0685-0700: shuffle left (loop)
+0735-0750: shuffle right (loop)
+0770-0802: spawn
+0828-0851: strafe left (loop)
+0903-0926: strafe right (loop)
+0955-1007: swipe
+1034-1058: walk (loop)

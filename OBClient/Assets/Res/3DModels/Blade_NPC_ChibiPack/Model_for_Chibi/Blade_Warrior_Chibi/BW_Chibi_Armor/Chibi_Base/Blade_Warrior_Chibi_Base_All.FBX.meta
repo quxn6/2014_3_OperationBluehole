@@ -1,0 +1,160 @@
+fileFormatVersion: 2
+guid: f10c2891b845e5844877bbde4f91c5dd
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: Blade_male
+    100002: Blade_male Footsteps
+    100004: Blade_male Head
+    100006: Blade_male HeadNub
+    100008: Blade_male L Calf
+    100010: Blade_male L Clavicle
+    100012: Blade_male L Foot
+    100014: Blade_male L Forearm
+    100016: Blade_male L Hand
+    100018: Blade_male L Thigh
+    100020: Blade_male L Toe0
+    100022: Blade_male L Toe0Nub
+    100024: Blade_male L UpperArm
+    100026: Blade_male Neck
+    100028: Blade_male Pelvis
+    100030: Blade_male Ponytail1
+    100032: Blade_male Ponytail11
+    100034: Blade_male Ponytail12
+    100036: Blade_male Ponytail1Nub
+    100038: Blade_male Prop1
+    100040: Blade_male R Calf
+    100042: Blade_male R Clavicle
+    100044: Blade_male R Foot
+    100046: Blade_male R Forearm
+    100048: Blade_male R Hand
+    100050: Blade_male R Thigh
+    100052: Blade_male R Toe0
+    100054: Blade_male R Toe0Nub
+    100056: Blade_male R UpperArm
+    100058: Blade_male Spine
+    100060: Blade_male Spine1
+    100062: //RootNode
+    100064: BW_Chibi_Body_Base
+    100066: BW_Chibi_Face_Base
+    100068: Hair_base001
+    100070: L_B_scult01
+    100072: L_B_scult02
+    100074: L_F_scult01
+    100076: L_F_scult0102
+    100078: M_scult01
+    100080: M_scult02
+    100082: R_B_scult01
+    100084: R_B_scult02
+    100086: R_F_scult01
+    100088: R_F_scult02
+    100090: Weapon_Chibi_base
+    400000: Blade_male
+    400002: Blade_male Footsteps
+    400004: Blade_male Head
+    400006: Blade_male HeadNub
+    400008: Blade_male L Calf
+    400010: Blade_male L Clavicle
+    400012: Blade_male L Foot
+    400014: Blade_male L Forearm
+    400016: Blade_male L Hand
+    400018: Blade_male L Thigh
+    400020: Blade_male L Toe0
+    400022: Blade_male L Toe0Nub
+    400024: Blade_male L UpperArm
+    400026: Blade_male Neck
+    400028: Blade_male Pelvis
+    400030: Blade_male Ponytail1
+    400032: Blade_male Ponytail11
+    400034: Blade_male Ponytail12
+    400036: Blade_male Ponytail1Nub
+    400038: Blade_male Prop1
+    400040: Blade_male R Calf
+    400042: Blade_male R Clavicle
+    400044: Blade_male R Foot
+    400046: Blade_male R Forearm
+    400048: Blade_male R Hand
+    400050: Blade_male R Thigh
+    400052: Blade_male R Toe0
+    400054: Blade_male R Toe0Nub
+    400056: Blade_male R UpperArm
+    400058: Blade_male Spine
+    400060: Blade_male Spine1
+    400062: //RootNode
+    400064: BW_Chibi_Body_Base
+    400066: BW_Chibi_Face_Base
+    400068: Hair_base001
+    400070: L_B_scult01
+    400072: L_B_scult02
+    400074: L_F_scult01
+    400076: L_F_scult0102
+    400078: M_scult01
+    400080: M_scult02
+    400082: R_B_scult01
+    400084: R_B_scult02
+    400086: R_F_scult01
+    400088: R_F_scult02
+    400090: Weapon_Chibi_base
+    4300000: Hair_base001
+    4300002: Weapon_Chibi_base
+    4300004: BW_Chibi_Body_Base
+    4300006: BW_Chibi_Face_Base
+    11100000: //RootNode
+    13700000: BW_Chibi_Body_Base
+    13700002: BW_Chibi_Face_Base
+    13700004: Hair_base001
+    13700006: Weapon_Chibi_base
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  additionalBone: 0
+  userData: 

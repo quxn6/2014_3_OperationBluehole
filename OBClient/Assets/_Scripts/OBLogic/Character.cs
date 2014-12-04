@@ -277,7 +277,16 @@ namespace OperationBluehole.Content
 
 			uint hitRate = (uint)random.Next((int)actualParams[(int)ParamType.avoid]);
 
-			return (hitRate <= accuracy);
+			if (hitRate <= accuracy)
+				return true;
+			else
+			{
+				#region 전투기록 : 효과 수치 기록
+				if (battleInfo != null)
+					battleInfo.RecordAffect(this, GaugeType.Hp, 0);
+				#endregion
+				return false;
+			}
 		}
 
 		// 명중시 방어력에 의한 데미지 감소 계산
