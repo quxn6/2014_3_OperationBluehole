@@ -187,8 +187,8 @@
  <Reference Include="Assembly-UnityScript">
  <HintPath>C:/OperationBluehole/OBClient/Library/ScriptAssemblies/Assembly-UnityScript.dll</HintPath>
  </Reference>
- <Reference Include="Newtonsoft.Json">
- <HintPath>C:/OperationBluehole/OBClient/Assets/Plugins/Newtonsoft.Json.dll</HintPath>
+ <Reference Include="LitJson">
+ <HintPath>C:/OperationBluehole/OBClient/Assets/Plugins/LitJson.dll</HintPath>
  </Reference>
  <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
  <HintPath>C:/OperationBluehole/OBClient/Assets/Util/UnityVS/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
@@ -202,10 +202,6 @@
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp-vs.csproj">
-      <Project>{216C3F65-67E4-02F6-CBA5-3C8751A0C1ED}</Project>      <Name>Assembly-CSharp-vs</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

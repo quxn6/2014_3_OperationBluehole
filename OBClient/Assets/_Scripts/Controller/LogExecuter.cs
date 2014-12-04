@@ -253,7 +253,7 @@ public class LogExecuter : MonoBehaviour
 					mob.BeAttacked();
 					break;
 				case OperationBluehole.Content.PartyType.PLAYER:
-					Hero hero = BattleManager.Instance.heroStatus[i].GetComponent<Hero>();
+					Hero hero = BattleManager.Instance.heroStatus[targetDataList[i].targetIdx].GetComponent<Hero>();
 					hero.UpdateCharacterData( targetDataList[i].gaugeType , targetDataList[i].value );
 					hero.BeAttacked();
 					break;

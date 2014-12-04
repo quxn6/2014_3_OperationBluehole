@@ -300,8 +300,8 @@
      <None Include="Assets\Res\3DModels\Zombie_Pack\Zombie_Commoner\_source\Animations(standalone)\zombie_commoner_animation_list.txt" />
      <None Include="Assets\Util\NGUI\Examples\Models\Orc Armor\Orc Armor.shader" />
      <None Include="Assets\Util\NGUI\Examples\Resources\Localization.txt" />
- <Reference Include="Newtonsoft.Json">
- <HintPath>C:/OperationBluehole/OBClient/Assets/Plugins/Newtonsoft.Json.dll</HintPath>
+ <Reference Include="LitJson">
+ <HintPath>C:/OperationBluehole/OBClient/Assets/Plugins/LitJson.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

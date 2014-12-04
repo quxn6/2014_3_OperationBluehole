@@ -273,7 +273,7 @@ public class NetworkManager : MonoBehaviour
 
 		///////////// test data /////////////
 		OperationBluehole.Content.PlayerData data = new OperationBluehole.Content.PlayerData();
-		OperationBluehole.Content.Player[] player = { new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() };
+		OperationBluehole.Content.Player[] player = { new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() };
 		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 102 , out data ) )
 			player[0].LoadPlayer( data );
 
@@ -282,6 +282,9 @@ public class NetworkManager : MonoBehaviour
 
 		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 104 , out data ) )
 			player[2].LoadPlayer( data );
+
+		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 101 , out data ) )
+			player[3].LoadPlayer( data );
 
 		OperationBluehole.Content.Party DummyParty = new OperationBluehole.Content.Party( OperationBluehole.Content.PartyType.PLAYER , 10 );
 		foreach ( OperationBluehole.Content.Player p in player )
