@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using LitJson;
 
 public class NetworkManager : MonoBehaviour 
 {
@@ -50,7 +50,8 @@ public class NetworkManager : MonoBehaviour
 			yield break;
 		
 		// get json data as dictionary
-		var dict =  JsonConvert.DeserializeObject<Dictionary<string, object>>( www.text );
+		// var dict =  JsonConvert.DeserializeObject<Dictionary<string, object>>( www.text );
+		var dict = JsonMapper.ToObject<Dictionary<string, object>>( www.text );
 
 		token = (string)dict["token"];
 
