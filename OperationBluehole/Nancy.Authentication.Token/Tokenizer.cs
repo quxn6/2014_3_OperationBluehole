@@ -74,7 +74,8 @@
             {
                 if (string.IsNullOrWhiteSpace(item))
                 {
-                    throw new RouteExecutionEarlyExitException(new Response { StatusCode = HttpStatusCode.Unauthorized });
+                    // throw new RouteExecutionEarlyExitException(new Response { StatusCode = HttpStatusCode.Unauthorized });
+                    continue;
                 }
                 items.Add(item);
             }
