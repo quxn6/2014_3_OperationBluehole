@@ -20,9 +20,20 @@ namespace OperationBluhole.DummyClient
 
 		public async void Start()
 		{
-			bool chk = await Network.SignIn(this.userId, this.password, this.userId + "_1");
+			{
+				bool chk = await Network.SignIn(this.userId, this.password, this.userId + "_1");
+				Console.WriteLine("SignIn : {0}", chk);
+			}
 
-			this.token = await Network.LogIn(userId, password);
+			{
+				this.token = await Network.LogIn(userId, password);
+				Console.WriteLine("Login Token : {0}", this.token);
+			}
+
+			{
+				bool chk = await Network.IsLogIn(this.token);
+				Console.WriteLine("Login Status : {0}", chk);
+			}
 		}
 
 	}
