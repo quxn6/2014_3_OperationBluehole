@@ -14,12 +14,14 @@ namespace OperationBluhole.DummyClient
 		public static Uri rootUri { get; private set; }
 		static HttpRequestCachePolicy cachePolicy;
 		static string contentType;
+		static string userAgent;
 
 		public static bool Init(string rootUrl)
 		{
 			rootUri = new Uri(rootUrl);
 			cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
 			contentType = "application/x-www-form-urlencoded";
+			userAgent = "OperationBluhole DummyClient";
 
 			return true;
 		}
@@ -30,6 +32,7 @@ namespace OperationBluhole.DummyClient
 			wRequest.Method = method;
 			wRequest.Accept = "*/*";
 			wRequest.CachePolicy = cachePolicy;
+			wRequest.UserAgent = userAgent;
 			
 			if (!string.IsNullOrEmpty(token))
 				wRequest.Headers["Authorization"] = "Token " + token;
