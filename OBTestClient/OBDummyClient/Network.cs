@@ -7,8 +7,11 @@ using System.Net;
 using System.IO;
 using System.Net.Cache;
 
-namespace OperationBluhole.DummyClient
+namespace OperationBluehole.DummyClient
 {
+    // using Newtonsoft.Json;
+    using LitJson;
+
 	static class Network
 	{
 		public static Uri rootUri { get; private set; }
@@ -21,7 +24,7 @@ namespace OperationBluhole.DummyClient
 			rootUri = new Uri(rootUrl);
 			cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
 			contentType = "application/x-www-form-urlencoded";
-			userAgent = "OperationBluhole DummyClient";
+			userAgent = "OperationBluehole DummyClient";
 
 			return true;
 		}
@@ -52,7 +55,8 @@ namespace OperationBluhole.DummyClient
 			{
 				HttpWebResponse wResponse = (HttpWebResponse)await wRequest.GetResponseAsync();
 
-				Console.WriteLine(wRequest.Headers);
+                // for debug
+				// Console.WriteLine(wRequest.Headers);
 
 				string res;
 				if (wResponse.StatusCode == HttpStatusCode.OK)
@@ -82,7 +86,7 @@ namespace OperationBluhole.DummyClient
 
 			var res = await SendRequest("POST", "user/signin", postData, null);
 
-			return (res == "success");
+            return res.CompareTo( "success" ) == 0;
 		}
 
 		public static async Task<string> LogIn(string userId, string pw)
@@ -91,8 +95,10 @@ namespace OperationBluhole.DummyClient
 
 			var res = await SendRequest("POST", "user/login", postData, null);
 
-			if( res != "")
-				res = Json.JsonParser.Deserialize(res).token;
+            if ( res != "" )
+                res = JsonMapper.ToObject<Dictionary<string, string>>( res )["token"];
+                // res = JsonConvert.DeserializeObject<Dictionary<string,string>>( res )["token"]; 
+				// res = Json.JsonParser.Deserialize(res).token;
 
 			return res;
 		}
@@ -101,7 +107,7 @@ namespace OperationBluhole.DummyClient
 		{
 			var res = await SendRequest("GET", "user/valid_session", null, token);
 
-			return (res == "valid");
+            return res.CompareTo( "valid" ) == 0;
 		}
 
 		public static async Task<string> GetPlayerData(string token)
@@ -110,6 +116,23 @@ namespace OperationBluhole.DummyClient
 
 			return res;
 		}
+
+        public static async Task<bool> RegisterPlayer( string token, int difficulty )
+        {
+
+            var postData = String.Format( "difficulty={0}", difficulty );
+
+            var res = await SendRequest( "POST", "matching/register", postData, null );
+
+            return res.CompareTo( "success" ) == 0;
+        }
+
+        public static async Task<string> GetSimulationResult( string token )
+        {
+            var res = await SendRequest( "GET", "character/simulation_result", null, token );
+
+            return res;
+        }
 
 		public static async Task<string> LevelUp(string token)
 		{
@@ -120,18 +143,12 @@ namespace OperationBluhole.DummyClient
 
 		public static async Task<string> IncreaseStats(string token, ushort[] stats)
 		{
-			var postData = String.Format("stat={0}&stat={1}&stat={2}&stat={3}&stat={4}&stat={5}", stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
+			var postData = String.Format("stat=[{0}, {1}, {2}, {3}, {4}, {5}, {6}]", stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
 
 			var res = await SendRequest("POST", "character/increase_stat", postData, token);
 
 			return res;
 		}
-
-		public static async Task<string> GetSimulationResult(string token)
-		{
-			var res = await SendRequest("GET", "character/simulation_result", null, token);
-
-			return res;
-		}
 	}
 }
+

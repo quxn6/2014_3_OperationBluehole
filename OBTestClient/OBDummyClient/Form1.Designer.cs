@@ -1,4 +1,4 @@
-﻿namespace OperationBluhole.DummyClient
+﻿namespace OperationBluehole.DummyClient
 {
 	partial class DummyClient
 	{

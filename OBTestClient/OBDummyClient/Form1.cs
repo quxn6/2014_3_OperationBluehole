@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace OperationBluhole.DummyClient
+namespace OperationBluehole.DummyClient
 {
 	public partial class DummyClient : Form
 	{
@@ -23,9 +23,11 @@ namespace OperationBluhole.DummyClient
 			
 			int numOfUsers = Convert.ToInt32(this.TextBox_dummyConnections.Text);
 
+            Random random = new Random();
+
 			for (int i = 1; i <= numOfUsers; ++i)
 			{
-				var user = new User("testUser" + i, "testPw" + i);
+                var user = new User( "testUser" + i, "testPw" + i, random );
 				user.Start();
 			}
 		}

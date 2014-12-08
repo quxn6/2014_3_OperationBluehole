@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace OperationBluhole.DummyClient
+namespace OperationBluehole.DummyClient
 {
 	static class Program
 	{

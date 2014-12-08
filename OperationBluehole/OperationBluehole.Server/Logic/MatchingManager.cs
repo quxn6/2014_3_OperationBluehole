@@ -37,6 +37,9 @@ namespace OperationBluehole.Server
             var playerData = PlayerDataDatabase.GetPlayerData( playerId );
             Debug.Assert( playerData != null, "player data is null : " + playerId );
 
+            // 이미 등록되어 있는지 확인 필요
+            // ...
+
             var userData = UserDataDatabase.GetUserData( playerId );
             Debug.Assert( userData != null, "user data is null : " + playerId );
 
