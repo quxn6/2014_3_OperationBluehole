@@ -122,7 +122,7 @@ namespace OperationBluehole.DummyClient
 
             var postData = String.Format( "difficulty={0}", difficulty );
 
-            var res = await SendRequest( "POST", "matching/register", postData, null );
+            var res = await SendRequest( "POST", "matching/register", postData, token );
 
             return res.CompareTo( "success" ) == 0;
         }

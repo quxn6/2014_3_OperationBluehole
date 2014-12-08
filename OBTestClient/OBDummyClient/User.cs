@@ -142,6 +142,7 @@ namespace OperationBluehole.DummyClient
 
                 if ( result.CompareTo("nothing") == 0 )
                 {
+                    Console.WriteLine( "not yet" );
                     Task.Delay( 2000 ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
                     return;
                 }
@@ -181,6 +182,8 @@ namespace OperationBluehole.DummyClient
                 {
                     result = await Network.LevelUp( this.token );
                 } while ( result.CompareTo( "level up" ) == 0 );
+
+                Console.WriteLine( "level up!" );
             }
 
             // 스탯 상승
@@ -205,6 +208,8 @@ namespace OperationBluehole.DummyClient
                         Console.WriteLine( "failed to increase player stats" );
                         return;
                     }
+
+                    Console.WriteLine( "increase stats" );
                 }
             }
 
