@@ -117,14 +117,12 @@ namespace OperationBluehole.DummyClient
 			return res;
 		}
 
-        public static async Task<bool> RegisterPlayer( string token, int difficulty )
+        public static async Task<string> RegisterPlayer( string token, int difficulty )
         {
 
             var postData = String.Format( "difficulty={0}", difficulty );
 
-            var res = await SendRequest( "POST", "matching/register", postData, token );
-
-            return res.CompareTo( "success" ) == 0;
+            return await SendRequest( "POST", "matching/register", postData, token );
         }
 
         public static async Task<string> GetSimulationResult( string token )

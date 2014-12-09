@@ -31,7 +31,7 @@ namespace OperationBluehole.Server.Module
                 if ( resultTable != null && resultTable.UnreadId != -1  )
                     return "not prepared";
 
-                MatchingManager.RegisterPlayer( this.Context.CurrentUser.UserName, difficulty );    // 리스트는 나중에 플레이어 데이터에 만들어서 추가할 것
+                MatchingManager.RegisterPlayer( this.Context.CurrentUser.UserName, difficulty );
 
                 return "success";
             };

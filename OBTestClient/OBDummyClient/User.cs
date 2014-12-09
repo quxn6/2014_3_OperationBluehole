@@ -115,21 +115,21 @@ namespace OperationBluehole.DummyClient
         {
             // 대기열 등록
             {
-                bool chk = false;
+                string result;
 
-                chk = await Network.RegisterPlayer( this.token, 1 );   // difficulty 일단 1로 고정
+                result = await Network.RegisterPlayer( this.token, 1 );   // difficulty 일단 1로 고정
 
-                if ( !chk )
-                {
-                    Console.WriteLine( "there is unread game result" );
-
-                    Task.Run( () => this.UpdateResult() );
-                }
-                else
+                if ( result.CompareTo( "success" ) == 0 )
                 {
                     Console.WriteLine( "player registered" );
 
                     Task.Delay( 2000 ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
+                }
+                else
+                {
+                    Console.WriteLine( "there is unread game result" );
+
+                    Task.Run( () => this.UpdateResult() );
                 }
             }
         }
