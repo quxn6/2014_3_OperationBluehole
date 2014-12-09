@@ -163,18 +163,6 @@ public class LogExecuter : MonoBehaviour
 	}
 
 	private int battleLogIterator = 0;
-// 	public void PlayBattleLog()
-// 	{
-// 		Debug.Log( "Start battle!! with " + battleLogIterator + "th mob Party." );
-// 
-// 		var mobParty = DataManager.Instance.EncounteredMobPartyList[battleLogIterator];
-// 		if ( mobParty == null )
-// 			Debug.LogError( "Error : There is no battle log" );
-// 
-// 		BattleManager.Instance.AssignBattleArea( battleLogIterator );
-// 		//PlayBattleLog();
-// 	}
-
 	IEnumerator PlayBattleLog()
 	{
 		Debug.Log( "Start battle!! with " + battleLogIterator + "th mob Party." );

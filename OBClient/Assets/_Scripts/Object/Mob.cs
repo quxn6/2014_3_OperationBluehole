@@ -10,15 +10,17 @@ public class Mob : MonoBehaviour
 	}	
 
 	private IAnimatable animatable;
+	private Animator anim;
 
 	void Awake()
 	{
-		animatable = (IAnimatable)GetComponent( typeof( IAnimatable ) );	
+		animatable = (IAnimatable)GetComponent( typeof( IAnimatable ) );
+		anim = GetComponent<Animator>();
 	}
 
 	void OnEnable()
 	{
-		animatable.PlayIdle();
+		//animatable.PlayIdle();
 	}
 
 	public void InitMobData(OperationBluehole.Content.Mob enemyStat)
@@ -81,6 +83,12 @@ public class Mob : MonoBehaviour
 
 	public bool IsAnimationPlaying()
 	{
-		return animation.isPlaying;
+		// check mecanim or not
+		if ( animation == null )
+		{
+			return !anim.GetCurrentAnimatorStateInfo( 0 ).IsName( "default" );
+		}			
+		else
+			return animation.isPlaying;
 	}
 }

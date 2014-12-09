@@ -5,33 +5,32 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
-    //using Newtonsoft.Json;
-	using LitJson;
+    using Newtonsoft.Json;
 
 	public class PlayerData
 	{
-//        [JsonProperty( "playerId" )]
+        [JsonProperty( "playerId" )]
         public string pId;
 
-        //[JsonProperty( "name" )]
+        [JsonProperty( "name" )]
         public string name;
 
-        //[JsonProperty( "exp" )]
+        [JsonProperty( "exp" )]
 		public uint exp;
 
-        //[JsonProperty( "stat" )]
+        [JsonProperty( "stat" )]
 		public ushort[] stats;
 
-        //[JsonProperty( "skill" )]
+        [JsonProperty( "skill" )]
         public List<SkillId> skills;
 
-        //[JsonProperty( "equipment" )]
+        [JsonProperty( "equipment" )]
         public List<ItemCode> equipments;
 
-        //[JsonProperty( "consumable" )]
+        [JsonProperty( "consumable" )]
 		public List<ItemCode> consumables;
 
-        //[JsonProperty( "battleStyle" )]
+        [JsonProperty( "battleStyle" )]
 		public BattleStyle battleStyle;
 
         public PlayerData()

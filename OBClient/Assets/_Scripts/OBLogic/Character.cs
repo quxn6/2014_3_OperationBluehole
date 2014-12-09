@@ -133,6 +133,13 @@ namespace OperationBluehole.Content
             buffs = new MinHeap<BuffPiece>();
 		}
 
+        public void ResetHpMpSp()
+        {
+            hp = actualParams[(int)ParamType.maxHp];
+            mp = actualParams[(int)ParamType.maxHp];
+            sp = 0;
+        }
+
 		public void CalcStat()
 		{
             // 1. base stat 로드
@@ -200,9 +207,7 @@ namespace OperationBluehole.Content
 
             // 조심해!
             // 일단 여기에서 초기값 할당은 하지만 나중에 적당한 위치로 이동하는 게 좋을 것 같아
-            hp = actualParams[(int)ParamType.maxHp];
-            mp = actualParams[(int)ParamType.maxHp];
-            sp = 0;
+            ResetHpMpSp();
 		}
 
 		public bool ReduceForAction(uint hpNeed, uint mpNeed, uint spNeed)

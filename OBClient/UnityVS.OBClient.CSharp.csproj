@@ -227,6 +227,7 @@
     <Compile Include="Assets\_Scripts\Object\Model\Demon.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\Goblin.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\Golem.cs" />
+    <Compile Include="Assets\_Scripts\Object\Model\SWarrior.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\SkeletonMage.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\SkeletonSoldier.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\SkeletonWarrior.cs" />

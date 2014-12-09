@@ -10,12 +10,6 @@ public class Explorer : MonoBehaviour, IAnimatable
 		animator = GetComponent<Animator>();
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
-
-	}
-
 	public void PlayIdle()
 	{
 		animator.SetTrigger( "Idle" );		
