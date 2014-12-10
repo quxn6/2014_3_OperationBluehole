@@ -208,12 +208,9 @@ namespace OperationBluehole.DummyClient
                     string result = await Network.IncreaseStats( this.token, stats );
 
                     if ( result.CompareTo( "failed" ) == 0 )
-                    {
                         Console.WriteLine( "failed to increase player stats" );
-                        return;
-                    }
-
-                    Console.WriteLine( "increase stats" );
+                    else
+                        Console.WriteLine( "increase stats" );
                 }
             }
 

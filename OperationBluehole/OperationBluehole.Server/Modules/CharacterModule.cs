@@ -166,10 +166,10 @@ namespace OperationBluehole.Server.Modules
                 Player player = new Player();
                 player.LoadPlayer( playerData );
 
-                ushort[] request = this.Request.Form.stat; 
+                ushort[] request = JsonConvert.DeserializeObject<ushort[]>( this.Request.Form.stat ); 
                 List<Tuple<StatType, ushort>> requestStats = new List<Tuple<StatType, ushort>>();
 
-                for ( int i = (int)StatType.Str; i < (int)StatType.StatCount; ++i )
+                for ( int i = (int)StatType.Str; i < (int)StatType.Mov; ++i )
                 {
                     if ( request[i] != 0 )
                         requestStats.Add( new Tuple<StatType, ushort>( (StatType)i, request[i] ) );
