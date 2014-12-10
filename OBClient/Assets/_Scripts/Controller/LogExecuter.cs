@@ -79,14 +79,17 @@ public class LogExecuter : MonoBehaviour
 				//MapManager.Instance.ItemList[dummyItemIndex].SetActive( false );
 				break;
 			case LogType.Win:
+				Clear();
 				break;
 			case LogType.Fail:
+				Fail();
 				break;
 		}
 	}
 
 	private void Fail()
 	{
+		Debug.Log( "Meet Fail" );
 		// show result popup
 	}
 
@@ -167,17 +170,19 @@ public class LogExecuter : MonoBehaviour
 	{
 		Debug.Log( "Start battle!! with " + battleLogIterator + "th mob Party." );
 
+		// Set Mob Party
 		var mobParty = DataManager.Instance.EncounteredMobPartyList[battleLogIterator];
 		if ( mobParty == null )
 		{
 			Debug.LogError( "Error : There is no battle log" );
-		}			
+		}
 
+		// Set Battle Area
 		BattleManager.Instance.AssignBattleArea( battleLogIterator );
 
 		yield return null;
 		
-		// Process battle continue
+		// Execute Each turn action
 		for ( int i = 0 ; i < BattleLog[battleLogIterator].Count; ++i)
 		{
 			yield return StartCoroutine( EachTurn( BattleLog[battleLogIterator][i] ) );

@@ -65,11 +65,13 @@ public class LogGenerator : MonoBehaviour
 
 		// Set Replay Log for each turn
 		char positionInfo = '\0';
+		int xPos = 0;
+		int yPos = 0;
 		for ( int i = 0 ; i < dungeonMaster.record.pathfinding.Count - 1 ; ++i )
 		{
 			// check what is on the next step
-			int xPos = dungeonMaster.record.pathfinding[i + 1].x;
-			int yPos = dungeonMaster.record.pathfinding[i + 1].y;
+			xPos = dungeonMaster.record.pathfinding[i + 1].x;
+			yPos = dungeonMaster.record.pathfinding[i + 1].y;
 			//int nextPosition = xPos * MapManager.Instance.InstanceDungeon.size + yPos;
 			positionInfo = MapManager.Instance.InstanceDungeon.mapArray2D[yPos , xPos];
 
@@ -104,7 +106,7 @@ public class LogGenerator : MonoBehaviour
 
 		// Check dungeon had cleared
 		if ( positionInfo != 'O' )
-		{
+		{			
 			LogExecuter.Instance.ReplayLog.Enqueue( MakeFailLog() );
 		}
 
