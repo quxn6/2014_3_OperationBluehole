@@ -203,7 +203,7 @@ public class LogExecuter : MonoBehaviour
 		switch( turnInfo.srcType)
 		{
 			case OperationBluehole.Content.PartyType.MOB :
-				yield return StartCoroutine( source.GetComponent<Mob>().Attack() );
+				yield return StartCoroutine( source.GetComponent<Mob>().Attack(turnInfo.skillId) );
 				break;			
 			case OperationBluehole.Content.PartyType.PLAYER:
 				yield return StartCoroutine( source.GetComponent<Hero>().Attack() );
@@ -254,31 +254,31 @@ public class LogExecuter : MonoBehaviour
 		}
 	}
 		
-	//public IEnumerator MobAttackHero( int mobNumber , int heroNumber , float damage )
-	public IEnumerator MobAttackHero( GameObject mob, GameObject hero )
-	{
-		// Do Attack Process
-		yield return StartCoroutine( mob.GetComponent<Mob>().Attack() );
-		
-		// heroes ui get damage( on UI )
-		//hero.GetComponent<Hero>().BeAttacked( damage );
-
-		//PlayBattleLog();
-	}
+// 	//public IEnumerator MobAttackHero( int mobNumber , int heroNumber , float damage )
+// 	public IEnumerator MobAttackHero( GameObject mob, GameObject hero )
+// 	{
+// 		// Do Attack Process
+// 		yield return StartCoroutine( mob.GetComponent<Mob>().Attack() );
+// 		
+// 		// heroes ui get damage( on UI )
+// 		//hero.GetComponent<Hero>().BeAttacked( damage );
+// 
+// 		//PlayBattleLog();
+// 	}
 
 // 	public void HeroAttackMob( GameObject mob , GameObject hero )
 // 	{
 // 		mob.GetComponent<Mob>().BeAttacked( damage );
 // 	}
 
-	public void KillPlayer( GameObject hero)
-	{
-		hero.GetComponent<Hero>().BeKilled();
-	}
-
-	public void KillMob( GameObject mob )
-	{
-		( (IAnimatable)mob.GetComponent( typeof( IAnimatable ) ) ).PlayDead();
-	}
+// 	public void KillPlayer( GameObject hero)
+// 	{
+// 		hero.GetComponent<Hero>().BeKilled();
+// 	}
+// 
+// 	public void KillMob( GameObject mob )
+// 	{
+// 		( (IAnimatable)mob.GetComponent( typeof( IAnimatable ) ) ).PlayDead();
+// 	}
 
 }

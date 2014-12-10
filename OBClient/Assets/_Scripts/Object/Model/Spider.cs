@@ -36,4 +36,13 @@ public class Spider : MonoBehaviour , IAnimatable
 	{
 		animation.CrossFade( "death" );
 	}
+
+	public void PlayHit() { }
+	public void PlaySkill_0() { }
+	public void PlaySkill_1() { }
+	public void PlaySkill_2() { }
+	public void PlayBuff_0() { }
+	public void PlayBuff_1() { }
+	public void PlayBuff_2() { }
+	public void PlayHooray() { }
 }

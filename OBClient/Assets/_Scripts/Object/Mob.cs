@@ -11,11 +11,21 @@ public class Mob : MonoBehaviour
 
 	private IAnimatable animatable;
 	private Animator anim;
+	private delegate void PlaySkill();
+	PlaySkill[] playSkill = null;
 
 	void Awake()
 	{
 		animatable = (IAnimatable)GetComponent( typeof( IAnimatable ) );
 		anim = GetComponent<Animator>();
+		playSkill = new PlaySkill[6];
+		playSkill = new PlaySkill[3];
+		playSkill[0] = animatable.PlaySkill_0;
+		playSkill[1] = animatable.PlaySkill_1;
+		playSkill[2] = animatable.PlaySkill_2;
+// 		playSkill[3] = animatable.PlayBuff_0;
+// 		playSkill[4] = animatable.PlayBuff_1;
+// 		playSkill[5] = animatable.PlayBuff_2;
 	}
 
 	void OnEnable()
@@ -33,13 +43,15 @@ public class Mob : MonoBehaviour
 			enemyStat.baseStats[(int)OperationBluehole.Content.StatType.Lev]);
 	}
 
-	public IEnumerator Attack()
+	public IEnumerator Attack(OperationBluehole.Content.SkillId skillId)
 	{
 		// play attack animation
-		animatable.PlayWalk();
+		//animatable.PlayWalk();
 		yield return new WaitForSeconds( GameConfig.MOB_ATTACKMOVING_TIME );
-		animatable.PlayAttack();
+		//animatable.PlayAttack();
 
+		playSkill[(int)skillId % playSkill.Length]();
+		
 		// after animation over, accept damage to hero
 		while ( IsAnimationPlaying() )
 		{

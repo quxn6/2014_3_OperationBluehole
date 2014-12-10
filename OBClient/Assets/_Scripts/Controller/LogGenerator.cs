@@ -106,7 +106,8 @@ public class LogGenerator : MonoBehaviour
 
 		// Check dungeon had cleared
 		if ( positionInfo != 'O' )
-		{			
+		{
+			LogExecuter.Instance.ReplayLog.Enqueue( MakeBattleLog( tmpMaster.GetMapObject( dungeonMaster.record.lastPosition.x , dungeonMaster.record.lastPosition.y ).party ) );
 			LogExecuter.Instance.ReplayLog.Enqueue( MakeFailLog() );
 		}
 
