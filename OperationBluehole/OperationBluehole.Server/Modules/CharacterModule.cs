@@ -161,8 +161,6 @@ namespace OperationBluehole.Server.Modules
                 // 일단 해당 유저의 id를 확인하고
                 this.RequiresAuthentication();
 
-                int stat = Request.Form.stat;
-
                 PlayerData playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
 
                 Player player = new Player();

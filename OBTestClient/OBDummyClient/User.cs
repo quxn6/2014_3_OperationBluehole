@@ -199,7 +199,7 @@ namespace OperationBluehole.DummyClient
 
                 if ( bonusStat > 0 )
                 {
-                    ushort[] stats = new ushort[] { 0, 0, 0, 0, 0, 0, 0 };
+                    ushort[] stats = new ushort[] { 0, 0, 0, 0, 0, 0, 0, 0 };
                     for ( int i = bonusStat; i > 0; --i )
                     {
                         ++stats[random.Next( (int)StatType.Str, (int)StatType.Mov )];
