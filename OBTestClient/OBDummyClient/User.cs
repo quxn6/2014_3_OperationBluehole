@@ -31,6 +31,10 @@ namespace OperationBluehole.DummyClient
         public byte BattleStyle { get; set; }
 
         public List<string> BanList { get; set; }
+
+        public ClientPlayerData()
+        {
+        }
     }
 
     internal class SimulationResult

@@ -143,7 +143,7 @@ namespace OperationBluehole.Content
             return MoveDiretion.STAY;
         }
 
-        public bool Move( MoveDiretion direction )
+        public bool Move( MoveDiretion direction, GameRecord record )
         {
             switch ( direction )
             {
@@ -173,7 +173,11 @@ namespace OperationBluehole.Content
             if ( target != null && target.partyType == PartyType.MOB )
             {
                 if ( !dungeonMaster.StartBattle( target ) )
+                {
+                    record.lastPosition = position;
+
                     return false;
+                }
             }
 
             // 아이템 있는지 확인한다

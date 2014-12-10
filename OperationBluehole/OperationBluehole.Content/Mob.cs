@@ -147,12 +147,15 @@ namespace OperationBluehole.Content
             newData.rewardGold = (uint)level * Config.MOB_REWARD_GOLD_WEIGHT;
 
 			if (random.Next(Config.MOB_REWARD_ITEM_CHANCE_MAX) < mobTypeDataTable[mobType].tokenDropChance)
-				newData.rewardItem = new ItemToken(
+            {
+                newData.rewardItem = new ItemToken();
+                ( (ItemToken)newData.rewardItem ).GenerateRandomToken(
 					level + random.Next(
 						(int)(-level * Config.MOB_REWARD_ITEM_RANGE),
 						(int)(level * Config.MOB_REWARD_ITEM_RANGE)
-					), random);
-			else
+                    ), ItemToken.equipTypePool[random.Next( ItemToken.equipTypePool.Length )] );
+			}
+            else
 				newData.rewardItem = null;
 
 			return newData;

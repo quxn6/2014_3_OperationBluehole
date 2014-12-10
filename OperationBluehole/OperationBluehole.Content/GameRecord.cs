@@ -21,6 +21,8 @@ namespace OperationBluehole.Content
         public List<Int2D> pathfinding = new List<Int2D>();
         public List<List<TurnInfo>> battleLog = new List<List<TurnInfo>>();
 
+        public Int2D lastPosition;
+
         // 전리품
         public List<Item> lootedItems = new List<Item>();
         public uint lootedGold = 0;

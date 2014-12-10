@@ -72,6 +72,8 @@ namespace OperationBluehole.Content
             random = new RandomGenerator( seed );
 
             record = new GameRecord();
+            record.lastPosition.x = -1;
+            record.lastPosition.y = -1;
 
             dungeon = new Dungeon( size, mobs, items, users, random, users.partyLevel );
             explorer = new Explorer( this, size );
@@ -101,7 +103,7 @@ namespace OperationBluehole.Content
                     break;
 
                 MoveDiretion direction = explorer.GetMoveDirection();
-                if ( !explorer.Move( direction ) )
+                if ( !explorer.Move( direction, record ) )
                     break;
 
                 // 위에서 아이템도 먹고 몹도 처리했으면 실제로 맵에서의 좌표도 이동시킨다
