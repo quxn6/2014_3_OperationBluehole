@@ -5,9 +5,11 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
+    using Newtonsoft.Json;
+
     public class ItemToken : Item
     {
-        static readonly EquipType[] equipTypePool = { 
+        static public readonly EquipType[] equipTypePool = { 
                                                         EquipType.Head, 
                                                         EquipType.Body, 
                                                         EquipType.LHand, 
@@ -15,15 +17,17 @@ namespace OperationBluehole.Content
                                                         EquipType.Leg, 
                                                         EquipType.Feet, 
                                                     };
-        
-        public readonly int level;
-        public readonly EquipType equipType;
+        [JsonProperty( "level" )]
+        public int level { get; set; }
 
-        public ItemToken( int level, RandomGenerator random )
+        [JsonProperty( "equipType" )]
+        public EquipType equipType { get; set; }
+
+        public void GenerateRandomToken( int level, EquipType type )
         {
             code = ItemCode.Token;
             this.level = level;
-            this.equipType = equipTypePool[random.Next( equipTypePool.Length )];
+            this.equipType = type;
         }
     }
 }
