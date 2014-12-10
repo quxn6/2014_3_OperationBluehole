@@ -142,7 +142,7 @@ namespace OperationBluehole.DummyClient
 		public static async Task<string> IncreaseStats(string token, ushort[] stats)
 		{
             // var postData = String.Format( "stat={0},{1},{2},{3},{4},{5},{6},{7}", stats[0], stats[1], stats[2], stats[3], stats[4], stats[5], stats[6], stats[7] );
-            string postData = "stat=" + string.Join( ",", stats );
+            string postData = "stat=" + JsonMapper.ToJson( stats );
 
 			var res = await SendRequest("POST", "character/increase_stat", postData, token);
 
