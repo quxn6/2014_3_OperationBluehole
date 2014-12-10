@@ -260,14 +260,6 @@ namespace OperationBluehole.Content
             return position;
         }
 
-        private ItemToken GenerateItemToken()
-        {
-            return new ItemToken(
-                    usersLevel + random.Next(
-                    (int)( -usersLevel * Config.LEVEL_RANGE ), (int)( usersLevel * Config.LEVEL_RANGE ) ),
-                    random );
-        }
-
         private Party GeneratoMobParty()
         {
             Party mobs = new Party( PartyType.MOB, usersLevel );
@@ -314,7 +306,13 @@ namespace OperationBluehole.Content
             for ( int i = 0; i < itemCOunt; ++i )
             {
                 // 아이템 생성하고
-                items.Add( GenerateItemToken() );
+                Item newItem = new ItemToken();
+                ( (ItemToken)newItem ).GenerateRandomToken(
+                    usersLevel + random.Next(
+                        (int)( -usersLevel * Config.MOB_REWARD_ITEM_RANGE ),
+                        (int)( usersLevel * Config.MOB_REWARD_ITEM_RANGE )
+                    ), ItemToken.equipTypePool[random.Next( ItemToken.equipTypePool.Length )] );
+                items.Add( newItem );
                 int idx = items.Count - 1;
 
                 zone.items.Add( items[idx] );

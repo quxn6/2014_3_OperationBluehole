@@ -141,8 +141,8 @@ namespace OperationBluehole.Content
 
                 return true;
             }
-            else
-                return false;
+
+            return false;
         }
 
         public int GetBonusStats()
@@ -156,9 +156,10 @@ namespace OperationBluehole.Content
         public uint GetExpToLevelUp(ushort upLev)
         {
             uint reqExp = 0;
-            for (var srcLev = this.baseStats[(int)StatType.Lev]; srcLev < srcLev + upLev; ++srcLev)
+
+            for ( ushort i = 0; i < upLev; ++i )
             {
-                reqExp += (uint)srcLev * srcLev * 10;
+                reqExp += (uint)Math.Pow( this.baseStats[(int)StatType.Lev] + i, 2 ) * 10;
             }
 
             return reqExp;
