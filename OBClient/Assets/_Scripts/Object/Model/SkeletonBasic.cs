@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SWarrior : MonoBehaviour , IAnimatable
+public class SkeletonBasic : MonoBehaviour , IAnimatable
 {
-	private Animator animator;
+	protected Animator animator;
 	// Use this for initialization
 	void Start()
 	{
@@ -21,12 +21,6 @@ public class SWarrior : MonoBehaviour , IAnimatable
 		animator.SetBool( "walk" , true );
 	}
 
-	public void PlayAttack()
-	{
-		animator.SetBool( "walk" , false );
-		animator.SetTrigger( "skill_0" );
-	}
-
 	public void PlayDead()
 	{
 		animator.SetBool( "walk" , false );
@@ -35,12 +29,20 @@ public class SWarrior : MonoBehaviour , IAnimatable
 
 	public void PlayHit()
 	{
-		animator.SetTrigger( "damageLeft" );
+		if (Random.Range(0,2) % 2 == 0)
+		{
+			animator.SetTrigger( "damageLeft" );
+		}
+		else
+		{
+			animator.SetTrigger( "damageRight" );
+		}
+		
 	}
 
-	public void PlaySkill_0() { animator.SetTrigger( "skill_0" ); }
-	public void PlaySkill_1() { animator.SetTrigger( "skill_1" ); }
-	public void PlaySkill_2() { animator.SetTrigger( "skill_2" ); }
+	public void PlaySkill_0() { animator.SetTrigger( "ShieldBash" ); }
+	public void PlaySkill_1() { animator.SetTrigger( "SwordSlice" ); }
+	public void PlaySkill_2() { animator.SetTrigger( "SwordSlash" ); }
 	public void PlayBuff_0() { animator.SetTrigger( "buff_0" ); }
 	public void PlayBuff_1() { animator.SetTrigger( "buff_1" ); }
 	public void PlayBuff_2() { animator.SetTrigger( "buff_2" ); }

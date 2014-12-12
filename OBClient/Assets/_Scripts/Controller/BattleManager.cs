@@ -47,6 +47,19 @@ public class BattleManager : MonoBehaviour
 		LoadHeroData();
 		battleUI.SetActive( true );
 		mobHpBarRoot.SetActive( true );
+
+
+		for ( int i = 0 ; i < 4 ; ++i )
+		{
+			Debug.Log(
+				"  dm:" + LogGenerator.Instance.tmpMaster.GetMapObject( enemyGroupData.position.x , enemyGroupData.position.y ).party.characters[i].actualParams[6] +
+				"  tmp:" + LogGenerator.Instance.dungeonMaster.GetMapObject( enemyGroupData.position.x , enemyGroupData.position.y ).party.characters[i].actualParams[6] +
+				"  partyList:" + enemyGroupData.characters[i].actualParams[6] +
+				"  displayData:" + enemyInstanceList[i].GetComponent<Mob>().MobData.maxHp +
+				" , " + enemyInstanceList[i].GetComponent<Mob>().MobData.currentHp +
+			" " );
+
+		}
 	}
 
 	// Clear battle area and turn back main camera to dungeon
@@ -74,7 +87,8 @@ public class BattleManager : MonoBehaviour
 	// Get Enemy Group Data from data manager class
 	private void InitBattleObjects( int mobId )
 	{
-		enemyGroupData = DataManager.Instance.MobPartyList[mobId];
+		enemyGroupData = DataManager.Instance.EncounteredMobPartyList[mobId];
+			
 		// 		// Create object pool in first battle
 		// 		if ( isInitialized )
 		// 			return;

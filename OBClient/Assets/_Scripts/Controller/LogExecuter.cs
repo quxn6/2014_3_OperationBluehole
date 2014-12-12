@@ -193,6 +193,9 @@ public class LogExecuter : MonoBehaviour
 	
 	IEnumerator EachTurn( OperationBluehole.Content.TurnInfo turnInfo )
 	{
+		if ( turnInfo.skillId == OperationBluehole.Content.SkillId.None )
+			yield break;
+
 		// Do source job
 		GameObject source = (turnInfo.srcType == OperationBluehole.Content.PartyType.MOB)?
 			BattleManager.Instance.EnemyInstanceList[turnInfo.srcIdx] :
@@ -202,8 +205,10 @@ public class LogExecuter : MonoBehaviour
 		// Warning!!! For now, we only use just attack skill, which skill used 
 		switch( turnInfo.srcType)
 		{
-			case OperationBluehole.Content.PartyType.MOB :
-				yield return StartCoroutine( source.GetComponent<Mob>().Attack(turnInfo.skillId) );
+			case OperationBluehole.Content.PartyType.MOB:
+				Debug.Log( "turn start" );
+				yield return StartCoroutine( source.GetComponent<Mob>().Attack(turnInfo) );		
+				Debug.Log( "turn end" );		
 				break;			
 			case OperationBluehole.Content.PartyType.PLAYER:
 				yield return StartCoroutine( source.GetComponent<Hero>().Attack() );
@@ -214,8 +219,11 @@ public class LogExecuter : MonoBehaviour
 		ApplyDamage( turnInfo.targets );
 	}
 
+	private int counter = 0;
 	public void EndBattle(OperationBluehole.Content.Party mobParty )
 	{
+		++counter;
+		Debug.Log( counter );
 		int mobIndex = mobParty.position.y * MapManager.Instance.InstanceDungeon.size + mobParty.position.x;
 		GameObject mobInstance = null;
 		if ( !MapManager.Instance.MobDictionary.TryGetValue( mobIndex , out mobInstance ) )
@@ -236,7 +244,7 @@ public class LogExecuter : MonoBehaviour
 	{		
 		for ( int i = 0 ; i < targetDataList.Count; ++i)
 		{
-			Debug.Log( targetDataList[i].value );
+			//Debug.Log( targetDataList[i].value );
 			// apply damage data & play animation for hit
 			switch ( targetDataList[i].targetType )
 			{

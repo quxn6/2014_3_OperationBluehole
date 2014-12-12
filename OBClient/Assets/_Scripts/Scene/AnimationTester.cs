@@ -12,13 +12,7 @@ public class AnimationTester : MonoBehaviour
 
 		( (IAnimatable)mob.GetComponent( typeof( IAnimatable ) ) ).PlayWalk();
 		yield return new WaitForSeconds( 2.0f );
-
-		( (IAnimatable)mob.GetComponent( typeof( IAnimatable ) ) ).PlayAttack();
-		yield return new WaitForSeconds( 2.0f );
-
-		( (IAnimatable)mob.GetComponent( typeof( IAnimatable ) ) ).PlayAttack();
-		yield return new WaitForSeconds( 2.0f );
-
+		
 		( (IAnimatable)mob.GetComponent( typeof( IAnimatable ) ) ).PlayDead();
 	}
 
