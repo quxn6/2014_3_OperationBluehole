@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Diagnostics;
 
 using Couchbase;
 using Couchbase.Extensions;
@@ -270,9 +271,9 @@ namespace OperationBluehole.Server.Modules
 
                 var playerData = PlayerDataDatabase.GetPlayerData(this.Context.CurrentUser.UserName);
 
-                Console.WriteLine("Character Info");
-                Console.WriteLine("name : " + playerData.name + " / Id : " + playerData.pId);
-                Console.WriteLine("Lev : " + playerData.stats[(int)StatType.Lev] + " / Exp : " + playerData.exp);
+                Debug.WriteLine("Character Info");
+                Debug.WriteLine("name : " + playerData.name + " / Id : " + playerData.pId);
+                Debug.WriteLine("Lev : " + playerData.stats[(int)StatType.Lev] + " / Exp : " + playerData.exp);
 
                 return "Yay! You are authorized!";
             };

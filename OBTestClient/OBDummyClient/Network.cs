@@ -14,6 +14,11 @@ namespace OperationBluehole.DummyClient
 
 	static class Network
 	{
+        // couchbase flush
+        // POST
+        // http://project08.codetalks.kr:8091/pools/default/buckets/default/controller/doFlush
+        // Authorization    Administrator next!@#123
+
 		public static Uri rootUri { get; private set; }
 		static HttpRequestCachePolicy cachePolicy;
 		static string contentType;

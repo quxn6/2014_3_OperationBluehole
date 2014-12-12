@@ -5,6 +5,7 @@ using System.Web;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using OperationBluehole.Content;
 
 namespace OperationBluehole.Server
@@ -46,7 +47,7 @@ namespace OperationBluehole.Server
             newPlayer.LoadPlayer( playerData );
             waitingPlayers.Enqueue( new Tuple<Player, int, List<string>>( newPlayer, difficulty, userData.BanList ) );
 
-            Console.WriteLine( "registered player id : " + newPlayer.pId );
+            Debug.WriteLine( "registered player id : " + newPlayer.pId );
         }
 
         public static void DeregisterPlayer(string playerId)
@@ -92,7 +93,7 @@ namespace OperationBluehole.Server
                 matchPlayerThreads.Add(newThread);
             }
 
-            Console.WriteLine( "matching manager is started" );
+            Debug.WriteLine( "matching manager is started" );
         }
 
         static void MatchPlayer()
@@ -180,7 +181,9 @@ namespace OperationBluehole.Server
                         newParty.AddCharacter(p.Item1);
                     }
 
-                    SimulationManger.RegisterParty(newParty);
+                    // SimulationManger.RegisterParty(newParty);
+                    // Task.Run( () => SimulationManger.Simulation( newParty ) );
+                    SimulationManger.AddParty( newParty );
                 }
                 else
                     Thread.Yield();

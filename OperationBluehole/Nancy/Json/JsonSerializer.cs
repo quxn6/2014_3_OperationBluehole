@@ -325,8 +325,8 @@ namespace Nancy.Json
 			} catch (TargetInvocationException niex) {
 				if (niex.InnerException is NotImplementedException) {
 					Console.WriteLine ("!!! COMPATIBILITY WARNING. FEATURE NOT IMPLEMENTED. !!!");
-					Console.WriteLine (niex);
-					Console.WriteLine ("!!! RETURNING NULL. PLEASE LET MONO DEVELOPERS KNOW ABOUT THIS EXCEPTION. !!!");
+                    Console.WriteLine( niex );
+                    Console.WriteLine( "!!! RETURNING NULL. PLEASE LET MONO DEVELOPERS KNOW ABOUT THIS EXCEPTION. !!!" );
 					return null;
 				}
 

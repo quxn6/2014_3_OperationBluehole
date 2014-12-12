@@ -375,21 +375,21 @@ namespace Nancy.Json
 		void DumpObject (string indent, object obj)
 		{
 			if (obj is Dictionary <string, object>) {
-				Console.WriteLine (indent + "{");
+                Console.WriteLine( indent + "{" );
 				foreach (KeyValuePair <string, object> kvp in (Dictionary <string, object>)obj) {
-					Console.WriteLine (indent + "\t\"{0}\": ", kvp.Key);
+                    Console.WriteLine( indent + "\t\"{0}\": ", kvp.Key );
 					DumpObject (indent + "\t\t", kvp.Value);
 				}
-				Console.WriteLine (indent + "}");
+                Console.WriteLine( indent + "}" );
 			} else if (obj is object[]) {
-				Console.WriteLine (indent + "[");
+                Console.WriteLine( indent + "[" );
 				foreach (object o in (object[])obj)
 					DumpObject (indent + "\t", o);
-				Console.WriteLine (indent + "]");
+                Console.WriteLine( indent + "]" );
 			} else if (obj != null)
-				Console.WriteLine (indent + obj.ToString ());
+                Console.WriteLine( indent + obj.ToString() );
 			else
-				Console.WriteLine ("null");
+                Console.WriteLine( "null" );
 		}
 #endif
 		

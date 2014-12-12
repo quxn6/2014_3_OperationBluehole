@@ -264,9 +264,9 @@ namespace OperationBluehole.Content
 
         private void MakePath( Int2D destination )
         {
-            // Console.WriteLine( "start to make the path" );
-            // Console.WriteLine( "start : " + position.x + " / " + position.y );
-            // Console.WriteLine( "dest : " + destination.x + " / " + destination.y );
+            // Debug.WriteLine( "start to make the path" );
+            // Debug.WriteLine( "start : " + position.x + " / " + position.y );
+            // Debug.WriteLine( "dest : " + destination.x + " / " + destination.y );
 
             // 조심해!!!
             // priority_queue가 없어서 일단 list로 구현
@@ -287,7 +287,7 @@ namespace OperationBluehole.Content
             {
                 // ExploerNode current = openSet.Min();
                 ExploerNode current = openSet.Peek();
-                // Console.WriteLine( "current : " + current.position.x + " / " + current.position.y );
+                // Debug.WriteLine( "current : " + current.position.x + " / " + current.position.y );
 
                 if ( current.position.Equals( destination ) )
                 {
@@ -341,7 +341,7 @@ namespace OperationBluehole.Content
                 }
             }
             
-            // Console.WriteLine( "end!!!!" );
+            // Debug.WriteLine( "end!!!!" );
         }
 
         private void ReconstructPath( ExploerNode currentNode )

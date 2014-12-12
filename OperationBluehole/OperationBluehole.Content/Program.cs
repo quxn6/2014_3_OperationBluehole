@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace OperationBluehole.Content
 {
@@ -33,19 +34,19 @@ namespace OperationBluehole.Content
                 users.AddCharacter( p );
 
 			DungeonMaster newMaster = new DungeonMaster();
-            newMaster.Init( 60, 4, users );
+            newMaster.Init( 60, 3, users );
 
             // 초기 정보 확인
             var mapInfo = newMaster.GetMapInfo();
             var itemList = newMaster.items;
             var mobList = newMaster.mobs;
 
-            Console.WriteLine( "turn : " + newMaster.Start() );
+            Debug.WriteLine( "turn : " + newMaster.Start() );
 
             // 시뮬레이션 결과 확인
 //             foreach( var each in newMaster.record.pathfinding )
 //             {
-//                 Console.WriteLine( "x : " + each.x + " / y : " + each.y );
+//                 Debug.WriteLine( "x : " + each.x + " / y : " + each.y );
 //             }
 // 
             // ------------------

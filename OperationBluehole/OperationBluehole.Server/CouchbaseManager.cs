@@ -132,7 +132,7 @@ namespace OperationBluehole.Server
         if (result.Item1) 
         {
            var dict = client.GetDictionary("user_1").Item4;
-           Console.WriteLine(dict); //should be output of Dictionary.ToString()
+           Debug.WriteLine(dict); //should be output of Dictionary.ToString()
         }
         */
 
@@ -219,7 +219,7 @@ namespace OperationBluehole.Server
         if (getResult.Item1)
         {
             dynamic item = getResult.Item4;
-            Console.WriteLine(item.Preferences.Theme);
+            Debug.WriteLine(item.Preferences.Theme);
         }
         */
         #endregion

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Diagnostics;
 
 namespace OperationBluehole.Content
 {
@@ -110,17 +111,17 @@ namespace OperationBluehole.Content
                 dungeon.MovePlayer( explorer.position );
 
                 // dungeon.PrintOutMAP();
-                // Console.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
+                // Debug.WriteLine( "player position : " + explorer.position.x + " / " + explorer.position.y );
 
                 //Thread.Sleep( 100 );
             }
 
-            Console.WriteLine( "THE END ( turn : " + turn + " )" );
+            // Debug.WriteLine( "THE END ( turn : " + turn + " )" );
 
-            Console.WriteLine( "Earned Exp : " + record.lootedExp );
-            Console.WriteLine( "Earned gold : " + record.lootedGold );
-            Console.WriteLine( "looted items : " );
-            record.lootedItems.ForEach(item => Console.Write(" " + ((ItemToken)item).level));
+            // Debug.WriteLine( "Earned Exp : " + record.lootedExp );
+            // Debug.WriteLine( "Earned gold : " + record.lootedGold );
+            // Debug.WriteLine( "looted items : " );
+            // record.lootedItems.ForEach(item => Console.Write(" " + ((ItemToken)item).level));
 
             return turn;
         }
@@ -148,9 +149,9 @@ namespace OperationBluehole.Content
         {
             // explorer 좌표에 있는 몹을 읽어와서 전투 시작
             if ( mob.partyType != PartyType.MOB )
-                Console.WriteLine( "NOOOOOOOOOOOOOOOO!!" );
+                Debug.WriteLine( "NOOOOOOOOOOOOOOOO!!" );
 
-            Console.WriteLine( "Battle : " );
+            // Debug.WriteLine( "Battle : " );
             // Console.ReadLine();
 
             // 임시 몹 사용
@@ -183,7 +184,7 @@ namespace OperationBluehole.Content
                         record.lootedItems.Add( currentMob.rewardItem );
                 } );
 
-                Console.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
+                // Debug.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
                 // Console.ReadLine();
 
                 return true;
@@ -201,7 +202,7 @@ namespace OperationBluehole.Content
 
             record.lootedItems.Add( item );
 
-            Console.WriteLine( "looting : " );
+            // Debug.WriteLine( "looting : " );
             // Console.ReadLine();
         }
     }
