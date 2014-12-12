@@ -5,7 +5,6 @@ public interface IAnimatable
 {
 	void PlayIdle();
 	void PlayWalk();
-	void PlayAttack();
 	void PlayDead();
  	void PlayHit();
 	void PlaySkill_0();

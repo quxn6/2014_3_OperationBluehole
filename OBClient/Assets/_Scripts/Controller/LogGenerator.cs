@@ -13,7 +13,8 @@ public class LogGenerator : MonoBehaviour
 		get { return instance; }
 	}
 
-	OperationBluehole.Content.DungeonMaster dungeonMaster;
+	public OperationBluehole.Content.DungeonMaster dungeonMaster;
+	//OperationBluehole.Content.DungeonMaster dungeonMaster;
 
 	void Awake()
 	{
@@ -30,7 +31,8 @@ public class LogGenerator : MonoBehaviour
 		dungeonMaster = new OperationBluehole.Content.DungeonMaster();
 	}
 
-	OperationBluehole.Content.DungeonMaster tmpMaster = new OperationBluehole.Content.DungeonMaster();
+	public OperationBluehole.Content.DungeonMaster tmpMaster = new OperationBluehole.Content.DungeonMaster();
+	// OperationBluehole.Content.DungeonMaster tmpMaster = new OperationBluehole.Content.DungeonMaster();
 	public void GenerateLog( int size , int seed , OperationBluehole.Content.Party userParty )
 	{
 		// Generate Dungeon Map

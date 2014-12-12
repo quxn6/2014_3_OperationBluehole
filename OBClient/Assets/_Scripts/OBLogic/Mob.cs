@@ -104,6 +104,7 @@ namespace OperationBluehole.Content
 			MobData newData = new MobData();
 
 			newData.name = mobTypeDataTable[mobType].name;
+			newData.mobType = mobType;
 
 			// 스탯 statRate에 따라 랜덤 분배
 			ushort[] stats = new ushort[(int)StatType.StatCount];
