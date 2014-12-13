@@ -48,9 +48,9 @@ namespace OperationBluehole.Content
         private Party TempMobGenerator()
         {
             Mob[] mob = {
-							new Mob( MobGenerator.GetMobData(random, MobType.Spider,10) ), 
-							new Mob( MobGenerator.GetMobData(random, MobType.Spider,10) ), 
-							new Mob( MobGenerator.GetMobData(random, MobType.Spider,10) )
+							new Mob( MobGenerator.GetMobData(random, MobType.ZombieFatty,10) ), 
+							new Mob( MobGenerator.GetMobData(random, MobType.ZombieFatty,10) ), 
+							new Mob( MobGenerator.GetMobData(random, MobType.ZombieFatty,10) )
 						};
             Party mobs = new Party( PartyType.MOB, 10 );
 

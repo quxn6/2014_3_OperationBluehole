@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
 
 namespace OperationBluehole.Content
 {
@@ -271,7 +270,7 @@ namespace OperationBluehole.Content
                 // 조심해!
                 // 몹타입에 따라서 Mob을 상속받아서 구현한다면
                 // 여기서 타입도 결정해서 그에 맞게 생성해주어야 한다
-				MobData newMobData = MobGenerator.GetMobData(random, MobType.Spider,
+				MobData newMobData = MobGenerator.GetMobData(random, (MobType)random.Next(1,(int)MobType.Length),
 					(ushort)(usersLevel + random.Next(
 					(int)(-usersLevel * Config.LEVEL_RANGE), (int)(usersLevel * Config.LEVEL_RANGE)))
 					);
@@ -467,10 +466,10 @@ namespace OperationBluehole.Content
 
             zoneList[map[ringPosition.y, ringPosition.x].zoneId].items.Add( ring );
 
-            // PrintOutMAP();
+            PrintOutMAP();
 
-            // Debug.WriteLine( "distance between player and ring" );
-            // Debug.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
+            Console.WriteLine( "distance between player and ring" );
+            Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
         }
 
         public bool FindRing( int zoneId )
@@ -550,7 +549,7 @@ namespace OperationBluehole.Content
                             break;
                     }
                 }
-                Debug.WriteLine( "" );
+                Console.WriteLine( "" );
             }
 
 			return dungeonMap;

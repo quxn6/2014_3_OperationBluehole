@@ -270,7 +270,7 @@ namespace OperationBluehole.Content
                 // 조심해!
                 // 몹타입에 따라서 Mob을 상속받아서 구현한다면
                 // 여기서 타입도 결정해서 그에 맞게 생성해주어야 한다
-				MobData newMobData = MobGenerator.GetMobData(random, MobType.Spider,
+				MobData newMobData = MobGenerator.GetMobData(random, (MobType)random.Next(1,(int)MobType.Length),
 					(ushort)(usersLevel + random.Next(
 					(int)(-usersLevel * Config.LEVEL_RANGE), (int)(usersLevel * Config.LEVEL_RANGE)))
 					);

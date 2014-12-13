@@ -4,15 +4,15 @@ using System.Collections;
 public enum MobType : uint
 {
 	Dummy = 0 ,
-	Demon = 1 ,
-	Troll = 2 ,
-	Goblin = 3 ,
-	IceGolem = 4 ,
-	Spider = 5 ,
-	Skeleton_Warrior = 6 ,
-	Skeleton_Soldier = 7 ,
-	Skeleton_Mage = 8 ,
-	Length = 9,
+	SkeletonArcher ,
+	SkeletonKing ,
+	SkeletonMage ,
+	SkeletonWarrior ,
+	ZombieFatty ,
+	ZombieKing ,
+	ZombieMurderer ,
+	ZombieSnapper ,
+	Length ,
 }
 
 static class GameConfig

@@ -8,14 +8,14 @@ namespace OperationBluehole.Content
 	public enum MobType : uint
 	{
 		Dummy	= 0,
-		Demon,
-		Troll,
-		Goblin,
-		IceGolem,
-		Spider,
-		Skeleton_Warrior,
-		Skeleton_Soldier,
-		Skeleton_Mage,
+		SkeletonArcher,
+		SkeletonKing,
+		SkeletonMage,
+		SkeletonWarrior,
+		ZombieFatty,
+		ZombieKing,
+		ZombieMurderer,
+		ZombieSnapper,
 		Length,
 	}
 
@@ -165,10 +165,10 @@ namespace OperationBluehole.Content
 		public static void Init()
 		{
 			mobTypeDataTable = new Dictionary<MobType, MobTypeData>();
-			// Demon
+			// SkeletonArcher
 			{
 				MobTypeData tData = new MobTypeData(
-					"Demon",
+					"SkeletonArcher",
 					2, 2, 2, 2, 1, 1,
 					5,
 					new List<SkillId>() 
@@ -186,15 +186,15 @@ namespace OperationBluehole.Content
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobType.Demon,
+				MobGenerator.mobTypeDataTable.Add(MobType.SkeletonArcher,
 					tData
 					);
 			}
 
-			// Troll
+			// SkeletonKing
 			{
 				MobTypeData tData = new MobTypeData(
-					"Troll",
+					"SkeletonKing",
 					2, 1, 0, 3, 1, 0,
 					5,
 					new List<SkillId>() 
@@ -212,15 +212,15 @@ namespace OperationBluehole.Content
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobType.Troll,
+				MobGenerator.mobTypeDataTable.Add(MobType.SkeletonKing,
 					tData
 					);
 			}
 
-			// Goblin
+			// SkeletonMage
 			{
 				MobTypeData tData = new MobTypeData(
-					"Goblin",
+					"SkeletonMage",
 					1, 1, 1, 1, 1, 1,
 					5,
 					new List<SkillId>() 
@@ -238,15 +238,15 @@ namespace OperationBluehole.Content
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobType.Goblin,
+				MobGenerator.mobTypeDataTable.Add(MobType.SkeletonMage,
 					tData
 					);
 			}
 
-			// Ice Golem
+			// SkeletonWarrior
 			{
 				MobTypeData tData = new MobTypeData(
-					"Ice Golem",
+					"SkeletonWarrior",
 					3, 1, 1, 3, 1, 1,
 					5,
 					new List<SkillId>() 
@@ -264,15 +264,15 @@ namespace OperationBluehole.Content
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobType.IceGolem,
+				MobGenerator.mobTypeDataTable.Add(MobType.SkeletonWarrior,
 					tData
 					);
 			}
 
-			// Spider
+			// ZombieFatty
 			{
 				MobTypeData tData = new MobTypeData(
-					"Spider",
+					"ZombieFatty",
 					1, 2, 1, 1, 1, 1,
 					5,
 					new List<SkillId>() 
@@ -290,15 +290,15 @@ namespace OperationBluehole.Content
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobType.Spider,
+				MobGenerator.mobTypeDataTable.Add(MobType.ZombieFatty,
 					tData
 					);
 			}
 
-			// Skeleton Warrior
+			// ZombieKing
 			{
 				MobTypeData tData = new MobTypeData(
-					"Skeleton Warrior",
+					"ZombieKing" ,
 					2, 2, 0, 2, 2, 0,
 					5,
 					new List<SkillId>() 
@@ -316,15 +316,15 @@ namespace OperationBluehole.Content
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobType.Skeleton_Warrior,
+				MobGenerator.mobTypeDataTable.Add(MobType.ZombieKing,
 					tData
 					);
 			}
 
-			// Skeleton Soldier
+			// ZombieMurderer
 			{
 				MobTypeData tData = new MobTypeData(
-					"Skeleton Soldier",
+					"ZombieMurderer" ,
 					2, 2, 1, 2, 2, 1,
 					5,
 					new List<SkillId>() 
@@ -342,15 +342,15 @@ namespace OperationBluehole.Content
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobType.Skeleton_Soldier,
+				MobGenerator.mobTypeDataTable.Add(MobType.ZombieMurderer,
 					tData
 					);
 			}
 
-			// Skeleton Mage
+			// ZombieSnapper
 			{
 				MobTypeData tData = new MobTypeData(
-					"Skeleton Mage",
+					"ZombieSnapper" ,
 					1, 1, 2, 1, 1, 2,
 					5,
 					new List<SkillId>() 
@@ -368,7 +368,7 @@ namespace OperationBluehole.Content
 					},
 					5000
 					);
-				MobGenerator.mobTypeDataTable.Add(MobType.Skeleton_Mage,
+				MobGenerator.mobTypeDataTable.Add(MobType.ZombieSnapper,
 					tData
 					);
 			}
