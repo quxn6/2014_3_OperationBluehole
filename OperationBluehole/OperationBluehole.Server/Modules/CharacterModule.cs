@@ -187,6 +187,11 @@ namespace OperationBluehole.Server.Modules
 
                 return "failed";
             };
+
+            Get["/rank"] = parameters =>
+            {
+                return false;
+            };
         }
     }
 }

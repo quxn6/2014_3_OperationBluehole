@@ -24,6 +24,8 @@
 
                 Console.WriteLine( "Your application is running on " + uri );
                 Console.WriteLine( "Press any [Enter] to close the host." );
+
+                RedisManager.Test();
                 Console.ReadLine();
             }
         }
