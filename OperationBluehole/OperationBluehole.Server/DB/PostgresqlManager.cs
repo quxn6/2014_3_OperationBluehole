@@ -35,16 +35,9 @@ namespace OperationBluehole.Server
 
         static readonly string[] userIdentity = { "user" };
 
-        static NpgsqlConnection conn;
-
-        static PostgresqlManager()
-        {
-            conn = new Npgsql.NpgsqlConnection(Connection_String);
-        }
-
         public static async Task<bool> SetAccountInfo(string userId, string password)
         {
-            //var conn = new Npgsql.NpgsqlConnection(Connection_String);
+            var conn = new Npgsql.NpgsqlConnection(Connection_String);
             try
             {
                 NpgsqlCommand cmd = new NpgsqlCommand(Query_SetAccountInfo, conn);
@@ -54,7 +47,7 @@ namespace OperationBluehole.Server
                 cmd.Parameters[1].Value = password;
                 cmd.Parameters.Add("claims", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Varchar);
                 cmd.Parameters[2].Value = userIdentity;
-                await conn.OpenAsync();
+                conn.Open();
                 int rowAffected = await cmd.ExecuteNonQueryAsync();
                 conn.Close();
                 return rowAffected > 0;
@@ -68,11 +61,11 @@ namespace OperationBluehole.Server
 
         public static async Task<AccountData> GetAccountInfo(string userId)
         {
-            //var conn = new Npgsql.NpgsqlConnection(Connection_String);
+            var conn = new Npgsql.NpgsqlConnection(Connection_String);
             NpgsqlCommand cmd = new NpgsqlCommand(Query_GetAccountInfo, conn);
             cmd.Parameters.Add("id", NpgsqlTypes.NpgsqlDbType.Varchar, 16);
             cmd.Parameters[0].Value = userId;
-            await conn.OpenAsync();
+            conn.Open();
             var res = await cmd.ExecuteReaderAsync();
 
             if (await res.ReadAsync())
