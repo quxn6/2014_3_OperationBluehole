@@ -6,15 +6,15 @@ using System.Dynamic;
 
 using Nancy.Security;
 
-using Couchbase;
-using Couchbase.Extensions;
-using Enyim.Caching.Memcached;
-using Newtonsoft.Json;
-
-using OperationBluehole.Content;
-
 namespace OperationBluehole.Server
 {
+    using Couchbase;
+    using Couchbase.Extensions;
+    using Enyim.Caching.Memcached;
+    using Newtonsoft.Json;
+
+    using OperationBluehole.Content;
+
     public class AccountInfo
     {
         [JsonProperty("name")]

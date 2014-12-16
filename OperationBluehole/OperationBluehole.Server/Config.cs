@@ -15,5 +15,8 @@ namespace OperationBluehole.Server
         public const int MATCHING_PARTY_THREAD_DEFAULT_NUM = 1;
 
         public const int SIMULATION_THREAD_DEFAULT_NUM = 4;
+
+        public const string REDIS_DATABASE_ADDRESS = "project06.codetalks.kr";
+        public const string RANKING_SET_NAME = "ranking_set";
     }
 }
