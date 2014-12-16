@@ -75,7 +75,7 @@
     <Reference Include="Npgsql">
       <HintPath>..\packages\Npgsql.2.2.3\lib\net45\Npgsql.dll</HintPath>
     </Reference>
-	<Reference Include="ServiceStack.Common">
+    <Reference Include="ServiceStack.Common">
       <HintPath>..\packages\ServiceStack.Common.4.0.34\lib\net40\ServiceStack.Common.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Interfaces">
@@ -108,7 +108,7 @@
     <Compile Include="Modules\UserModule.cs" />
     <Compile Include="Logic\SimulationManger.cs" />
     <Compile Include="DB\PostgresqlManager.cs" />
-	<Compile Include="RedisManager.cs" />
+    <Compile Include="DB\RedisManager.cs" />
     <Compile Include="TokenAuthBootstrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Util.cs" />

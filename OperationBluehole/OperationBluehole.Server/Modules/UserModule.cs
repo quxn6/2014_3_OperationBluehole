@@ -58,12 +58,16 @@ namespace OperationBluehole.Server.Modules
                         battleStyle = BattleStyle.AGGRESSIVE,
                     } );
                     
+                    // result table
                     ResultTableDatabase.SetResultTable( new ResultTable
                     {
                         PlayerId = userId,
                         ReadId = new List<long> { },
                         UnreadId = -1
                     } );
+
+                    // ranking list
+                    RedisManager.RegisterPlayerRank( userId );
 
                     return "success";
                 }

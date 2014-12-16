@@ -83,6 +83,19 @@ namespace OperationBluehole.Content
             this.equipments = player.equipments;
             this.battleStyle = player.battleStyle;
         }
+
+        public long GetScore()
+        {
+            // 누적 exp를 score로 사용
+            long retVal = 0;
+
+            for ( int i = 2; i <= stats[(int)StatType.Lev]; ++i )
+                retVal += (long)Math.Pow( i, 2 ) * 10;
+
+            retVal += exp;
+
+            return retVal;
+        }
 	}
 
 	public class Player : Character

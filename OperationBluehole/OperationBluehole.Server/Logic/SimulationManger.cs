@@ -127,6 +127,9 @@ namespace OperationBluehole.Server
 
                 resultTable.UnreadId = currentIdx;
                 Debug.Assert( ResultTableDatabase.SetResultTable( resultTable ), "fail to save the result table - ID : " + resultTable.PlayerId );
+
+                // update rank
+                Debug.Assert( RedisManager.UpdateRank( playerData.pId, playerData.GetScore() ) );
             } );
 
             Debug.WriteLine( "simulation ended" );

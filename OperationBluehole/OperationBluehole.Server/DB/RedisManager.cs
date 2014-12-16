@@ -26,33 +26,39 @@ namespace OperationBluehole.Server
             _redis.AddItemToSortedSet( Config.RANKING_SET_NAME, "four", 4 );
             _redis.AddItemToSortedSet( Config.RANKING_SET_NAME, "five", 5 );
 
-            var result = _redis.GetRangeFromSortedSet( Config.RANKING_SET_NAME, 1, 3 );
+            var result = _redis.GetRangeFromSortedSetDesc( Config.RANKING_SET_NAME, 1, 3 );
             result.ForEach( each => Console.WriteLine( each ) );
 
+            // 기존 값 수정
             _redis.IncrementItemInSortedSet( Config.RANKING_SET_NAME, "two", 9 );
 
-            var fixedResult = _redis.GetRangeFromSortedSet( Config.RANKING_SET_NAME, 1, 3 );
+            var fixedResult = _redis.GetRangeFromSortedSetDesc( Config.RANKING_SET_NAME, 1, 3 );
             fixedResult.ForEach( each => Console.WriteLine( each ) );
 
+            // 현재 rank
             var currentRank = _redis.GetItemIndexInSortedSet( Config.RANKING_SET_NAME, "two" );
             Console.WriteLine( "current rank : " + currentRank );
 
-            // 기존 값 수정
-
             // 전체 수 구하기
-
+            Console.WriteLine( "total count : " + _redis.GetSortedSetCount( Config.RANKING_SET_NAME ) );
         }
 
-        public static bool RegisterPlayerRank( PlayerData data )
+        public static bool RegisterPlayerRank( string playerId )
         {
-            long totalExp = 0;
-            return _redis.AddItemToSortedSet( Config.RANKING_SET_NAME, data.pId, totalExp );
+            return _redis.AddItemToSortedSet( Config.RANKING_SET_NAME, playerId, 0 );
         }
 
-        public static bool UpdateRank( PlayerData data )
+        public static bool UpdateRank(string playerId, long score)
         {
-            long totalExp = 0;
-            return totalExp == _redis.IncrementItemInSortedSet( Config.RANKING_SET_NAME, data.pId, totalExp );
+            return score == _redis.IncrementItemInSortedSet( Config.RANKING_SET_NAME, playerId, score );
         }
+
+        public static long GetRank( string playerId )
+        {
+            return _redis.GetItemIndexInSortedSetDesc( Config.RANKING_SET_NAME, playerId );
+        }
+
+        // 자신 점수 주변 사람들 아이디랑 점수 알려줄까...
+
     }
 }

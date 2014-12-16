@@ -190,7 +190,12 @@ namespace OperationBluehole.Server.Modules
 
             Get["/rank"] = parameters =>
             {
-                return false;
+                // 일단 해당 유저의 id를 확인하고
+                this.RequiresAuthentication();
+
+                long rank = RedisManager.GetRank( this.Context.CurrentUser.UserName );
+
+                return rank;
             };
         }
     }
