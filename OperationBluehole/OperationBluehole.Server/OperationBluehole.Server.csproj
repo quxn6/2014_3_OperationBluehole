@@ -65,11 +65,17 @@
     <Reference Include="Enyim.Caching">
       <HintPath>..\packages\CouchbaseNetClient.1.3.10\lib\net40\Enyim.Caching.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Security">
+      <HintPath>..\packages\Npgsql.2.2.3\lib\net45\Mono.Security.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Common">
+    <Reference Include="Npgsql">
+      <HintPath>..\packages\Npgsql.2.2.3\lib\net45\Npgsql.dll</HintPath>
+    </Reference>
+	<Reference Include="ServiceStack.Common">
       <HintPath>..\packages\ServiceStack.Common.4.0.34\lib\net40\ServiceStack.Common.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Interfaces">
@@ -84,6 +90,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml" />
@@ -93,14 +100,15 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Config.cs" />
-    <Compile Include="CouchbaseManager.cs" />
+    <Compile Include="DB\CouchbaseManager.cs" />
     <Compile Include="Logic\MatchingManager.cs" />
     <Compile Include="Modules\CharacterModule.cs" />
     <Compile Include="Modules\MatchingModule.cs" />
     <Compile Include="Modules\TestModule.cs" />
     <Compile Include="Modules\UserModule.cs" />
     <Compile Include="Logic\SimulationManger.cs" />
-    <Compile Include="RedisManager.cs" />
+    <Compile Include="DB\PostgresqlManager.cs" />
+	<Compile Include="RedisManager.cs" />
     <Compile Include="TokenAuthBootstrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Util.cs" />
@@ -129,7 +137,9 @@
       <Name>OperationBluehole.Content</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="DB\OperationBluehole.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

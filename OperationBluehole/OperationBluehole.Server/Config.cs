@@ -16,7 +16,15 @@ namespace OperationBluehole.Server
 
         public const int SIMULATION_THREAD_DEFAULT_NUM = 4;
 
-        public const string REDIS_DATABASE_ADDRESS = "project06.codetalks.kr";
+        //postgresql
+        public const string POSTGRESQL_SERVER = "localhost";
+        public const string POSTGRESQL_PORT = "5432";
+        public const string POSTGRESQL_ID = "OperationBluehole_User";
+        public const string POSTGRESQL_PW = "next!@#123";
+        public const string POSTGRESQL_TARGET_DB = "operation_bluehole";
+
+		// Redis
+		public const string REDIS_DATABASE_ADDRESS = "project06.codetalks.kr";
         public const string RANKING_SET_NAME = "ranking_set";
     }
 }

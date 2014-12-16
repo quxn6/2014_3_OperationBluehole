@@ -28,10 +28,13 @@ namespace OperationBluehole.Server.Modules
                 string password = Request.Form.password;
                 string playerName = Request.Form.playername;
 
-                if ( AccountInfoDatabase.SetAccountInfo( new AccountInfo( userId, password ) ) )
+                // if ( AccountInfoDatabase.SetAccountInfo( new AccountInfo( userId, password ) ) )
+                var task = PostgresqlManager.SetAccountInfo(userId, password);
+                task.Wait();
+                if (task.Result)
                 {
                     // user identity
-                    UserIdentityDatabase.SetUserIdentity( new UserIdentity { UserName = userId, Claims = new List<string> { "user", } } );
+                    // UserIdentityDatabase.SetUserIdentity( new UserIdentity { UserName = userId, Claims = new List<string> { "user", } } );
 
                     // user data
                     UserDataDatabase.SetUserData( new UserData {
@@ -77,7 +80,10 @@ namespace OperationBluehole.Server.Modules
                 var userName = (string)this.Request.Form.UserName;
                 var password = (string)this.Request.Form.Password;
 
-                var userIdentity = UserIdentityDatabase.ValidateUser( userName, password );
+                // var userIdentity = UserIdentityDatabase.ValidateUser( userName, password );
+                var task = PostgresqlManager.ValidateUser(userName, password);
+                task.Wait();
+                var userIdentity = task.Result;
 
                 if ( userIdentity == null )
                 {
