@@ -29,7 +29,7 @@ namespace OperationBluehole.Content
             if ( TestData.playerList.TryGetValue( 101, out data ) )
                 player[3].LoadPlayer( data );
 
-            Party users = new Party( PartyType.PLAYER, 10 );
+            Party users = new Party( PartyType.PLAYER, 3 );
             foreach ( Player p in player )
                 users.AddCharacter( p );
 
