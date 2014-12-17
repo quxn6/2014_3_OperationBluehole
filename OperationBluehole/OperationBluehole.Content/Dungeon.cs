@@ -466,10 +466,10 @@ namespace OperationBluehole.Content
 
             zoneList[map[ringPosition.y, ringPosition.x].zoneId].items.Add( ring );
 
-            PrintOutMAP();
+            // PrintOutMAP();
 
-            Console.WriteLine( "distance between player and ring" );
-            Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
+            // Console.WriteLine( "distance between player and ring" );
+            // Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
         }
 
         public bool FindRing( int zoneId )

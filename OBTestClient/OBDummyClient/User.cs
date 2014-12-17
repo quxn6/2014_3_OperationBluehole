@@ -11,6 +11,7 @@ namespace OperationBluehole.DummyClient
 {
     // using Newtonsoft.Json;
     using LitJson;
+    using System.Threading;
 
     internal class ClientPlayerData
     {
@@ -57,11 +58,14 @@ namespace OperationBluehole.DummyClient
 	class User
 	{
         const uint MAX_SIMULATION_COUNT = 10;
+        public const int SIMULATION_UPDATE_DELAY = 2000;
+        public const int REGISTER_DELAY = 500;
 
 		string userId, password;
 		string token;
         ClientPlayerData playerData;
-        uint simulationCount;
+        int registeredCount;
+        int updateRequestCount;
         Random random;
 
 		public User(string userId, string password, Random random)
@@ -70,7 +74,8 @@ namespace OperationBluehole.DummyClient
             this.password = password;
             this.random = random;
             playerData = null;
-            simulationCount = 0;
+            registeredCount = 0;
+            updateRequestCount = 0;
 		}
 
 		public async void Start()
@@ -112,7 +117,7 @@ namespace OperationBluehole.DummyClient
                 }
             }
 
-            Task.Delay( 500 ).GetAwaiter().OnCompleted( () => this.Register() );
+            Task.Delay( REGISTER_DELAY ).GetAwaiter().OnCompleted( () => this.Register() );
 		}
 
         private async void Register()
@@ -122,12 +127,13 @@ namespace OperationBluehole.DummyClient
                 string result;
 
                 result = await Network.RegisterPlayer( this.token, 1 );   // difficulty 일단 1로 고정
+                ++registeredCount;
 
                 if ( result.CompareTo( "success" ) == 0 )
                 {
                     Console.WriteLine( "player registered" );
 
-                    Task.Delay( 2000 ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
+                    Task.Delay( SIMULATION_UPDATE_DELAY ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
                 }
                 else
                 {
@@ -143,11 +149,12 @@ namespace OperationBluehole.DummyClient
             // 결과 확인
             {
                 string result = await Network.GetSimulationResult( this.token );
+                ++updateRequestCount;
 
                 if ( result.CompareTo("nothing") == 0 )
                 {
                     Console.WriteLine( "not yet" );
-                    Task.Delay( 2000 ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
+                    Task.Delay( SIMULATION_UPDATE_DELAY ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
                     return;
                 }
                 else if ( result.CompareTo( "error") == 0 )
@@ -214,7 +221,26 @@ namespace OperationBluehole.DummyClient
                 }
             }
 
-            Task.Delay( 500 ).GetAwaiter().OnCompleted( () => this.Register() );
+            if ( registeredCount < MAX_SIMULATION_COUNT )
+                Task.Delay( REGISTER_DELAY ).GetAwaiter().OnCompleted( () => this.Register() );
+            else
+            {
+                // finished
+                // update test result
+                
+                // registered count
+                Interlocked.Add(ref TestResult.registeredCount, registeredCount);
+                
+                // request count
+                Interlocked.Add(ref TestResult.updateRequestCount, updateRequestCount);
+                
+                // user count
+                int currentFinished = Interlocked.Add(ref TestResult.finishedUsers, 1);
+
+                // all is finished
+                if ( currentFinished == TestResult.totalUsers )
+                    TestResult.PrintResult();
+            }
         }
 	}
 }

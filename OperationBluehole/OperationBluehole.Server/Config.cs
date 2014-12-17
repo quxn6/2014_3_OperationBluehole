@@ -24,7 +24,8 @@ namespace OperationBluehole.Server
         public const string POSTGRESQL_TARGET_DB = "operation_bluehole";
 
 		// Redis
-		public const string REDIS_DATABASE_ADDRESS = "project06.codetalks.kr";
+		// public const string REDIS_DATABASE_ADDRESS = "project06.codetalks.kr";
+        public const string REDIS_DATABASE_ADDRESS = "localhost";
         public const string RANKING_SET_NAME = "ranking_set";
     }
 }

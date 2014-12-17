@@ -25,6 +25,7 @@ namespace OperationBluehole.DummyClient
 
             Random random = new Random();
 
+            TestResult.totalUsers = numOfUsers;
 			for (int i = 1; i <= numOfUsers; ++i)
 			{
                 var user = new User( "testUser" + i, "testPw" + i, random );

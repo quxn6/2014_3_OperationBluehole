@@ -115,11 +115,11 @@ namespace OperationBluehole.Content
                 //Thread.Sleep( 100 );
             }
 
-            Console.WriteLine( "THE END ( turn : " + turn + " )" );
+            // Console.WriteLine( "THE END ( turn : " + turn + " )" );
 
-            Console.WriteLine( "Earned Exp : " + record.lootedExp );
-            Console.WriteLine( "Earned gold : " + record.lootedGold );
-            Console.WriteLine( "looted items : " );
+            // Console.WriteLine( "Earned Exp : " + record.lootedExp );
+            // Console.WriteLine( "Earned gold : " + record.lootedGold );
+            // Console.WriteLine( "looted items : " );
             record.lootedItems.ForEach(item => Console.Write(" " + ((ItemToken)item).level));
 
             return turn;

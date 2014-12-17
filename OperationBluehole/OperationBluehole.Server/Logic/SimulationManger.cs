@@ -30,7 +30,7 @@ namespace OperationBluehole.Server
 
         public void Dispose()
         {
-
+            GC.SuppressFinalize( this );
         }
     }
 
@@ -50,18 +50,10 @@ namespace OperationBluehole.Server
             // simulationThreads = new List<Thread>();
             random = new Random((int)Stopwatch.GetTimestamp());
 
-            partyQueue = new PCQueue( Config.MATCHING_PLAYER_THREAD_DEFAULT_NUM );
-
             // 전투 로직 초기화
             ContentsPrepare.Init();
-            /*
-            for (int i = 0; i < Config.MATCHING_PLAYER_THREAD_DEFAULT_NUM; ++i)
-            {
-                Thread newThread = new Thread(SimulationParty);
-                newThread.Start();
-                simulationThreads.Add(newThread);
-            }
-            */
+            partyQueue = new PCQueue( Config.MATCHING_PLAYER_THREAD_DEFAULT_NUM );
+
             Debug.WriteLine("simulation manager is started");
         }
         /*
