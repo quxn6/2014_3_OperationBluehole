@@ -5,14 +5,54 @@ using LitJson;
 
 public class NetworkManager : MonoBehaviour 
 {
-	public GameObject sceneManager;
-	private int size = 60;
-
+	internal class ClientPlayerData
+	{
+		public string Name { get; set; }
+		
+		public uint Exp { get; set; }
+		public ushort StatPoints { get; set; }
+		public List<ushort> Stat { get; set; }
+		public List<ushort> Skill { get; set; }
+		
+		public uint Gold { get; set; }
+		public List<uint> Inventory { get; set; }
+		public List<ItemToken> Token { get; set; }
+		
+		public List<uint> Equipment { get; set; }
+		public List<uint> Consumable { get; set; }
+		
+		public byte BattleStyle { get; set; }
+		
+		public List<string> BanList { get; set; }
+		
+		public ClientPlayerData()
+		{
+		}
+	}
+	
+	internal class SimulationResult
+	{
+		public long Id { get; set; }
+		
+		// 참가한 player id 목록
+		public List<PlayerData> PlayerList { get; set; }
+		
+		// 맵 크기
+		public int MapSize { get; set; }
+		
+		// 게임 결과를 확인한 플레이어 - 전부 확인하면 지울 수 있도록? 아니면 아예 무조건 타임아웃? 적절히 혼합?
+		public List<ulong> CheckedPlayer { get; set; }
+		
+		// 시뮬레이션에 사용한 random seed 값
+		public int Seed { get; set; }
+	}
+	
+	public UnityEngine.GameObject sceneManager;
+	
 	static string token = "";
-	static string userId = "";
-
-    // static string serverUri = "project06.codetalks.kr:9990";
-	static string serverUri = "localhost:3579";
+	
+	// static string serverUri = "project06.codetalks.kr:9990";
+	static string serverUri = "project06.codetalks.kr:3579";
     // client version check
     // ...
 
@@ -27,40 +67,6 @@ public class NetworkManager : MonoBehaviour
 		instance = this;
 	}
 
-
-
-	
-	public void LoginRequest( string id, string pw )
-	{
-		var data = new  Dictionary<string, object>();
-		data.Add( "UserName", id );
-		data.Add( "Password", pw );
-		
-		userId = id;
-		
-		StartCoroutine( WaitForLogin( POST( "/user/login", data ) ) );
-	}
-	
-	private IEnumerator WaitForLogin( WWW www )
-	{
-		yield return www;
-		
-		// check for errors
-		if (!RequestErrorHandling (www))
-			yield break;
-		
-		// get json data as dictionary
-		// var dict =  JsonConvert.DeserializeObject<Dictionary<string, object>>( www.text );
-		var dict = JsonMapper.ToObject<Dictionary<string, object>>( www.text );
-
-		token = (string)dict["token"];
-
-		Debug.Log ("Token : " + token);
-		
-		// check the result 
-		// ... 
-	}
-	
 	public void SignupRequest( string id, string pw, string name )
 	{
 		var data = new Dictionary<string, object>();
@@ -79,13 +85,49 @@ public class NetworkManager : MonoBehaviour
 		if (!RequestErrorHandling (www))
 			yield break;
 			
-		if ( www.text.CompareTo ("success") == 0 )
+		if (www.text.CompareTo ("success") == 0) 
+		{
+			Debug.Log("signup : success");
+			LoginRequest("quxn6","next!!@@##$$");
 			yield break;
-
+		}
 		// display signup window
 		// ...
+
+		Debug.Log ("signup fail");
 	}
 	
+	public void LoginRequest( string id, string pw )
+	{
+		var data = new  Dictionary<string, object>();
+		data.Add( "UserName", id );
+		data.Add( "Password", pw );
+		
+		StartCoroutine( WaitForLogin( POST( "/user/login", data ) ) );
+	}
+	
+	private IEnumerator WaitForLogin( WWW www )
+	{
+		yield return www;
+		
+		// check for errors
+		if (!RequestErrorHandling (www))
+			yield break;
+		
+		// get json data as dictionary
+		// var dict =  JsonConvert.DeserializeObject<Dictionary<string, object>>( www.text );
+		var dict = JsonMapper.ToObject<Dictionary<string, object>>( www.text );
+		
+		token = (string)dict["token"];
+		
+		Debug.Log ("Token : " + token);
+		
+		// check the result 
+		// ... 
+
+		SessionCheck ();
+	}
+
 	public void SessionCheck()
 	{
 		StartCoroutine( WaitForSessionCheck( GET( "/user/valid_session" ) ) );
@@ -99,9 +141,12 @@ public class NetworkManager : MonoBehaviour
 		if (!RequestErrorHandling (www)) 
 			yield break;
 
-		if ( www.text.CompareTo( "valid" ) == 0 )
+		if (www.text.CompareTo ("valid") == 0) 
+		{
+			Debug.Log("valid session");
+			RegisterRequest(1);
 			yield break;
-		
+		}
 		// display login window
 		// ...
 	}
@@ -123,7 +168,11 @@ public class NetworkManager : MonoBehaviour
 			yield break;
 		
 		if (www.text.CompareTo ("success") == 0)
+		{
+			Debug.Log("registered");
+			GetSimulationResult();
 			yield break;
+		}
 		else if (www.text.CompareTo ("not prepared") == 0) 
 		{
 			// check the previous game result
@@ -147,7 +196,11 @@ public class NetworkManager : MonoBehaviour
 			yield break;
 		
 		// deserialize the base data
-		// var baseData =  JsonConvert.DeserializeObject<GameResultBaseData>( www.text );
+		if (www.text.CompareTo ("nothing") == 0)
+			GetSimulationResult ();
+
+		//var baseData = JsonMapper.ToObject<SimulationResult>( www.text );
+		Debug.Log (www.text);
 	}
 	
 	public void GetPlayerInfo()
@@ -164,7 +217,9 @@ public class NetworkManager : MonoBehaviour
 			yield break;
 		
 		// apply the current status
-		// var playerData =  JsonConvert.DeserializeObject<ClientPlayerData>( www.text );
+
+		//var playerData = JsonMapper.ToObject<ClientPlayerData>( www.text );
+		Debug.Log (www.text);
 	}
 	
 	public void LevelUpRequest()
@@ -223,10 +278,10 @@ public class NetworkManager : MonoBehaviour
 	
 	private WWW GET( string url )
 	{
-		Debug.Log ("Add token : " + token);
-
-		var headers = new Hashtable();
+		var headers = new Dictionary<string,string>();
 		headers.Add("Authorization", "Token " + token );
+
+		Debug.Log (headers["Authorization"]);
 
 		WWW www = new WWW( serverUri + url, null, headers );
 
@@ -241,19 +296,16 @@ public class NetworkManager : MonoBehaviour
 		{
 			form.AddField( each.Key, each.Value.ToString() );
 		}
-		
-		// token!
-		form.headers.Add( "Authorization", "Token " + token );
-		
-		WWW www = new WWW( serverUri + url, form );
-		
+
+		var headers = form.headers;
+		var rawData = form.data;
+
+		headers ["Authorization"] = "Token " + token;
+		WWW www = new WWW(serverUri + url, rawData, headers);
+
 		return www;
 	}  
 
-
-
-
-	
 	// dungeon map ///
 	public void RequestReplayInfo()
 	{
