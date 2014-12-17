@@ -15,7 +15,7 @@ namespace OperationBluehole.DummyClient
 
         public static void PrintResult()
         {
-            Console.Clear();
+            // Console.Clear();
             Console.WriteLine( "Test result :" );
             Console.WriteLine( "Test user number :" + totalUsers );
 

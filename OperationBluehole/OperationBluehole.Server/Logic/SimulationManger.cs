@@ -71,6 +71,7 @@ namespace OperationBluehole.Server
         public static void Simulation( Party party )
         {
             Debug.WriteLine( "start to simulation" );
+            Console.WriteLine( "start to simulation" );
 
             SimulationResult result = new SimulationResult();
 
@@ -125,6 +126,7 @@ namespace OperationBluehole.Server
             } );
 
             Debug.WriteLine( "simulation ended" );
+            Console.WriteLine( "simulation ended" );
         }
         /*
         static void SimulationParty()

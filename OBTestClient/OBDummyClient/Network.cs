@@ -79,7 +79,7 @@ namespace OperationBluehole.DummyClient
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(wRequest.Headers);
+                Console.WriteLine( e.ToString() );
 
 				return "";
 			}

@@ -57,7 +57,7 @@ namespace OperationBluehole.DummyClient
 
 	class User
 	{
-        const uint MAX_SIMULATION_COUNT = 10;
+        const uint MAX_SIMULATION_COUNT = 4;
         public const int SIMULATION_UPDATE_DELAY = 2000;
         public const int REGISTER_DELAY = 500;
 

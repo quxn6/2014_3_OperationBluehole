@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Diagnostics;
 
 namespace OperationBluehole.Server.Modules
 {
@@ -31,6 +32,7 @@ namespace OperationBluehole.Server.Modules
                 // if ( AccountInfoDatabase.SetAccountInfo( new AccountInfo( userId, password ) ) )
                 var task = PostgresqlManager.SetAccountInfo(userId, password);
                 task.Wait();
+
                 if (task.Result)
                 {
                     // user identity
@@ -71,6 +73,48 @@ namespace OperationBluehole.Server.Modules
 
                     return "success";
                 }
+                else
+                {
+                    // 조심해!!!!!!!
+                    // RDM 매번 초기화하기 힘들어서 이미 존재하는 아이디어도 덮어쓰기로 가입
+
+                    // user data
+                    UserDataDatabase.SetUserData( new UserData
+                    {
+                        UserId = userId,
+                        Gold = 0,
+                        Inventory = new List<uint> { },
+                        Token = new List<ItemToken> { },
+                        BanList = new List<string> { },
+                    } );
+
+                    // player data
+                    PlayerDataDatabase.SetPlayerData( new PlayerData
+                    {
+                        pId = userId,
+                        name = playerName,
+                        exp = 0,
+                        stats = new ushort[] { 1, 5, 5, 5, 5, 5, 5, 5, },
+                        skills = new List<SkillId> { },
+                        consumables = new List<ItemCode> { },
+                        equipments = new List<ItemCode> { },
+                        battleStyle = BattleStyle.AGGRESSIVE,
+                    } );
+
+                    // result table
+                    ResultTableDatabase.SetResultTable( new ResultTable
+                    {
+                        PlayerId = userId,
+                        ReadId = new List<long> { },
+                        UnreadId = -1
+                    } );
+
+                    // ranking list
+                    // Debug.Assert( RedisManager.RegisterPlayerRank( userId ) );
+                    RedisManager.RegisterPlayerRank( userId );
+
+                    return "success";
+                }
 
                 return "fail";
             };
@@ -95,6 +139,8 @@ namespace OperationBluehole.Server.Modules
                 }
 
                 var token = tokenizer.Tokenize( userIdentity, Context );
+
+                Console.WriteLine(userName + " : " + token);
 
                 return new
                 {
