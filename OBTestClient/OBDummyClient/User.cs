@@ -57,10 +57,6 @@ namespace OperationBluehole.DummyClient
 
 	class User
 	{
-        const uint MAX_SIMULATION_COUNT = 4;
-        public const int SIMULATION_UPDATE_DELAY = 2000;
-        public const int REGISTER_DELAY = 500;
-
 		string userId, password;
 		string token;
         ClientPlayerData playerData;
@@ -117,7 +113,7 @@ namespace OperationBluehole.DummyClient
                 }
             }
 
-            Task.Delay( REGISTER_DELAY ).GetAwaiter().OnCompleted( () => this.Register() );
+            Task.Delay( TestResult.REGISTER_DELAY ).GetAwaiter().OnCompleted( () => this.Register() );
 		}
 
         private async void Register()
@@ -133,7 +129,7 @@ namespace OperationBluehole.DummyClient
                 {
                     Console.WriteLine( "player registered" );
 
-                    Task.Delay( SIMULATION_UPDATE_DELAY ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
+                    Task.Delay( TestResult.SIMULATION_UPDATE_DELAY ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
                 }
                 else
                 {
@@ -154,7 +150,7 @@ namespace OperationBluehole.DummyClient
                 if ( result.CompareTo("nothing") == 0 )
                 {
                     Console.WriteLine( "not yet" );
-                    Task.Delay( SIMULATION_UPDATE_DELAY ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
+                    Task.Delay( TestResult.SIMULATION_UPDATE_DELAY ).GetAwaiter().OnCompleted( () => this.UpdateResult() );
                     return;
                 }
                 else if ( result.CompareTo( "error") == 0 )
@@ -221,8 +217,8 @@ namespace OperationBluehole.DummyClient
                 }
             }
 
-            if ( registeredCount < MAX_SIMULATION_COUNT )
-                Task.Delay( REGISTER_DELAY ).GetAwaiter().OnCompleted( () => this.Register() );
+            if ( registeredCount < TestResult.MAX_SIMULATION_COUNT )
+                Task.Delay( TestResult.REGISTER_DELAY ).GetAwaiter().OnCompleted( () => this.Register() );
             else
             {
                 // finished

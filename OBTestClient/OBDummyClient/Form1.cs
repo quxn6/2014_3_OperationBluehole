@@ -20,13 +20,15 @@ namespace OperationBluehole.DummyClient
 		private void button1_Click(object sender, EventArgs e)
 		{
 			Network.Init(this.TextBox_host.Text);
-			
-			int numOfUsers = Convert.ToInt32(this.TextBox_dummyConnections.Text);
+
+            TestResult.totalUsers = Convert.ToInt32( this.TextBox_dummyConnections.Text );
+            TestResult.MAX_SIMULATION_COUNT = Convert.ToUInt32( this.textBox_MaxSimulationCount.Text );
+            TestResult.REGISTER_DELAY = Convert.ToInt32( this.textBox_RegisterDelay.Text );
+            TestResult.SIMULATION_UPDATE_DELAY = Convert.ToInt32( this.textBox_UpdateResultDelay.Text );
 
             Random random = new Random();
 
-            TestResult.totalUsers = numOfUsers;
-			for (int i = 1; i <= numOfUsers; ++i)
+            for ( int i = 1; i <= TestResult.totalUsers; ++i )
 			{
                 var user = new User( "testUser" + i, "testPw" + i, random );
 				user.Start();

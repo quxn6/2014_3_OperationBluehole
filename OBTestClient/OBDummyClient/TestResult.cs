@@ -13,6 +13,10 @@ namespace OperationBluehole.DummyClient
         public static int totalUsers = 0;
         public static int finishedUsers = 0;
 
+        public static uint MAX_SIMULATION_COUNT = 0;
+        public static int SIMULATION_UPDATE_DELAY = 0;
+        public static int REGISTER_DELAY = 0;
+
         public static void PrintResult()
         {
             // Console.Clear();
