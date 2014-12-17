@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using LitJson;
+using OperationBluehole.Content;
 
 public class NetworkManager : MonoBehaviour 
 {
