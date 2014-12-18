@@ -37,6 +37,23 @@ namespace OperationBluehole.Content
 
 		public void StartBattle()
         {
+            /*
+            party[0].characters.ForEach( each =>
+            {
+                Console.Write( "actual params :" );
+                for ( int i = 0; i < each.actualParams.Length; ++i )
+                    Console.Write( " " + each.actualParams[i] );
+                Console.WriteLine( "" );
+            } );
+            party[1].characters.ForEach( each =>
+            {
+                Console.Write( "actual params :" );
+                for ( int i = 0; i < each.actualParams.Length; ++i )
+                    Console.Write( " " + each.actualParams[i] );
+                Console.WriteLine( "" );
+            } );
+            */
+
             #region 전투기록 : 캐릭터들에 전투기록 설정
             if (battleInfo != null)
             {

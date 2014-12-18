@@ -170,7 +170,8 @@ namespace OperationBluehole.Server
                     for (int i = 0; i < 4; ++i)
                         power += (int)md.members.Average(c => c.Item1.actualParams[i]);
 
-                    int partyLevel = power / Config.MATCHING_STANDARD_POWER_PER_LEVEL;
+                    // int partyLevel = power / Config.MATCHING_STANDARD_POWER_PER_LEVEL;
+                    int partyLevel = (int)md.members.Average( each => each.Item1.baseStats[0] );
                     partyLevel += md.difficulty;
                     if (partyLevel < 1)
                         partyLevel = 1;

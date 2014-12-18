@@ -122,7 +122,7 @@ namespace OperationBluehole.DummyClient
             {
                 string result;
 
-                result = await Network.RegisterPlayer( this.token, 1 );   // difficulty 일단 1로 고정
+                result = await Network.RegisterPlayer( this.token, 0 );   // difficulty 일단 0로 고정
                 ++registeredCount;
 
                 if ( result.CompareTo( "success" ) == 0 )
@@ -195,7 +195,7 @@ namespace OperationBluehole.DummyClient
 
             // 스탯 상승
             {
-                int totalStats = ( playerData.Stat[(int)StatType.Lev] - 1 ) * 3 + 35;
+                int totalStats = ( playerData.Stat[(int)StatType.Lev] - 1 ) * Config.BONUS_STAT_PER_LEVEL + Config.CHARACTER_BASE_STATS.Skip( 1 ).Take( 6 ).Sum( i => i );
                 int curStats = playerData.Stat.Skip( 1 ).Take( 6 ).Sum( i => i );
                 
                 int bonusStat = totalStats - curStats;

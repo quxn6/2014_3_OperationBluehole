@@ -54,9 +54,9 @@ namespace OperationBluehole.Server.Modules
                         name = playerName,
                         exp = 0,
                         stats = new ushort[] { 1, 5, 5, 5, 5, 5, 5, 5, },
-                        skills = new List<SkillId> { },
-                        consumables = new List<ItemCode> { },
-                        equipments = new List<ItemCode> { },
+                        skills = new List<SkillId> { SkillId.Punch, },
+                        consumables = new List<ItemCode> { ItemCode.HpPotion_S, },
+                        equipments = new List<ItemCode> { ItemCode.Sword_Test, },
                         battleStyle = BattleStyle.AGGRESSIVE,
                     } );
                     
