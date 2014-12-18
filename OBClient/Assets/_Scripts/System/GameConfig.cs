@@ -38,7 +38,7 @@ static class GameConfig
 	public static Color DEAD_HERO_COLOR = new Color( 0.2f , 0.2f , 0.2f );
 	public static Color BEATTACKED_HERO_COLOR = new Color( 0.7f , 0.2f , 0.2f );
 	public static Color DEFALUT_HERO_COLOR = Color.white;
-	public const float UI_COLOR_CHANGED_TIME = 0.5f;
+	public const float UI_COLOR_CHANGED_TIME = 0.2f;
 
 	// Scene
 	public const float SPLASH_IMAGE_PLAY_TIME = 2.0f;
