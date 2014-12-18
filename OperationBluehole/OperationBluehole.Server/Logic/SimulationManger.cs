@@ -80,6 +80,7 @@ namespace OperationBluehole.Server
 
             result.Id = currentIdx;
             result.Seed = random.Next();
+            result.MapSize = 60;
 
             // result에 사용될 사용자 정보 기록
             result.PlayerList = new List<PlayerData>();
@@ -89,10 +90,16 @@ namespace OperationBluehole.Server
                 result.PlayerList.Add( player.ConvertToPlayerData() );
             } );
 
+            Console.WriteLine( "party level : " + party.partyLevel );
+
             // simulation!!!!
             DungeonMaster newMaster = new DungeonMaster();
-            newMaster.Init( 60, result.Seed, party );
+            newMaster.Init( result.MapSize, result.Seed, party );
             var res = newMaster.Start();
+
+            Console.WriteLine( "turn : " + res );
+            Console.WriteLine( "looted gold : " + newMaster.record.lootedGold );
+            Console.WriteLine( "looted exp : " + newMaster.record.lootedExp );
 
             // save the result data in DB
             result.CheckedPlayer = new List<ulong>();
