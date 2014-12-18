@@ -28,9 +28,12 @@ static class GameConfig
 
 	/////////////////////////////////////////////////////////////
 
+	// Map
+	public const int FLOOR_BLOCK_SIZE = 3;
+
 	// battle
 	public const int MAXIMUM_HERO_COUNT = 4;
-	public const float MOB_ATTACKMOVING_TIME = 0.2f;
+	public const float MOB_ATTACKMOVING_TIME = 0.4f;
 
 	public static Color DEAD_HERO_COLOR = new Color( 0.2f , 0.2f , 0.2f );
 	public static Color BEATTACKED_HERO_COLOR = new Color( 0.7f , 0.2f , 0.2f );

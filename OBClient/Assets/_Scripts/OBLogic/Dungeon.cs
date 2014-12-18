@@ -466,10 +466,10 @@ namespace OperationBluehole.Content
 
             zoneList[map[ringPosition.y, ringPosition.x].zoneId].items.Add( ring );
 
-            PrintOutMAP();
+            // PrintOutMAP();
 
-            Console.WriteLine( "distance between player and ring" );
-            Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
+            // Console.WriteLine( "distance between player and ring" );
+            // Console.WriteLine( " :" + Math.Abs( playerPosition.x - ringPosition.x ) + " / "+ Math.Abs( playerPosition.y - ringPosition.y ) );
         }
 
         public bool FindRing( int zoneId )
@@ -520,7 +520,10 @@ namespace OperationBluehole.Content
                             Console.Write( visualizer[2] );
 							dungeonMap[i, j] = visualizer[2];
                             break;
-                        default:	
+                        default:								
+							Console.Write( visualizer[1] );
+							dungeonMap[i, j] = visualizer[1];		
+
                             if ( map[i, j].party != null )
                             {
 								if ( map[i , j].party.partyType == PartyType.MOB )
@@ -535,15 +538,11 @@ namespace OperationBluehole.Content
 									dungeonMap[i, j] = visualizer[5];		
 								}
                             }
-                            else if ( map[i, j].gameObject != null )
+                            
+							if ( map[i, j].gameObject != null )
 							{
 								Console.Write( mobFlag? visualizer[7] : visualizer[3] );
 								dungeonMap[i, j] = mobFlag ? visualizer[7] : visualizer[3];		
-							}                                
-                            else
-							{
-								Console.Write( visualizer[1] );
-								dungeonMap[i, j] = visualizer[1];		
 							}
                                 
                             break;
