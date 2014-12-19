@@ -1,17 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{35460AA4-B94A-4B64-9418-7243EC3D2F01}</ProjectGuid>
+    <ProjectGuid>{2C21FCB3-60D5-4570-A52B-4148FEB04DB1}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OperationBluehole.Server</RootNamespace>
-    <AssemblyName>OperationBluehole.Server</AssemblyName>
+    <RootNamespace>OperationBluehole.Server.Simulation</RootNamespace>
+    <AssemblyName>OperationBluehole.Server.Simulation</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -22,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,31 +30,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MonoDebug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\MonoDebug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MonoRelease|AnyCPU'">
-    <OutputPath>bin\MonoRelease\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Couchbase">
@@ -68,15 +41,9 @@
     <Reference Include="LitJson">
       <HintPath>..\..\OBClient\Assets\Plugins\LitJson.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Security">
-      <HintPath>..\packages\Npgsql.2.2.3\lib\net45\Mono.Security.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Npgsql">
-      <HintPath>..\packages\Npgsql.2.2.3\lib\net45\Npgsql.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="RabbitMQ.Client">
       <HintPath>..\packages\RabbitMQ.Client.3.4.0\lib\net35\RabbitMQ.Client.dll</HintPath>
@@ -95,55 +62,27 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Config.cs" />
-    <Compile Include="DB\CouchbaseManager.cs" />
-    <Compile Include="Logic\MatchingManager.cs" />
-    <Compile Include="Modules\CharacterModule.cs" />
-    <Compile Include="Modules\MatchingModule.cs" />
-    <Compile Include="Modules\TestModule.cs" />
-    <Compile Include="Modules\UserModule.cs" />
-    <Compile Include="DB\PostgresqlManager.cs" />
-    <Compile Include="DB\RedisManager.cs" />
-    <Compile Include="TokenAuthBootstrapper.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Util.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimulationManager.cs" />
+    <Compile Include="TaskManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nancy.Authentication.Token\Nancy.Authentication.Token.csproj">
-      <Project>{97fa024a-f6ed-4086-bcc1-1a51be63474c}</Project>
-      <Name>Nancy.Authentication.Token</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Nancy.Hosting.Self\Nancy.Hosting.Self.csproj">
-      <Project>{aa7f66eb-ec2c-47de-855f-30b3e6ef2134}</Project>
-      <Name>Nancy.Hosting.Self</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Nancy\Nancy.csproj">
-      <Project>{34576216-0dca-4b0f-a0dc-9075e75a676f}</Project>
-      <Name>Nancy</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OperationBluehole.Content\OperationBluehole.Content.csproj">
       <Project>{df80892c-1f01-4997-9065-d269793f7fcd}</Project>
       <Name>OperationBluehole.Content</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="DB\OperationBluehole.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

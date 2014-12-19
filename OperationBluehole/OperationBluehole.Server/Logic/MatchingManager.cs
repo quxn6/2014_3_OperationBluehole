@@ -6,10 +6,14 @@ using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using OperationBluehole.Content;
 
 namespace OperationBluehole.Server
 {
+    using OperationBluehole.Content;
+    using RabbitMQ.Client;
+    using System.Text;
+    using LitJson;
+
     struct MatchingData
     {
         public Object lockObj;
@@ -184,7 +188,25 @@ namespace OperationBluehole.Server
 
                     // SimulationManger.RegisterParty(newParty);
                     // Task.Run( () => SimulationManger.Simulation( newParty ) );
-                    SimulationManger.AddParty( newParty );
+                    // SimulationManger.AddParty( newParty );
+
+                    var factory = new ConnectionFactory() { HostName = "localhost" };
+                    using ( var connection = factory.CreateConnection() )
+                    {
+                        using ( var channel = connection.CreateModel() )
+                        {
+                            channel.QueueDeclare( "task_queue", true, false, false, null );
+
+                            var message = JsonMapper.ToJson( newParty );
+                            var body = Encoding.UTF8.GetBytes( message );
+
+                            var properties = channel.CreateBasicProperties();
+                            properties.SetPersistent( true );
+
+                            channel.BasicPublish( "", "task_queue", properties, body );
+                            Console.WriteLine( " [x] Sent {0}", message );
+                        }
+                    }
                 }
                 else
                     Thread.Yield();
