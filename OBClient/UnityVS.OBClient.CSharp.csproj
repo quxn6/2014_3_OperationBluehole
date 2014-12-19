@@ -224,6 +224,7 @@
     <Compile Include="Assets\_Scripts\Object\HPBar.cs" />
     <Compile Include="Assets\_Scripts\Object\Hero.cs" />
     <Compile Include="Assets\_Scripts\Object\Mob.cs" />
+    <Compile Include="Assets\_Scripts\Object\Model\ChibiWarrior.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\OldVersion\Demon.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\OldVersion\Goblin.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\OldVersion\Golem.cs" />

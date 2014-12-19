@@ -339,7 +339,7 @@ public class NetworkManager : MonoBehaviour
 		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 101 , out data ) )
 			player[3].LoadPlayer( data );
 
-		OperationBluehole.Content.Party DummyParty = new OperationBluehole.Content.Party( OperationBluehole.Content.PartyType.PLAYER , 10 );
+		OperationBluehole.Content.Party DummyParty = new OperationBluehole.Content.Party( OperationBluehole.Content.PartyType.PLAYER , 3 );
 		foreach ( OperationBluehole.Content.Player p in player )
 			DummyParty.AddCharacter( p );
 

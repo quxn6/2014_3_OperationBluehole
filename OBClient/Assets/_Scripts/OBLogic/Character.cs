@@ -192,14 +192,14 @@ namespace OperationBluehole.Content
             // 7. Base stat과 extra stat의 합으로 1차 actual param 계산
             // 지금은 임시 값들 사용하고
             // 나중에 직업별 static function으로 만들어서 거기서 계산 할 것
-            actualParams[(int)ParamType.phyAtk] = (uint)( baseStats[(int)StatType.Str] + extraStats[(int)StatType.Str] );
+            actualParams[(int)ParamType.phyAtk] = (uint)( baseStats[(int)StatType.Str] + extraStats[(int)StatType.Str] ) * 5;
             actualParams[(int)ParamType.phyDef] = (uint)( baseStats[(int)StatType.Con] + extraStats[(int)StatType.Con] );
-            actualParams[(int)ParamType.magAtk] = (uint)( baseStats[(int)StatType.Int] + extraStats[(int)StatType.Int] );
-            actualParams[(int)ParamType.magDef] = (uint)( baseStats[(int)StatType.Wis] + extraStats[(int)StatType.Wis] );
+            actualParams[(int)ParamType.magAtk] = (uint)( baseStats[(int)StatType.Int] + extraStats[(int)StatType.Int] ) * 5;
+            actualParams[(int)ParamType.magDef] = (uint)( baseStats[(int)StatType.Wis] + extraStats[(int)StatType.Wis] ) * 2;
             actualParams[(int)ParamType.spRegn] = (uint)( baseStats[(int)StatType.Mov] + extraStats[(int)StatType.Mov] );
 			actualParams[(int)ParamType.avoid] = (uint)( baseStats[(int)StatType.Agi] + extraStats[(int)StatType.Agi] );
-            actualParams[(int)ParamType.maxHp] = (uint)( baseStats[(int)StatType.Con] + extraStats[(int)StatType.Con] ) * 20;
-            actualParams[(int)ParamType.maxMp] = (uint)( baseStats[(int)StatType.Wis] + extraStats[(int)StatType.Wis] );
+            actualParams[(int)ParamType.maxHp] = (uint)( baseStats[(int)StatType.Con] + extraStats[(int)StatType.Con] ) * 10 + 50;
+            actualParams[(int)ParamType.maxMp] = (uint)( baseStats[(int)StatType.Wis] + extraStats[(int)StatType.Wis] ) * 10 + 50;
 
             // 8. effect param을 actual param에 적용
             for ( int i = 0; i < actualParams.Length; ++i )

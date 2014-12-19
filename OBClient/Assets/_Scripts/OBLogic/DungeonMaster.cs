@@ -115,12 +115,12 @@ namespace OperationBluehole.Content
                 //Thread.Sleep( 100 );
             }
 
-            Console.WriteLine( "THE END ( turn : " + turn + " )" );
+            // Console.WriteLine( "THE END ( turn : " + turn + " )" );
 
-            Console.WriteLine( "Earned Exp : " + record.lootedExp );
-            Console.WriteLine( "Earned gold : " + record.lootedGold );
-            Console.WriteLine( "looted items : " );
-            record.lootedItems.ForEach(item => Console.Write(" " + ((ItemToken)item).level));
+            // Console.WriteLine( "Earned Exp : " + record.lootedExp );
+            // Console.WriteLine( "Earned gold : " + record.lootedGold );
+            // Console.WriteLine( "looted items : " );
+            // record.lootedItems.ForEach(item => Console.Write(" " + ((ItemToken)item).level));
 
             return turn;
         }
@@ -150,7 +150,7 @@ namespace OperationBluehole.Content
             if ( mob.partyType != PartyType.MOB )
                 Console.WriteLine( "NOOOOOOOOOOOOOOOO!!" );
 
-            Console.WriteLine( "Battle : " );
+            // Console.WriteLine( "Battle : " );
             // Console.ReadLine();
 
             // 임시 몹 사용
@@ -183,7 +183,7 @@ namespace OperationBluehole.Content
                         record.lootedItems.Add( currentMob.rewardItem );
                 } );
 
-                Console.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
+                // Console.WriteLine( "Test: {0} Win.", (int)newBattle.battleResult );
                 // Console.ReadLine();
 
                 return true;
@@ -201,7 +201,7 @@ namespace OperationBluehole.Content
 
             record.lootedItems.Add( item );
 
-            Console.WriteLine( "looting : " );
+            // Console.WriteLine( "looting : " );
             // Console.ReadLine();
         }
     }

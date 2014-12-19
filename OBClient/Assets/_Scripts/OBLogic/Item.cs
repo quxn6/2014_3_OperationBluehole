@@ -73,7 +73,7 @@ namespace OperationBluehole.Content
 		public WeaponType weaponType { get; private set; }
 		public List<Tuple<StatType, ushort>> reqStat { get; private set; }
         public List<Tuple<StatType, ushort>> plusStat { get; private set; }
-        public List<Tuple<StatType, uint>> plusParam { get; private set; }
+        public List<Tuple<ParamType, uint>> plusParam { get; private set; }
 		// 		private Func<Character, Character, bool> action;
 
 		public Equipment(ItemCode id, ItemCatag type,
@@ -81,7 +81,7 @@ namespace OperationBluehole.Content
 			WeaponType weaponType,
 			List<Tuple<StatType, ushort>> reqStat,
             List<Tuple<StatType, ushort>> plusStat,
-            List<Tuple<StatType, uint>> plusParam,
+            List<Tuple<ParamType, uint>> plusParam,
             Func<RandomGenerator, Character, Character, bool> action )
 			: base( id, type, action )
 		{
@@ -215,8 +215,9 @@ namespace OperationBluehole.Content
 					new List<Tuple<StatType, ushort>>() //plusStat
 					{
 					},
-					new List<Tuple<StatType, uint>>() //plusParam
+                    new List<Tuple<ParamType, uint>>() //plusParam
 					{
+                        new Tuple<ParamType, uint>(ParamType.phyAtk, 20)
 					},
 					null
 				));

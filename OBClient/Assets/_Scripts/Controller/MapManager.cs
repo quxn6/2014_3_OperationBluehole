@@ -145,7 +145,7 @@ public class MapManager : MonoBehaviour
 				// check flag
 				if ( (isPlaced[i,j] & MapObjectType.HasFloor) == 0)
 				{
-					if ( Random.Range( 0 , 20 ) == 0 )
+					if ( Random.Range( 0 , 10 ) == 0 )
 					{
 						InstantiateObject( floorPrefab[Random.Range( 1 , floorPrefab.Length )].name , i , j );
 					}
@@ -154,9 +154,9 @@ public class MapManager : MonoBehaviour
 						InstantiateObject( floorPrefab[0].name , i , j );
 					}
 
-					for ( int k = i ; k < i+3 ; ++k)
+					for ( int k = i ; k < i + GameConfig.FLOOR_BLOCK_SIZE ; ++k )
 					{
-						for ( int l = j; l < j+3; ++l)
+						for ( int l = j ; l < j + GameConfig.FLOOR_BLOCK_SIZE ; ++l )
 						{
 							isPlaced[k , l] |= MapObjectType.HasFloor;
 						}
@@ -175,7 +175,7 @@ public class MapManager : MonoBehaviour
 					case 'X':
 						if ( !CanBePlaced(instanceDungeon.size, i, j))
 						{
-							InstantiateObject( wallPrefab[0].name , i , j );							
+							InstantiateObject( wallPrefab[Random.Range( 0 , wallPrefab.Length )].name , i , j );
 							continue;
 						}
 						
@@ -331,7 +331,7 @@ public class MapManager : MonoBehaviour
 						// exit object
 						break;
 					case 'T': // Mob on the item
-						InstantiateObject( itemBoxPrefab[0].name , i , j );
+						InstanceItem( i , j );
 						InstanceMob( i , j );
 						break;
 				}
