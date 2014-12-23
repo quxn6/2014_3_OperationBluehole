@@ -48,7 +48,7 @@ public class NetworkManager : MonoBehaviour
 		public int Seed { get; set; }
 	}
 	
-	public UnityEngine.GameObject sceneManager;
+	//public UnityEngine.GameObject sceneManager;
 	
 	static string token = "";
 	
@@ -70,12 +70,13 @@ public class NetworkManager : MonoBehaviour
 
 	public void SignupRequest( string id, string pw, string name )
 	{
+		Debug.Log( "signupcall by " + id );
 		var data = new Dictionary<string, object>();
 		data.Add( "UserId", id );
 		data.Add( "password", pw );
 		data.Add( "playerName", name );
 		
-		StartCoroutine( WaitForSignup( POST( "/user/signin", data ) ) );
+		StartCoroutine( WaitForSignup( POST( "/user/signup", data ) ) );
 	}
 	
 	private IEnumerator WaitForSignup(WWW www)
@@ -85,11 +86,12 @@ public class NetworkManager : MonoBehaviour
 		// check for errors
 		if (!RequestErrorHandling (www))
 			yield break;
-			
+
+		Debug.Log( www.text );
 		if (www.text.CompareTo ("success") == 0) 
 		{
 			Debug.Log("signup : success");
-			LoginRequest("quxn6","next!!@@##$$");
+			//LoginRequest("quxn6","next!!@@##$$");
 			yield break;
 		}
 		// display signup window
@@ -125,8 +127,9 @@ public class NetworkManager : MonoBehaviour
 		
 		// check the result 
 		// ... 
+		Application.LoadLevel( "MainMenu" );
 
-		SessionCheck ();
+		//SessionCheck ();
 	}
 
 	public void SessionCheck()
@@ -145,7 +148,7 @@ public class NetworkManager : MonoBehaviour
 		if (www.text.CompareTo ("valid") == 0) 
 		{
 			Debug.Log("valid session");
-			RegisterRequest(1);
+			//RegisterRequest(1);
 			yield break;
 		}
 		// display login window
@@ -171,7 +174,7 @@ public class NetworkManager : MonoBehaviour
 		if (www.text.CompareTo ("success") == 0)
 		{
 			Debug.Log("registered");
-			GetSimulationResult();
+			//GetSimulationResult();
 			yield break;
 		}
 		else if (www.text.CompareTo ("not prepared") == 0) 
@@ -198,7 +201,8 @@ public class NetworkManager : MonoBehaviour
 		
 		// deserialize the base data
 		if (www.text.CompareTo ("nothing") == 0)
-			GetSimulationResult ();
+			//GetSimulationResult ();
+			//not yet
 
 		//var baseData = JsonMapper.ToObject<SimulationResult>( www.text );
 		Debug.Log (www.text);

@@ -7,6 +7,12 @@ public class TitleMenu : MonoBehaviour
 	public GameObject signUpButton = null;
 	public GameObject playButton = null;
 
+	public GameObject LoginIDForm = null;
+	public GameObject LoginPWForm = null;
+	public GameObject SignupIDForm = null;
+	public GameObject SignupPWForm = null;
+	public GameObject SignupNameForm = null;
+
 	public GameObject loginForm = null;
 	public GameObject signUpForm = null;
 
@@ -41,12 +47,20 @@ public class TitleMenu : MonoBehaviour
 	// post signup data
 	public void SubmitSignUpForm()
 	{
-		Debug.Log( "submit signup form" );
+		NetworkManager.Instance.SignupRequest(
+			SignupIDForm.GetComponent<UILabel>().text ,
+			SignupPWForm.GetComponent<UILabel>().text ,
+			SignupNameForm.GetComponent<UILabel>().text );
+		//Debug.Log( "submit signup form" );
 	}
 
 	// post login data
 	public void SubmitLoginForm()
 	{
-		Debug.Log( "submit login form" );
+		NetworkManager.Instance.LoginRequest(
+			LoginIDForm.GetComponent<UILabel>().text ,
+			LoginPWForm.GetComponent<UILabel>().text
+			);
+		//Debug.Log( "submit login form" );
 	}
 }
