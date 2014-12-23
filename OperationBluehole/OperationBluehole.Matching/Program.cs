@@ -17,8 +17,11 @@ namespace OperationBluehole.Matching
             MatchingManager.Init();
             var factory = new ConnectionFactory() { HostName = "localhost" };
 
+            /*
             for ( int i = 0; i < WORKER_THREAD_NUM; ++i )
                 Task.Factory.StartNew( () => TaskManager.Run( factory ) );
+            */
+            TaskManager.Run( factory );
         }
     }
 }

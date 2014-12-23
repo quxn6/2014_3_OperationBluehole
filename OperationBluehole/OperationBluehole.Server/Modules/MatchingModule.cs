@@ -43,7 +43,7 @@ namespace OperationBluehole.Server.Module
                     {
                         channel.QueueDeclare( "matching_queue", true, false, false, null );
 
-                        var message = JsonMapper.ToJson( new Tuple<string, int>( this.Context.CurrentUser.UserName, difficulty ) );
+                        var message = JsonMapper.ToJson( new Dictionary<string, object> { { "playerId", this.Context.CurrentUser.UserName}, { "difficulty", difficulty } } );
                         var body = Encoding.UTF8.GetBytes( message );
 
                         var properties = channel.CreateBasicProperties();

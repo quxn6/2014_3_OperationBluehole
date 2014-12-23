@@ -35,10 +35,12 @@ namespace OperationBluehole.Matching
                         var message = Encoding.UTF8.GetString( body );
 
                         // 등록
-                        var matchingData = JsonMapper.ToObject<Tuple<string, int>>( message );
-                        MatchingManager.RegisterPlayer( matchingData.Item1, matchingData.Item2 );
+                        Console.WriteLine( "register : " + message );
+                        var matchingData = JsonMapper.ToObject<Dictionary<string, object>>( message );
+                        MatchingManager.RegisterPlayer( (string)matchingData["playerId"], (int)matchingData["difficulty"] );
 
                         // 매칭
+                        Console.WriteLine("matching");
                         MatchingManager.MatchPlayer();
 
                         channel.BasicAck( ea.DeliveryTag, false );

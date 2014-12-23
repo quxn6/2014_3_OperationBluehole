@@ -17,8 +17,11 @@ namespace OperationBluehole.Simulation
             SimulationManager.Init();
             var factory = new ConnectionFactory() { HostName = Config.SIMULATION_QUEUE_ADDRESS };
 
+            /*
             for ( int i = 0; i < WORKER_THREAD_NUM; ++i )
                 Task.Factory.StartNew( () => TaskManager.Run( factory ) );
+            */
+            TaskManager.Run( factory );
         }
     }
 }

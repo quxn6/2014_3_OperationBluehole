@@ -196,7 +196,6 @@ namespace OperationBluehole.Matching
                     // Task.Run( () => SimulationManger.Simulation( newParty ) );
                     // SimulationManger.AddParty( newParty );
 
-
                     using ( var connection = _connectionFactory.CreateConnection() )
                     {
                         using ( var channel = connection.CreateModel() )
