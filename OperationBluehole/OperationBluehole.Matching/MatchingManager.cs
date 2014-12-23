@@ -34,9 +34,18 @@ namespace OperationBluehole.Matching
         static MatchingManager()
         {
             _connectionFactory = new ConnectionFactory() { HostName = Config.SIMULATION_QUEUE_ADDRESS };
+
+			matchingThreads = new SynchronizedCollection<MatchingThread>();
         }
 
-        public static void RegisterPlayer( string playerId, int difficulty )
+		public static void Init()
+		{
+			NewMatchingThread( 1, ushort.MaxValue );
+
+			Debug.WriteLine( "matching manager is started" );
+		}
+
+		public static void RegisterPlayer( string playerId, int difficulty )
         {
             var playerData = PlayerDataDatabase.GetPlayerData( playerId );
             Debug.Assert( playerData != null, "player data is null : " + playerId );
@@ -45,8 +54,6 @@ namespace OperationBluehole.Matching
             Debug.Assert( userData != null, "user data is null : " + playerId );
 
 			RegisterPlayer( new RegData( playerData, difficulty, userData.BanList ) );
-
-			Debug.WriteLine( "registered player id : " + playerData.pId );
         }
 		public static void RegisterPlayer( RegData data )
 		{
@@ -57,50 +64,80 @@ namespace OperationBluehole.Matching
         public static void DeregisterPlayer( string playerId )
         {
 			var playerData = PlayerDataDatabase.GetPlayerData( playerId );
+			DeregisterPlayer( playerData );
+        }
+		public static void DeregisterPlayer( PlayerData playerData )
+		{
 			var lev = playerData.stats[(int)StatType.Lev];
-			matchingThreads.First( mt => mt.maxLev >= lev && mt.minLev <= lev ).DeregisterPlayer( playerId ); // 좀 빠르게 고쳐야...
-        }
+			matchingThreads.First( mt => mt.maxLev >= lev && mt.minLev <= lev ).DeregisterPlayer( playerData.pId ); // 좀 빠르게 고쳐야...
+		}
 
-        public static void Init()
-        {
-			matchingThreads = new SynchronizedCollection<MatchingThread>();
-			NewMatchingThread( 1, ushort.MaxValue );
-
-			Debug.WriteLine( "matching manager is started" );
-        }
-
-		// 새 스레드를 만들어 구간을 분할한다
+        // 해당 레벨 구간을 매칭하는 스레드를 만든다.
 		public static void NewMatchingThread( ushort minLev, ushort maxLev )
 		{
 			Debug.Assert( minLev > 0 && maxLev >= minLev );
 
-			var res = matchingThreads.Where( mt => mt.minLev < minLev && mt.maxLev >= minLev ).FirstOrDefault();
+			// 해당 구간 스레드 생성
+			if ( matchingThreads.FirstOrDefault( mt => mt.minLev == minLev && mt.maxLev == maxLev ) == null )
+				matchingThreads.Add( new MatchingThread( minLev, maxLev ) );
+			else
+				return;
 
-			if ( res != null )
+			// 해당 구간에 포함되는 스레드 삭제
+			//      [Thread]
+			// [new Thread        ]
 			{
-				if ( res.maxLev > maxLev )
-					matchingThreads.Add( new MatchingThread( (ushort)(maxLev + 1), res.maxLev ) );
-
-				res.maxLev = (ushort)(minLev - 1);
+				var res = matchingThreads.Where( mt =>
+					minLev < mt.minLev
+					&& mt.maxLev < maxLev
+					);
+				foreach ( var mt in res )
+				{
+					matchingThreads.Remove( mt );
+					mt.maxLev = 0;
+				}
 			}
-			matchingThreads.Add( new MatchingThread( minLev, maxLev ) );
+
+			// 해당 구간과 겹치는 스레드 조정
+			// [Thread            ]
+			//     [new Thread]
+			{
+				var res = matchingThreads.Where( mt =>
+					mt.minLev <= minLev
+					&& maxLev <= mt.maxLev
+					);
+				foreach ( var mt in res )
+				{
+					matchingThreads.Add( new MatchingThread( (ushort)(maxLev + 1), mt.maxLev ) );
+					mt.maxLev = (ushort)(minLev - 1);
+				}
+			}
+
+			// 해당 구간과 겹치는 스레드 조정
+			// [Thread     ]
+			//        [new Thread]
+			{
+				var res = matchingThreads.Where( mt =>
+					mt.minLev <= minLev
+					&& minLev <= mt.maxLev
+					);
+				foreach ( var mt in res )
+					mt.maxLev = (ushort)(minLev - 1);
+			}
+
+			// 해당 구간과 겹치는 스레드 조정
+			//       [Thread     ]
+			// [new Thread]
+			{
+				var res = matchingThreads.Where( mt =>
+					mt.minLev <= maxLev
+					&& maxLev <= mt.maxLev
+					);
+				foreach ( var mt in res )
+					mt.minLev = (ushort)(maxLev + 1);
+			}
 		}
 
-		// 해당 구간의 스레드를 하나로 만든다.
-		public static void MergeMatchingThread( ushort minLev, ushort maxLev )
-		{
-			var res = matchingThreads.Where( mt => mt.minLev >= minLev && mt.maxLev <= maxLev );
-			res.First().minLev = res.Min( mt => mt.minLev );
-			res.First().maxLev = res.Max( mt => mt.maxLev );
-
-			res = res.Skip( 1 );
-			foreach ( var mt in res )
-			{
-				mt.maxLev = 0;
-				mt.minLev = 0;
-				matchingThreads.Remove( mt );
-			}
-		}
 
 
 
@@ -163,6 +200,8 @@ namespace OperationBluehole.Matching
 						md.members.RemoveAll( m =>
 							deregisterWaitingPlayers.Contains( m.Item1.pId )
 						);
+
+						// 해당 파티가 비었다면 파티 삭제
 						if ( md.members.Count == 0 )
 							waitingParties.Remove( md );
 					} );
@@ -172,11 +211,12 @@ namespace OperationBluehole.Matching
 					if ( data.Item1.stats[(int)StatType.Lev] < minLev || data.Item1.stats[(int)StatType.Lev] > maxLev )
 					{
 						MatchingManager.RegisterPlayer( data );
-						if ( minLev == 0 && maxLev == 0 && waitingPlayers.Count == 0 ) // 더 이상 사용하지 않는 스레드이므로 종료
+						if ( maxLev < minLev && waitingPlayers.Count == 0 ) // 더 이상 사용하지 않는 스레드이므로 종료
 							break;
 						continue;
 					}
 
+					// 조건에 맞는 파티 검색
 					var resList = waitingParties
 						.Where( md =>
 							Math.Abs( md.level - data.Item1.stats[(int)StatType.Lev] ) <= Config.MATCHING_ALLOW_LEVEL_DIFF
@@ -187,6 +227,7 @@ namespace OperationBluehole.Matching
 							)
 						);
 
+					// 조건에 맞는 파티가 없으면 새로 만듬
 					if ( resList.Count() == 0 )
 					{
 						MatchingData newMd = new MatchingData();
@@ -200,15 +241,19 @@ namespace OperationBluehole.Matching
 						continue;
 					}
 
+					// 조건에 맞는 파티에 전부 집어 넣어본다
 					foreach ( var md in resList )
 					{
 						if ( md.members.Count < Config.MATCHING_PARTY_MEMBERS_NUM )
 							md.members.Add( data );
+
+						// 인원이 꽉차 매칭된 파티가 생기면 매칭된 멤버들은 스레드에서 제거
 						if ( md.members.Count == Config.MATCHING_PARTY_MEMBERS_NUM )
 						{
 							waitingParties.Remove( md );
 							MatchParty( md );
-							DeregisterPlayer( data.Item1.pId );
+							foreach ( var member in md.members )
+								DeregisterPlayer( member.Item1.pId );
 							break;
 						}
 					}
