@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace OperationBluehole.Server.Simulation
 {
     using OperationBluehole.Content;
+    using OperationBluehole.Database;
     using System.Diagnostics;
     using System.Threading;
 

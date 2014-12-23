@@ -14,6 +14,8 @@ namespace OperationBluehole.Server
         public const int MATCHING_PLAYER_THREAD_DEFAULT_NUM = 1;
         public const int MATCHING_PARTY_THREAD_DEFAULT_NUM = 1;
 
+        public const string MATCHING_QUEUE_ADDRESS = "localhost";
+
         public const int SIMULATION_THREAD_DEFAULT_NUM = 4;
 
         //postgresql
@@ -23,9 +25,5 @@ namespace OperationBluehole.Server
         public const string POSTGRESQL_PW = "next!@#123";
         public const string POSTGRESQL_TARGET_DB = "operation_bluehole";
 
-		// Redis
-		// public const string REDIS_DATABASE_ADDRESS = "project06.codetalks.kr";
-        public const string REDIS_DATABASE_ADDRESS = "localhost";
-        public const string RANKING_SET_NAME = "ranking_set";
     }
 }

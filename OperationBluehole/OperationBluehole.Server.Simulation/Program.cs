@@ -10,7 +10,7 @@ namespace OperationBluehole.Server.Simulation
 
     class Program
     {
-        const int WORKER_THREAD_NUM = 2;
+        const int WORKER_THREAD_NUM = 1;
 
         static void Main( string[] args )
         {

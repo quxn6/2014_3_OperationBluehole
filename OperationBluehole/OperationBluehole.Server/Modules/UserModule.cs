@@ -12,6 +12,7 @@ namespace OperationBluehole.Server.Modules
     using Nancy.Authentication.Token;
 
     using OperationBluehole.Content;
+    using OperationBluehole.Database;
 
     // 가입, 로그인 등 사용자 인증 작업을 처리
     public class UserModule : NancyModule

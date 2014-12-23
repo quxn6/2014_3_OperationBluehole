@@ -106,17 +106,14 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Config.cs" />
-    <Compile Include="DB\CouchbaseManager.cs" />
-    <Compile Include="Logic\MatchingManager.cs" />
+    <Compile Include="MessageManager.cs" />
     <Compile Include="Modules\CharacterModule.cs" />
     <Compile Include="Modules\MatchingModule.cs" />
     <Compile Include="Modules\TestModule.cs" />
     <Compile Include="Modules\UserModule.cs" />
     <Compile Include="DB\PostgresqlManager.cs" />
-    <Compile Include="DB\RedisManager.cs" />
     <Compile Include="TokenAuthBootstrapper.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -140,6 +137,10 @@
     <ProjectReference Include="..\OperationBluehole.Content\OperationBluehole.Content.csproj">
       <Project>{df80892c-1f01-4997-9065-d269793f7fcd}</Project>
       <Name>OperationBluehole.Content</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OperationBluehole.Database\OperationBluehole.Database.csproj">
+      <Project>{a18fceb5-0fbd-4a00-be1c-a367d9403a87}</Project>
+      <Name>OperationBluehole.Database</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

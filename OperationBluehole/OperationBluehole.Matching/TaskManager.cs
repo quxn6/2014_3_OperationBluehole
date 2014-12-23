@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OperationBluehole.Server.Simulation
+namespace OperationBluehole.Matching
 {
     using RabbitMQ.Client;
     using RabbitMQ.Client.Events;
@@ -13,17 +13,17 @@ namespace OperationBluehole.Server.Simulation
 
     static class TaskManager
     {
-        public static void Run( ConnectionFactory factory)
+        public static void Run( ConnectionFactory factory )
         {
             using ( var connection = factory.CreateConnection() )
             {
                 using ( var channel = connection.CreateModel() )
                 {
-                    channel.QueueDeclare( "simulation_queue", true, false, false, null );
+                    channel.QueueDeclare( "matching_queue", true, false, false, null );
 
                     channel.BasicQos( 0, 1, false );
                     var consumer = new QueueingBasicConsumer( channel );
-                    channel.BasicConsume( "simulation_queue", false, consumer );
+                    channel.BasicConsume( "matching_queue", false, consumer );
 
                     Console.WriteLine( " [*] Waiting for messages. " + "To exit press CTRL+C" );
 
@@ -34,9 +34,12 @@ namespace OperationBluehole.Server.Simulation
                         var body = ea.Body;
                         var message = Encoding.UTF8.GetString( body );
 
-                        // 보내준 파티 정보를 사용해서 시뮬레이션 실행
-                        var party = JsonMapper.ToObject<Party>( message );
-                        SimulationManager.Simulation( party );
+                        // 등록
+                        var matchingData = JsonMapper.ToObject<Tuple<string, int>>( message );
+                        MatchingManager.RegisterPlayer( matchingData.Item1, matchingData.Item2 );
+
+                        // 매칭
+                        MatchingManager.MatchPlayer();
 
                         channel.BasicAck( ea.DeliveryTag, false );
                     }

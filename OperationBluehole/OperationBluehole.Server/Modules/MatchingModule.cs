@@ -10,6 +10,12 @@ namespace OperationBluehole.Server.Module
     using Nancy.Security;
     using Nancy.Authentication.Token;
 
+    using OperationBluehole.Content;
+    using OperationBluehole.Database;
+    using RabbitMQ.Client;
+    using System.Text;
+    using LitJson;
+
     // 사용자들이 신청하면 적절하게 매칭 시켜서 시뮬레이션 시킨다
     public class MatchingModule : NancyModule
     {
@@ -31,7 +37,22 @@ namespace OperationBluehole.Server.Module
                 if ( resultTable != null && resultTable.UnreadId != -1  )
                     return "not prepared";
 
-                MatchingManager.RegisterPlayer( this.Context.CurrentUser.UserName, difficulty );
+                using ( var connection = MessageManager.connectionFactory.CreateConnection() )
+                {
+                    using ( var channel = connection.CreateModel() )
+                    {
+                        channel.QueueDeclare( "matching_queue", true, false, false, null );
+
+                        var message = JsonMapper.ToJson( new Tuple<string, int>( this.Context.CurrentUser.UserName, difficulty ) );
+                        var body = Encoding.UTF8.GetBytes( message );
+
+                        var properties = channel.CreateBasicProperties();
+                        properties.SetPersistent( true );
+
+                        channel.BasicPublish( "", "matching_queue", properties, body );
+                        Console.WriteLine( " [x] Sent {0}", message );
+                    }
+                }
 
                 return "success";
             };

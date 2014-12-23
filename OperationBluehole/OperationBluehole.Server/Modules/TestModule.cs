@@ -16,6 +16,7 @@ namespace OperationBluehole.Server.Modules
     using Nancy.Authentication.Token;
 
     using OperationBluehole.Content;
+    using OperationBluehole.Database;
 
     // 한다! 테스트! 
     public class TestModule : NancyModule
@@ -55,20 +56,6 @@ namespace OperationBluehole.Server.Modules
 
                 return "turn : " + newMaster.Start();
             };
-
-            Get["/matching_test"] = parameters =>
-            {
-                SimulationManger.Init();
-                MatchingManager.Init();
-
-                MatchingManager.RegisterPlayer( "101", 0 );
-                MatchingManager.RegisterPlayer( "102", 0 );
-                MatchingManager.RegisterPlayer( "103", 0 );
-                MatchingManager.RegisterPlayer( "104", 0 );
-
-                return "check";
-            };
-
         }
     }
     
@@ -77,6 +64,7 @@ namespace OperationBluehole.Server.Modules
         public AuthModule(ITokenizer tokenizer)
             : base("/auth")
         {
+            /*
             Get["/init"] = parameters =>
             {
                 var client = CouchbaseManager.Client;
@@ -237,26 +225,7 @@ namespace OperationBluehole.Server.Modules
 
                 return "FAIL";
             };
-
-            Post["/"] = x =>
-            {
-                var userName = (string)this.Request.Form.UserName;
-                var password = (string)this.Request.Form.Password;
-
-                var userIdentity = UserIdentityDatabase.ValidateUser(userName, password);
-
-                if (userIdentity == null)
-                {
-                    return HttpStatusCode.Unauthorized;
-                }
-
-                var token = tokenizer.Tokenize(userIdentity, Context);
-
-                return new
-                {
-                    Token = token,
-                };
-            };
+            */
 
             Get["/validation"] = _ =>
             {
