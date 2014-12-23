@@ -40,8 +40,8 @@ namespace OperationBluehole.Matching
                         MatchingManager.RegisterPlayer( (string)matchingData["playerId"], (int)matchingData["difficulty"] );
 
                         // 매칭
-                        Console.WriteLine("matching");
-                        MatchingManager.MatchPlayer();
+//                         Console.WriteLine("matching");
+//                         MatchingManager.MatchPlayer();
 
                         channel.BasicAck( ea.DeliveryTag, false );
                     }
