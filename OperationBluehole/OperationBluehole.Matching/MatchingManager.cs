@@ -202,7 +202,13 @@ namespace OperationBluehole.Matching
                         {
                             channel.QueueDeclare( "simulation_queue", true, false, false, null );
 
-                            var message = JsonMapper.ToJson( newParty );
+                            var message = JsonMapper.ToJson( new Dictionary<string, object> { 
+                                { "level", newParty.partyLevel }, 
+                                { "char_0", ((Player)newParty.characters[0]).pId }, 
+                                { "char_1", ((Player)newParty.characters[1]).pId }, 
+                                { "char_2", ((Player)newParty.characters[2]).pId }, 
+                                { "char_3", ((Player)newParty.characters[3]).pId }, 
+                            } );
                             var body = Encoding.UTF8.GetBytes( message );
 
                             var properties = channel.CreateBasicProperties();

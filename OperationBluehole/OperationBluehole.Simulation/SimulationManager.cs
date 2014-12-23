@@ -10,6 +10,7 @@ namespace OperationBluehole.Simulation
     using OperationBluehole.Database;
     using System.Diagnostics;
     using System.Threading;
+    using LitJson;
 
     public static class SimulationManager
     {
@@ -29,6 +30,33 @@ namespace OperationBluehole.Simulation
             ContentsPrepare.Init();
 
             Debug.WriteLine( "simulation manager is started" );
+        }
+
+        public static void Simulation( string src )
+        {
+            var data = JsonMapper.ToObject<Dictionary<string, object>>( src);
+
+            Party party = new Party( PartyType.PLAYER, (int)data["level"] );
+            for ( int i = 0; i < 4; ++i )
+            {
+                Player newPlayer = new Player();
+
+                string playerId = (string)data["char_" + i];
+
+                var playerData = PlayerDataDatabase.GetPlayerData( playerId );
+                Debug.Assert( playerData != null, "player data is null : " + playerId );
+
+                // 이미 등록되어 있는지 확인 필요
+                // ...
+
+                var userData = UserDataDatabase.GetUserData( playerId );
+                Debug.Assert( userData != null, "user data is null : " + playerId );
+
+                newPlayer.LoadPlayer( playerData );
+                party.AddCharacter( newPlayer );
+            }
+
+            Simulation( party );
         }
 
         public static void Simulation( Party party )

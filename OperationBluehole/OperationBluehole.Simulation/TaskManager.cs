@@ -35,8 +35,9 @@ namespace OperationBluehole.Simulation
                         var message = Encoding.UTF8.GetString( body );
 
                         // 보내준 파티 정보를 사용해서 시뮬레이션 실행
-                        var party = JsonMapper.ToObject<Party>( message );
-                        SimulationManager.Simulation( party );
+                        // var party = JsonMapper.ToObject<Party>( message );
+                        // SimulationManager.Simulation( party );
+                        SimulationManager.Simulation( message );
 
                         channel.BasicAck( ea.DeliveryTag, false );
                     }
