@@ -22,7 +22,7 @@ namespace OperationBluehole.Server.Modules
         {
             // 가입
             // 이메일, 비밀번호, 
-            Post["/signin"] = parameters =>
+            Post["/signup"] = parameters =>
             {
                 var client = CouchbaseManager.Client;
 

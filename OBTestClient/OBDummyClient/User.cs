@@ -78,7 +78,7 @@ namespace OperationBluehole.DummyClient
 		{
             // 가입
 			{
-				bool chk = await Network.SignIn(this.userId, this.password, this.userId + "_1");
+				bool chk = await Network.SignUp(this.userId, this.password, this.userId + "_1");
 				Console.WriteLine("SignIn : {0}", chk);
 			}
 

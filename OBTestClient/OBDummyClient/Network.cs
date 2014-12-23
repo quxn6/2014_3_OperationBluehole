@@ -85,11 +85,11 @@ namespace OperationBluehole.DummyClient
 			}
 		}
 
-		public static async Task<bool> SignIn(string userId, string pw, string playerName)
+		public static async Task<bool> SignUp(string userId, string pw, string playerName)
 		{
 			var postData = String.Format("userId={0}&password={1}&playername={2}", userId, pw, playerName);
 
-			var res = await SendRequest("POST", "user/signin", postData, null);
+			var res = await SendRequest("POST", "user/signUp", postData, null);
 
             return res.CompareTo( "success" ) == 0;
 		}
