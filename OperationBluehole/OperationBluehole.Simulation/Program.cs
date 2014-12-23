@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OperationBluehole.Server.Simulation
+namespace OperationBluehole.Simulation
 {
     using RabbitMQ.Client;
 
@@ -15,8 +15,8 @@ namespace OperationBluehole.Server.Simulation
         static void Main( string[] args )
         {
             SimulationManager.Init();
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            
+            var factory = new ConnectionFactory() { HostName = Config.SIMULATION_QUEUE_ADDRESS };
+
             for ( int i = 0; i < WORKER_THREAD_NUM; ++i )
                 Task.Factory.StartNew( () => TaskManager.Run( factory ) );
         }

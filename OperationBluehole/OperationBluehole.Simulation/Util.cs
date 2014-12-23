@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OperationBluehole.Server.Simulation
+namespace OperationBluehole.Simulation
 {
     using OperationBluehole.Content;
 
