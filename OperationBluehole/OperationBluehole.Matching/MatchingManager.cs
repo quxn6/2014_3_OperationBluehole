@@ -103,13 +103,13 @@ namespace OperationBluehole.Matching
 			//     [new Thread]
 			{
 				var res = matchingThreads.Where( mt =>
-					mt.minLev <= minLev
-					&& maxLev <= mt.maxLev
-					);
-				foreach ( var mt in res )
+					mt.minLev < minLev
+					&& maxLev < mt.maxLev
+					).FirstOrDefault();
+				if ( res != null )
 				{
-					matchingThreads.Add( new MatchingThread( (ushort)(maxLev + 1), mt.maxLev ) );
-					mt.maxLev = (ushort)(minLev - 1);
+					matchingThreads.Add( new MatchingThread( (ushort)(maxLev + 1), res.maxLev ) );
+					res.maxLev = (ushort)(minLev - 1);
 				}
 			}
 
@@ -118,11 +118,11 @@ namespace OperationBluehole.Matching
 			//        [new Thread]
 			{
 				var res = matchingThreads.Where( mt =>
-					mt.minLev <= minLev
+					mt.minLev < minLev
 					&& minLev <= mt.maxLev
-					);
-				foreach ( var mt in res )
-					mt.maxLev = (ushort)(minLev - 1);
+					).FirstOrDefault();
+				if ( res != null )
+					res.maxLev = (ushort)(minLev - 1);
 			}
 
 			// 해당 구간과 겹치는 스레드 조정
@@ -131,10 +131,10 @@ namespace OperationBluehole.Matching
 			{
 				var res = matchingThreads.Where( mt =>
 					mt.minLev <= maxLev
-					&& maxLev <= mt.maxLev
-					);
-				foreach ( var mt in res )
-					mt.minLev = (ushort)(maxLev + 1);
+					&& maxLev < mt.maxLev
+					).FirstOrDefault();
+				if ( res != null )
+					res.minLev = (ushort)(maxLev + 1);
 			}
 		}
 
@@ -273,13 +273,14 @@ namespace OperationBluehole.Matching
 					{
 						channel.QueueDeclare( "simulation_queue", true, false, false, null );
 
-						var message = JsonMapper.ToJson( new Dictionary<string, object> { 
-                                { "level", partyLevel }, 
-                                { "char_0", md.members[0].Item1.pId }, 
-                                { "char_1", md.members[1].Item1.pId }, 
-                                { "char_2", md.members[2].Item1.pId }, 
-                                { "char_3", md.members[3].Item1.pId }, 
-                            } );
+						var newDic = new Dictionary<string, object>();
+						newDic.Add( "level", partyLevel );
+						for ( int idx = 0; idx < Config.MATCHING_PARTY_MEMBERS_NUM; ++idx )
+						{
+							newDic.Add( "char_" + idx, md.members[idx].Item1.pId );
+						}
+
+						var message = JsonMapper.ToJson( newDic );
 						var body = Encoding.UTF8.GetBytes( message );
 
 						var properties = channel.CreateBasicProperties();
