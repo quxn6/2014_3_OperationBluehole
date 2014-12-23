@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OperationBluehole.Server
+namespace OperationBluehole.Database
 {
     using ServiceStack.Redis;
     using OperationBluehole.Content;
@@ -54,7 +54,7 @@ namespace OperationBluehole.Server
             }
         }
 
-        public static bool UpdateRank(string playerId, long score)
+        public static bool UpdateRank( string playerId, long score )
         {
             using ( var _redis = new RedisClient( Config.REDIS_DATABASE_ADDRESS ) )
             {

@@ -12,6 +12,7 @@ namespace OperationBluehole.Server.Modules
 
     using Newtonsoft.Json;
     using OperationBluehole.Content;
+    using OperationBluehole.Database;
 
     // 플레이어의 캐릭터를 조작( 장비 설정이나 능력치 배분과 같은... )
 

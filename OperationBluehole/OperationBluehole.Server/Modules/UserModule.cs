@@ -12,6 +12,7 @@ namespace OperationBluehole.Server.Modules
     using Nancy.Authentication.Token;
 
     using OperationBluehole.Content;
+    using OperationBluehole.Database;
 
     // 가입, 로그인 등 사용자 인증 작업을 처리
     public class UserModule : NancyModule
@@ -21,7 +22,7 @@ namespace OperationBluehole.Server.Modules
         {
             // 가입
             // 이메일, 비밀번호, 
-            Post["/signin"] = parameters =>
+            Post["/signup"] = parameters =>
             {
                 var client = CouchbaseManager.Client;
 

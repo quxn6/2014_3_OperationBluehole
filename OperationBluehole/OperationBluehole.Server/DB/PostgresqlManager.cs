@@ -7,6 +7,8 @@ using Npgsql;
 
 namespace OperationBluehole.Server
 {
+    using Nancy.Security;
+
     public class AccountData
     {
         public string AccountName { get; set; }
@@ -19,6 +21,13 @@ namespace OperationBluehole.Server
             this.Password = password;
             this.Claims = claims;
         }
+    }
+
+    public class UserIdentity : IUserIdentity
+    {
+        public string UserName { get; set; }
+
+        public IEnumerable<string> Claims { get; set; }
     }
 
     public static class PostgresqlManager
