@@ -61,6 +61,8 @@ namespace OperationBluehole.Simulation
 
         public static void Simulation( Party party )
         {
+			var runningTime = Stopwatch.StartNew();
+
             Debug.WriteLine( "start to simulation" );
             Console.WriteLine( "start to simulation" );
 
@@ -125,6 +127,8 @@ namespace OperationBluehole.Simulation
 
             Debug.WriteLine( "simulation ended" );
             Console.WriteLine( "simulation ended" );
+
+			LogRecord.Write( "[Simulation : " + runningTime.ElapsedMilliseconds + " ms]" );
         }
     }
 }
