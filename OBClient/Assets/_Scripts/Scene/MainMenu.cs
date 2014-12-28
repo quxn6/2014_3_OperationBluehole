@@ -11,25 +11,27 @@ public class MainMenu : MonoBehaviour
 		Left = 0 ,
 		Default = 1,
 		Right = 2 ,
-		Up = 3 ,
+		Down = 4 ,
+		Up = 3,
 	}
 
 	private void SwipeMenu( MenuSwipeDirection swipeDirection, float swipeTime )
 	{
-		if ( swipeDirection == MenuSwipeDirection.Up )
+		bool isVertical = false;
+		if ( swipeDirection == MenuSwipeDirection.Up || swipeDirection == MenuSwipeDirection.Down)
 		{
-
-			return;
+			isVertical = true;
 		}
 
-		float swipeAmount = Screen.width / 2;
-		//floatingMenu.transform.localPosition = new Vector3( (int)swipeDirection * swipeAmount , 0.0f , 0.0f );
+		float swipeAmountWidth = Screen.width / 2;
+		float swipeAmountHeight = Screen.height;
 
 		iTween.MoveTo( floatingMenu , iTween.Hash(
-			"x" , (int)swipeDirection * swipeAmount ,
-			"isLocal", true,
-			"easetype", iTween.EaseType.easeInOutExpo,
-			"time", swipeTime
+			"x" , ( isVertical ? (int)MenuSwipeDirection.Default : (int)swipeDirection ) * swipeAmountWidth ,
+			"y" , ( isVertical ? ( (int)swipeDirection - (int)MenuSwipeDirection.Down ) : 0 ) * swipeAmountHeight ,
+			"isLocal" , true ,
+			"easetype" , iTween.EaseType.easeInOutExpo ,
+			"time" , swipeTime
 			) );
 	}
 
@@ -44,9 +46,8 @@ public class MainMenu : MonoBehaviour
 	}
 
 	public void ReplayJournal()
-	{
-		//temp
-		Application.LoadLevel( "ReplayScene" );
+	{		
+		SwipeMenu( MenuSwipeDirection.Up , GameConfig.MENU_SWIPE_TIME );		
 	}
 
 	public void BackButton()
