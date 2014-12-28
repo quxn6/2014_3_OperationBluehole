@@ -57,7 +57,7 @@ namespace OperationBluehole.Content
             // 전투 로직 초기화
             ContentsPrepare.Init();
 
-            for ( int i = 0; i < 100000; ++i )
+            for ( int i = 0; i < 1; ++i )
             {
                 Task.Run( () => TestSimulation(i) );
             }

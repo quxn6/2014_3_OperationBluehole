@@ -135,6 +135,14 @@ namespace OperationBluehole.Content
             return turn;
         }
 
+        public void TestPathFinding()
+        {
+            // must init this class before calling TestPathFinding()
+            Console.WriteLine("start");
+
+            explorer.Test(); ;
+        }
+
         // 구현할 것
         // wrappers
         public Int2D GetZonePosition( int id ) { return dungeon.GetZonePosition( id ); }
