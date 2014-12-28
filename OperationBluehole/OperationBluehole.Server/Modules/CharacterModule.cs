@@ -134,27 +134,36 @@ namespace OperationBluehole.Server.Modules
 
             Get["/levelup"] = parameters =>
             {
-                // 일단 해당 유저의 id를 확인하고
-                this.RequiresAuthentication();
-
-                PlayerData playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
-
-                Debug.Assert( playerData != null );
-
-                Player player = new Player();
-                player.LoadPlayer( playerData );
-
-                if ( player.LevelUp( 1 ) )
+                try
                 {
-                    // update playerData 
-                    playerData.UpdateFromPlayer( player );
+                    // 일단 해당 유저의 id를 확인하고
+                    this.RequiresAuthentication();
 
-                    Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
+                    PlayerData playerData = PlayerDataDatabase.GetPlayerData( this.Context.CurrentUser.UserName );
 
-                    return "levelup";
+                    Debug.Assert( playerData != null );
+
+                    Player player = new Player();
+                    player.LoadPlayer( playerData );
+
+                    if ( player.LevelUp( 1 ) )
+                    {
+                        // update playerData 
+                        playerData.UpdateFromPlayer( player );
+
+                        Debug.Assert( PlayerDataDatabase.SetPlayerData( playerData ) );
+
+                        return "levelup";
+                    }
+
+                    return "need more exp";
+                }
+                catch( Exception e)
+                {
+                    Console.WriteLine( e );
                 }
 
-                return "need more exp";
+                return "fail";
             };
 
             Post["/increase_stat"] = parameters =>

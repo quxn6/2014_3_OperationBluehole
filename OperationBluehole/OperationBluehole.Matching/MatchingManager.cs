@@ -16,7 +16,7 @@ namespace OperationBluehole.Matching
     using System.Text;
     using LitJson;
 
-	using RegData = Tuple<OperationBluehole.Content.PlayerData, int, List<string>>; // Tuple<플레이어, 추가난이도, 차단리스트>
+	using RegData = Tuple<OperationBluehole.Content.PlayerData, int, List<string>, Int64>; // Tuple<플레이어, 추가난이도, 차단리스트, 등록 시간>
 
     struct MatchingData
     {
@@ -53,7 +53,7 @@ namespace OperationBluehole.Matching
             var userData = UserDataDatabase.GetUserData( playerId );
             Debug.Assert( userData != null, "user data is null : " + playerId );
 
-			RegisterPlayer( new RegData( playerData, difficulty, userData.BanList ) );
+			RegisterPlayer( new RegData( playerData, difficulty, userData.BanList, Stopwatch.GetTimestamp() ) );
         }
 		public static void RegisterPlayer( RegData data )
 		{
@@ -194,19 +194,6 @@ namespace OperationBluehole.Matching
 					if ( deregisterWaitingPlayers.Remove( data.Item1.pId ) )
 						continue;
 
-					// waitingParties에서 등록 해제 목록에 있는 유저 모두 제거
-					waitingParties.ForEach( md =>
-					{
-						md.members.RemoveAll( m =>
-							deregisterWaitingPlayers.Contains( m.Item1.pId )
-						);
-
-						// 해당 파티가 비었다면 파티 삭제
-						if ( md.members.Count == 0 )
-							waitingParties.Remove( md );
-					} );
-					deregisterWaitingPlayers.Clear();
-
 					// 레벨 구간에 맞지 않으면 되돌려보냄
 					if ( data.Item1.stats[(int)StatType.Lev] < minLev || data.Item1.stats[(int)StatType.Lev] > maxLev )
 					{
@@ -257,11 +244,31 @@ namespace OperationBluehole.Matching
 							break;
 						}
 					}
+
+					// waitingParties에서 등록 해제 목록에 있는 유저 모두 제거
+					waitingParties.ForEach( md =>
+					{
+						md.members.RemoveAll( m =>
+							deregisterWaitingPlayers.Contains( m.Item1.pId )
+						);
+
+						// 해당 파티가 비었다면 파티 삭제
+						if ( md.members.Count == 0 )
+							waitingParties.Remove( md );
+					} );
+					deregisterWaitingPlayers.Clear();
 				}
 			}
 
 			void MatchParty( MatchingData md )
 			{
+				Int64 curTime = Stopwatch.GetTimestamp();
+				LogRecord.Write( "[Party Matching Time : " + (curTime - md.regTime) / LogRecord.tickPerMillisecond + " ms]" );
+				foreach ( var member in md.members )
+				{
+					LogRecord.Write( "[Player : " + member.Item1.pId + "] [Matching Time : " + (curTime - member.Item4) / LogRecord.tickPerMillisecond + " ms]" );
+				}
+
 				int partyLevel = (int)md.members.Average( each => each.Item1.stats[0] );
 				partyLevel += md.difficulty;
 				if ( partyLevel < 1 )

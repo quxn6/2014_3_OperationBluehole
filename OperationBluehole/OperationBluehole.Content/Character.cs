@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
+using System.Diagnostics;
 
 namespace OperationBluehole.Content
 {
@@ -160,6 +161,7 @@ namespace OperationBluehole.Content
             {
                 var equip = (Equipment)ItemManager.table[id];
 
+                Debug.Assert( equip != null );
                 // tank's code
 				if ((equipStatus & equip.equipType) > 0)
 					UnEquipItem(id);
@@ -168,7 +170,6 @@ namespace OperationBluehole.Content
 					equipStatus |= equip.equipType;
 					weaponStatus |= equip.weaponType;
 				}
-
                 // equip.action( this, this );
                 // 여기까지
 

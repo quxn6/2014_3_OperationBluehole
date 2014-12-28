@@ -39,20 +39,15 @@ namespace OperationBluehole.Simulation
             Party party = new Party( PartyType.PLAYER, (int)data["level"] );
             for ( int i = 0; i < 4; ++i )
             {
-                Player newPlayer = new Player();
-
                 string playerId = (string)data["char_" + i];
 
                 var playerData = PlayerDataDatabase.GetPlayerData( playerId );
                 Debug.Assert( playerData != null, "player data is null : " + playerId );
+                // Console.WriteLine( playerData.name + " count : " + playerData.equipments.Count );
 
-                // 이미 등록되어 있는지 확인 필요
-                // ...
-
-                var userData = UserDataDatabase.GetUserData( playerId );
-                Debug.Assert( userData != null, "user data is null : " + playerId );
-
+                Player newPlayer = new Player();
                 newPlayer.LoadPlayer( playerData );
+
                 party.AddCharacter( newPlayer );
             }
 
@@ -61,8 +56,12 @@ namespace OperationBluehole.Simulation
 
         public static void Simulation( Party party )
         {
+			var runningTime = Stopwatch.StartNew();
+
             Debug.WriteLine( "start to simulation" );
             Console.WriteLine( "start to simulation" );
+
+            party.characters.ForEach( each => Console.WriteLine( "equip : " + each.equipments.Count ) );
 
             SimulationResult result = new SimulationResult();
 
@@ -120,11 +119,13 @@ namespace OperationBluehole.Simulation
                 Debug.Assert( ResultTableDatabase.SetResultTable( resultTable ), "fail to save the result table - ID : " + resultTable.PlayerId );
 
                 // update rank
-                Debug.Assert( RedisManager.UpdateRank( playerData.pId, playerData.GetScore() ) );
+                RedisManager.UpdateRank( playerData.pId, playerData.GetScore() );
             } );
 
             Debug.WriteLine( "simulation ended" );
             Console.WriteLine( "simulation ended" );
+
+			LogRecord.Write( "[Simulation : " + runningTime.ElapsedMilliseconds + " ms]" );
         }
     }
 }
