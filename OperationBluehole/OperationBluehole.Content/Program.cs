@@ -6,13 +6,13 @@ using System.Diagnostics;
 
 namespace OperationBluehole.Content
 {
+    using System.Threading.Tasks;
+    using System.Threading;
+
     class Program
     {
-        static void Main(string[] args)
+        static void TestSimulation(int seed)
         {
-            // 전투 로직 초기화
-            ContentsPrepare.Init();
-
             // 던전 테스트--------
             Player[] player = { new Player(), new Player(), new Player(), new Player() };
 
@@ -33,8 +33,8 @@ namespace OperationBluehole.Content
             foreach ( Player p in player )
                 users.AddCharacter( p );
 
-			DungeonMaster newMaster = new DungeonMaster();
-            newMaster.Init( 60, 3, users );
+            DungeonMaster newMaster = new DungeonMaster();
+            newMaster.Init( 60, seed, users );
 
             // 초기 정보 확인
             var mapInfo = newMaster.GetMapInfo();
@@ -44,13 +44,24 @@ namespace OperationBluehole.Content
             Debug.WriteLine( "turn : " + newMaster.Start() );
 
             // 시뮬레이션 결과 확인
-//             foreach( var each in newMaster.record.pathfinding )
-//             {
-//                 Debug.WriteLine( "x : " + each.x + " / y : " + each.y );
-//             }
-// 
+            //             foreach( var each in newMaster.record.pathfinding )
+            //             {
+            //                 Debug.WriteLine( "x : " + each.x + " / y : " + each.y );
+            //             }
+            // 
             // ------------------
+        }
 
+        static void Main(string[] args)
+        {
+            // 전투 로직 초기화
+            ContentsPrepare.Init();
+
+            for ( int i = 0; i < 100000; ++i )
+            {
+                Task.Run( () => TestSimulation(i) );
+            }
+            
             Console.ReadLine();
         }
     }
@@ -59,6 +70,7 @@ namespace OperationBluehole.Content
     {
         public static void Init()
         {
+            Console.WriteLine( "Initialize contents" );
             SkillManager.Init();
             ItemManager.Init();
             MobGenerator.Init();

@@ -8,6 +8,8 @@
     {
         static void Main(string[] args)
         {
+            ContentsPrepare.Init();
+
             var uri =
                 new Uri("http://localhost:3579");
 

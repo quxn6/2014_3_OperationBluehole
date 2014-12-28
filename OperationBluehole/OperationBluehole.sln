@@ -138,6 +138,9 @@ Global
 		{AA7F66EB-EC2C-47DE-855F-30B3E6EF2134} = {E944109B-0B7A-4ADE-8602-004CEFA5897D}
 		{97FA024A-F6ED-4086-BCC1-1A51BE63474C} = {E944109B-0B7A-4ADE-8602-004CEFA5897D}
 	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Nancy.Demo.Hosting.Aspnet\Nancy.Demo.Hosting.Aspnet.csproj
 	EndGlobalSection

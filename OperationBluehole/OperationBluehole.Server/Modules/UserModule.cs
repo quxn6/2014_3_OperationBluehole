@@ -70,7 +70,7 @@ namespace OperationBluehole.Server.Modules
                     } );
 
                     // ranking list
-                    RedisManager.RegisterPlayerRank( userId );
+                    Debug.Assert( RedisManager.RegisterPlayerRank( userId ) );
 
                     return "success";
                 }
