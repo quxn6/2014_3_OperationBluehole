@@ -68,6 +68,10 @@ namespace OperationBluehole.Database
         [JsonProperty( "playerData" )]
         public List<PlayerData> PlayerList { get; set; }
 
+		// 파티의 도전 레벨
+		[JsonProperty( "partyLevel" )]
+		public int PartyLevel { get; set; }
+
         // 맵 크기
         [JsonProperty( "mapSize" )]
         public int MapSize { get; set; }
