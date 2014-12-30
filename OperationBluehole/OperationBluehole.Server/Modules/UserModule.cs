@@ -34,6 +34,8 @@ namespace OperationBluehole.Server.Modules
                 var task = PostgresqlManager.SetAccountInfo(userId, password);
                 task.Wait();
 
+                Console.WriteLine("finished PostgreSQL job");
+
                 if (task.Result)
                 {
                     // user identity

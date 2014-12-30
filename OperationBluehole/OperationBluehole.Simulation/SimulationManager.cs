@@ -69,6 +69,7 @@ namespace OperationBluehole.Simulation
             // over flow 확인하고 제어 할 것
 
             result.Id = currentIdx;
+			result.PartyLevel = party.partyLevel;
             result.Seed = random.Next();
             result.MapSize = 60;
 

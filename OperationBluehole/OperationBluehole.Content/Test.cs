@@ -124,6 +124,19 @@ namespace OperationBluehole.Content
 				},
 				BattleStyle.AGGRESSIVE
 			));
+
+			TestData.playerList.Add( 105, new PlayerData
+					{
+						pId = "DefaultTestPlayer",
+						name = "DefaultTestPlayer",
+						exp = 0,
+						stats = new ushort[] { 1, 5, 5, 5, 5, 5, 5, 5, },
+						skills = new List<SkillId> { SkillId.Punch, },
+						consumables = new List<ItemCode> { ItemCode.HpPotion_S, },
+						equipments = new List<ItemCode> { ItemCode.Sword_Test, },
+						battleStyle = BattleStyle.AGGRESSIVE,
+					} 
+			);
 		}
 	}
 }

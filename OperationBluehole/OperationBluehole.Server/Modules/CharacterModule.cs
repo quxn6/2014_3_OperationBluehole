@@ -78,6 +78,7 @@ namespace OperationBluehole.Server.Modules
         {
             public int mapSize;
             public int randomSeed;
+			public int partyLevel;
             public List<PlayerData> playerList = new List<PlayerData>();
         }
 
@@ -105,6 +106,7 @@ namespace OperationBluehole.Server.Modules
                 GameResultBaseData baseData = new GameResultBaseData();
                 baseData.mapSize = result.MapSize;
                 baseData.randomSeed = result.Seed;
+				baseData.partyLevel = result.PartyLevel;
 
                 result.PlayerList.ForEach( each => baseData.playerList.Add( each ) );
 
