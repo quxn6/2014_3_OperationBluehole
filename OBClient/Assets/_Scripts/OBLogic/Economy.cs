@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OperationBluehole.Content
 {
-    //using Newtonsoft.Json;
+    using Newtonsoft.Json;
 
     public class ItemToken : Item
     {
