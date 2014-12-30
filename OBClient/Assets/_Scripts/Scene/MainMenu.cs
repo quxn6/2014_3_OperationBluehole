@@ -3,8 +3,15 @@ using System.Collections;
 
 public class MainMenu : MonoBehaviour
 {
+	public int DIFFICULT = GameConfig.DUNGEON_DIFFICULTY_DIFFICULT;
+	public int NORMAL = GameConfig.DUNGEON_DIFFICULTY_NORMAL;
+	public int EASY = GameConfig.DUNGEON_DIFFICULTY_EASY;
+
 	public GameObject listObject = null;
 	public GameObject floatingMenu = null;
+
+	// warning!!! for now, only 1 result can be checked
+	//private bool hasResult = false;
 
 	private enum MenuSwipeDirection
 	{
@@ -13,6 +20,33 @@ public class MainMenu : MonoBehaviour
 		Right = 2 ,
 		Down = 4 ,
 		Up = 3,
+	}
+
+	void Start()
+	{
+		StartCoroutine( PoolingResult() );
+	}
+
+	private IEnumerator PoolingResult()
+	{
+		while(true)
+		{
+			if ( !NetworkManager.Instance.HasResult )
+			{
+				NetworkManager.Instance.GetSimulationResult();
+			}
+			yield return new WaitForSeconds( GameConfig.RESULT_CHECKING_INTERVAL );
+		}
+	}
+
+	public void ShowSimulationResult()
+	{
+		NetworkManager.Instance.GetSimulationResult();
+	}
+
+	public void FindParty(int difficulty)
+	{
+		NetworkManager.Instance.RegisterRequest( difficulty );
 	}
 
 	private void SwipeMenu( MenuSwipeDirection swipeDirection, float swipeTime )

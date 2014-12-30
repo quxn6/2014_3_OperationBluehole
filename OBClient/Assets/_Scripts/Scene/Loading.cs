@@ -9,8 +9,36 @@ public class Loading : MonoBehaviour
 	void Start()
 	{
 		replayButton.SetActive( false );
-		loadingUI.GetComponent<TweenAlpha>().enabled = false;		
-		NetworkManager.Instance.RequestReplayInfo();		
+		loadingUI.GetComponent<TweenAlpha>().enabled = false;
+		LoadReplayInfo();
+	}
+
+	private void LoadReplayInfo()
+	{
+		// Init
+		OperationBluehole.Content.ContentsPrepare.Init();
+		OperationBluehole.Content.Player[] players = { new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() };
+
+		// Warning!!! There is no information about mobPartyLevel in simulation result.
+		// use temp variable
+		int tempMobPartyLevel = 3;
+		OperationBluehole.Content.Party playerParty = new OperationBluehole.Content.Party( OperationBluehole.Content.PartyType.PLAYER , tempMobPartyLevel );
+
+		for ( int i = 0 ; i < DataManager.Instance.latestSimulationResult.PlayerList.Count ; ++i )
+		{
+			if ( DataManager.Instance.latestSimulationResult.PlayerList[i] == null )
+			{
+				Debug.LogError( "No Player " + i );
+			}
+			players[i].LoadPlayer( DataManager.Instance.latestSimulationResult.PlayerList[i] );
+			playerParty.AddCharacter( players[i] );
+		}
+
+		LogGenerator.Instance.GenerateLog(
+			DataManager.Instance.latestSimulationResult.MapSize ,
+			DataManager.Instance.latestSimulationResult.Seed ,
+			playerParty
+			);
 	}
 
 	public void LoadMap(Dungeon dungeonMap)

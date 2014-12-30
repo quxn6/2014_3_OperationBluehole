@@ -6,7 +6,7 @@ using OperationBluehole.Content;
 
 public class NetworkManager : MonoBehaviour 
 {
-	internal class ClientPlayerData
+	public class ClientPlayerData
 	{
 		public string Name { get; set; }
 		
@@ -31,7 +31,7 @@ public class NetworkManager : MonoBehaviour
 		}
 	}
 	
-	internal class SimulationResult
+	public class SimulationResult
 	{
 		public long Id { get; set; }
 		
@@ -47,8 +47,8 @@ public class NetworkManager : MonoBehaviour
 		// 시뮬레이션에 사용한 random seed 값
 		public int Seed { get; set; }
 	}
-	
-	//public UnityEngine.GameObject sceneManager;
+
+	public bool HasResult {get;set;}
 	
 	static string token = "";
 	
@@ -66,22 +66,39 @@ public class NetworkManager : MonoBehaviour
 	void Awake()
 	{
 		instance = this;
+		HasResult = false;
 	}
 
-	public void SignupRequest( string id, string pw, string name )
+// 	public IEnumerator SignupRequest( string id, string pw, string name )
+// 	{
+// 		Debug.Log( "signupcall by " + id );
+// 		var data = new Dictionary<string, object>();
+// 		data.Add( "UserId", id );
+// 		data.Add( "password", pw );
+// 		data.Add( "playerName", name );
+// 		yield return null;
+// 		StartCoroutine( WaitForSignup( POST( "/user/signup", data ) ) );
+// 		Debug.Log( "end of waitForSignup" );
+// 	}
+
+	public void SignupRequest( string id , string pw , string name )
 	{
 		Debug.Log( "signupcall by " + id );
-		var data = new Dictionary<string, object>();
-		data.Add( "UserId", id );
-		data.Add( "password", pw );
-		data.Add( "playerName", name );
+		var data = new Dictionary<string , object>();
+		data.Add( "UserId" , id );
+		data.Add( "password" , pw );
+		data.Add( "playerName" , name );
 		
-		StartCoroutine( WaitForSignup( POST( "/user/signup", data ) ) );
+		StartCoroutine( WaitForSignup( POST( "/user/signup" , data ) ) );
+		Debug.Log( "end of waitForSignup" );
 	}
+
 	
 	private IEnumerator WaitForSignup(WWW www)
 	{
+		Debug.Log( "before www" );
 		yield return www;
+		Debug.Log( "after www" );
 
 		// check for errors
 		if (!RequestErrorHandling (www))
@@ -201,9 +218,14 @@ public class NetworkManager : MonoBehaviour
 		
 		// deserialize the base data
 		if (www.text.CompareTo ("nothing") == 0)
+		{
 			//GetSimulationResult ();
 			//not yet
+			yield break;
+		}
 
+		DataManager.Instance.latestSimulationResult = JsonMapper.ToObject<SimulationResult>( www.text );
+		HasResult = true;
 		//var baseData = JsonMapper.ToObject<SimulationResult>( www.text );
 		Debug.Log (www.text);
 	}
@@ -286,7 +308,7 @@ public class NetworkManager : MonoBehaviour
 		var headers = new Dictionary<string,string>();
 		headers.Add("Authorization", "Token " + token );
 
-		Debug.Log (headers["Authorization"]);
+		//Debug.Log (headers["Authorization"]);
 
 		WWW www = new WWW( serverUri + url, null, headers );
 
@@ -311,48 +333,49 @@ public class NetworkManager : MonoBehaviour
 		return www;
 	}  
 
-	// dungeon map ///
-	public void RequestReplayInfo()
-	{
-		StartCoroutine( DummyMapInfoResponse() );
-	}
-
-	IEnumerator DummyMapInfoResponse()
-	{
-		yield return new WaitForSeconds( 0.1f );
-		HandleReplayInfo();
-	}
-
-	public void HandleReplayInfo()
-	{
-		// Init
-		OperationBluehole.Content.ContentsPrepare.Init();
-
-		///////////// test data /////////////
-		OperationBluehole.Content.PlayerData data = new OperationBluehole.Content.PlayerData();
-		OperationBluehole.Content.Player[] player = { new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() };
-		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 102 , out data ) )
-			player[0].LoadPlayer( data );
-
-		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 103 , out data ) )
-			player[1].LoadPlayer( data );
-
-		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 104 , out data ) )
-			player[2].LoadPlayer( data );
-
-		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 101 , out data ) )
-			player[3].LoadPlayer( data );
-
-		OperationBluehole.Content.Party DummyParty = new OperationBluehole.Content.Party( OperationBluehole.Content.PartyType.PLAYER , 3 );
-		foreach ( OperationBluehole.Content.Player p in player )
-			DummyParty.AddCharacter( p );
-
-		int dummySize = 60;
-		int dummySeed = 3;
-
-		///////////////////////////////////////
-
-		LogGenerator.Instance.GenerateLog( dummySize, dummySeed, DummyParty );
-	}
+// 	// dungeon map ///
+// 	public void RequestReplayInfo()
+// 	{
+// 		StartCoroutine( DummyMapInfoResponse() );
+// 	}
+// 
+// 	IEnumerator DummyMapInfoResponse()
+// 	{
+// 		yield return new WaitForSeconds( 0.1f );
+// 		HandleReplayInfo();
+// 	}
+// 
+// 
+// 	public void HandleReplayInfo()
+// 	{
+// 		// Init
+// 		OperationBluehole.Content.ContentsPrepare.Init();
+// 
+// 		///////////// test data /////////////
+// 		OperationBluehole.Content.PlayerData data = new OperationBluehole.Content.PlayerData();
+// 		OperationBluehole.Content.Player[] player = { new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() , new OperationBluehole.Content.Player() };
+// 		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 102 , out data ) )
+// 			player[0].LoadPlayer( data );
+// 
+// 		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 103 , out data ) )
+// 			player[1].LoadPlayer( data );
+// 
+// 		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 104 , out data ) )
+// 			player[2].LoadPlayer( data );
+// 
+// 		if ( OperationBluehole.Content.TestData.playerList.TryGetValue( 101 , out data ) )
+// 			player[3].LoadPlayer( data );
+// 
+// 		OperationBluehole.Content.Party DummyParty = new OperationBluehole.Content.Party( OperationBluehole.Content.PartyType.PLAYER , 3 );
+// 		foreach ( OperationBluehole.Content.Player p in player )
+// 			DummyParty.AddCharacter( p );
+// 
+// 		int dummySize = 60;
+// 		int dummySeed = 3;
+// 
+// 		///////////////////////////////////////
+// 
+// 		LogGenerator.Instance.GenerateLog( dummySize, dummySeed, DummyParty );
+// 	}
 	
 }
