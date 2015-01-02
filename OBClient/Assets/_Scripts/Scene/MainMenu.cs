@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
 
 	public GameObject listObject = null;
 	public GameObject floatingMenu = null;
+	public GameObject replayButton = null;
 
 	// warning!!! for now, only 1 result can be checked
 	//private bool hasResult = false;
@@ -24,24 +25,35 @@ public class MainMenu : MonoBehaviour
 
 	void Start()
 	{
+		// Load Player Data
+		NetworkManager.Instance.GetPlayerInfo();
+
+		// Start Pooling Result
 		StartCoroutine( PoolingResult() );
 	}
 
 	private IEnumerator PoolingResult()
 	{
+		int i = 0 ;
+		// Check any simulation result wasn't played before
+		NetworkManager.Instance.GetSimulationResult();
+
 		while(true)
 		{
-			if ( !NetworkManager.Instance.HasResult )
+			replayButton.gameObject.SetActive( ( NetworkManager.Instance.HasResult ) ? true : false );
+			if ( !NetworkManager.Instance.HasResult && NetworkManager.Instance.IsRegisterd )
 			{
+				Debug.Log( "Pooling Sequence" + i++ );
 				NetworkManager.Instance.GetSimulationResult();
 			}
 			yield return new WaitForSeconds( GameConfig.RESULT_CHECKING_INTERVAL );
 		}
 	}
 
-	public void ShowSimulationResult()
+	public void PlaySimulationResult()
 	{
-		NetworkManager.Instance.GetSimulationResult();
+		NetworkManager.Instance.IsRegisterd = false;
+		Application.LoadLevel( "ReplayScene" );
 	}
 
 	public void FindParty(int difficulty)

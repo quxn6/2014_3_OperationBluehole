@@ -24,19 +24,19 @@ public class Loading : MonoBehaviour
 		int tempMobPartyLevel = 3;
 		OperationBluehole.Content.Party playerParty = new OperationBluehole.Content.Party( OperationBluehole.Content.PartyType.PLAYER , tempMobPartyLevel );
 
-		for ( int i = 0 ; i < DataManager.Instance.latestSimulationResult.PlayerList.Count ; ++i )
+		for ( int i = 0 ; i < DataManager.Instance.latestSimulationResult.playerList.Count ; ++i )
 		{
-			if ( DataManager.Instance.latestSimulationResult.PlayerList[i] == null )
+			if ( DataManager.Instance.latestSimulationResult.playerList[i] == null )
 			{
 				Debug.LogError( "No Player " + i );
 			}
-			players[i].LoadPlayer( DataManager.Instance.latestSimulationResult.PlayerList[i] );
+			players[i].LoadPlayer( DataManager.Instance.latestSimulationResult.playerList[i] );
 			playerParty.AddCharacter( players[i] );
 		}
 
 		LogGenerator.Instance.GenerateLog(
-			DataManager.Instance.latestSimulationResult.MapSize ,
-			DataManager.Instance.latestSimulationResult.Seed ,
+			DataManager.Instance.latestSimulationResult.mapSize ,
+			DataManager.Instance.latestSimulationResult.randomSeed ,
 			playerParty
 			);
 	}

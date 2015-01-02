@@ -110,7 +110,12 @@ public class LogExecuter : MonoBehaviour
 		GameObject itemInstance = null;
 		if (!MapManager.Instance.ItemDictionary.TryGetValue( itemIndex , out itemInstance ))
 		{
-			Debug.LogError( "Error : Item list index is not exist" );
+			//Debug.LogError( "Error : Item list index is not exist" );
+			// temporary
+			Debug.Log( "Clean Failed (" + item.position.x + " , " + item.position.y + ")" );
+			++lootedItemIterator;
+			PlayMapLog();
+			return;
 		}
 
 		itemInstance.SetActive( false );
@@ -261,32 +266,4 @@ public class LogExecuter : MonoBehaviour
 			}
 		}
 	}
-		
-// 	//public IEnumerator MobAttackHero( int mobNumber , int heroNumber , float damage )
-// 	public IEnumerator MobAttackHero( GameObject mob, GameObject hero )
-// 	{
-// 		// Do Attack Process
-// 		yield return StartCoroutine( mob.GetComponent<Mob>().Attack() );
-// 		
-// 		// heroes ui get damage( on UI )
-// 		//hero.GetComponent<Hero>().BeAttacked( damage );
-// 
-// 		//PlayBattleLog();
-// 	}
-
-// 	public void HeroAttackMob( GameObject mob , GameObject hero )
-// 	{
-// 		mob.GetComponent<Mob>().BeAttacked( damage );
-// 	}
-
-// 	public void KillPlayer( GameObject hero)
-// 	{
-// 		hero.GetComponent<Hero>().BeKilled();
-// 	}
-// 
-// 	public void KillMob( GameObject mob )
-// 	{
-// 		( (IAnimatable)mob.GetComponent( typeof( IAnimatable ) ) ).PlayDead();
-// 	}
-
 }

@@ -245,7 +245,6 @@
     <Compile Include="Assets\_Scripts\Object\Model\ZMurderer.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\ZSnapper.cs" />
     <Compile Include="Assets\_Scripts\Object\Model\ZombieBasic.cs" />
-    <Compile Include="Assets\_Scripts\Object\SimulationResult.cs" />
     <Compile Include="Assets\_Scripts\Object\UserStatus.cs" />
     <Compile Include="Assets\_Scripts\Scene\AnimationTester.cs" />
     <Compile Include="Assets\_Scripts\Scene\Loading.cs" />

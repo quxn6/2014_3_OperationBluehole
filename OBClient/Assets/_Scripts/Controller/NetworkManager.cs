@@ -33,22 +33,21 @@ public class NetworkManager : MonoBehaviour
 	
 	public class SimulationResult
 	{
-		public long Id { get; set; }
-		
 		// 참가한 player id 목록
-		public List<PlayerData> PlayerList { get; set; }
-		
+		public List<PlayerData> playerList { get; set; }
+
+		// 파티의 도전 레벨
+		public int partyLevel { get; set; }
+
 		// 맵 크기
-		public int MapSize { get; set; }
-		
-		// 게임 결과를 확인한 플레이어 - 전부 확인하면 지울 수 있도록? 아니면 아예 무조건 타임아웃? 적절히 혼합?
-		public List<ulong> CheckedPlayer { get; set; }
+		public int mapSize { get; set; }
 		
 		// 시뮬레이션에 사용한 random seed 값
-		public int Seed { get; set; }
+		public int randomSeed { get; set; }
 	}
 
 	public bool HasResult {get;set;}
+	public bool IsRegisterd { get; set; }
 	
 	static string token = "";
 	
@@ -67,32 +66,19 @@ public class NetworkManager : MonoBehaviour
 	{
 		instance = this;
 		HasResult = false;
+		IsRegisterd = false;
 	}
 
-// 	public IEnumerator SignupRequest( string id, string pw, string name )
-// 	{
-// 		Debug.Log( "signupcall by " + id );
-// 		var data = new Dictionary<string, object>();
-// 		data.Add( "UserId", id );
-// 		data.Add( "password", pw );
-// 		data.Add( "playerName", name );
-// 		yield return null;
-// 		StartCoroutine( WaitForSignup( POST( "/user/signup", data ) ) );
-// 		Debug.Log( "end of waitForSignup" );
-// 	}
-
-	public void SignupRequest( string id , string pw , string name )
+	public IEnumerator SignupRequest( string id, string pw, string name )
 	{
 		Debug.Log( "signupcall by " + id );
-		var data = new Dictionary<string , object>();
-		data.Add( "UserId" , id );
-		data.Add( "password" , pw );
-		data.Add( "playerName" , name );
-		
-		StartCoroutine( WaitForSignup( POST( "/user/signup" , data ) ) );
+		var data = new Dictionary<string, object>();
+		data.Add( "UserId", id );
+		data.Add( "password", pw );
+		data.Add( "playerName", name );
+		yield return StartCoroutine( WaitForSignup( POST( "/user/signup", data ) ) );
 		Debug.Log( "end of waitForSignup" );
 	}
-
 	
 	private IEnumerator WaitForSignup(WWW www)
 	{
@@ -191,6 +177,7 @@ public class NetworkManager : MonoBehaviour
 		if (www.text.CompareTo ("success") == 0)
 		{
 			Debug.Log("registered");
+			IsRegisterd = true;
 			//GetSimulationResult();
 			yield break;
 		}
@@ -219,20 +206,17 @@ public class NetworkManager : MonoBehaviour
 		// deserialize the base data
 		if (www.text.CompareTo ("nothing") == 0)
 		{
-			//GetSimulationResult ();
-			//not yet
 			yield break;
 		}
-
+		Debug.Log( www.text );
 		DataManager.Instance.latestSimulationResult = JsonMapper.ToObject<SimulationResult>( www.text );
 		HasResult = true;
-		//var baseData = JsonMapper.ToObject<SimulationResult>( www.text );
-		Debug.Log (www.text);
+		
 	}
 	
 	public void GetPlayerInfo()
 	{
-		StartCoroutine( WaitForSimulationResult( GET( "/character/update" ) ) );
+		StartCoroutine( WaitForPlayerInfo( GET( "/character/update" ) ) );
 	}
 	
 	private IEnumerator WaitForPlayerInfo( WWW www )
@@ -244,9 +228,11 @@ public class NetworkManager : MonoBehaviour
 			yield break;
 		
 		// apply the current status
+		Debug.Log( www.text );
+		DataManager.Instance.clientPlayerData = JsonMapper.ToObject<ClientPlayerData>( www.text );
 
-		//var playerData = JsonMapper.ToObject<ClientPlayerData>( www.text );
-		Debug.Log (www.text);
+		// Warning!!! temporary Code, it must be execute by deligate or flag
+		ItemManager.Instance.SetStatus();
 	}
 	
 	public void LevelUpRequest()

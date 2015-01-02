@@ -22,13 +22,6 @@ public class Hero : MonoBehaviour
 		levelUI = GameObject.Find( gameObject.name + "Level/Label" );
 	}
 
-	// Set hero UI value with character data
-
-	void Start()
-	{
-		InitHeroUI();
-	}
-
 	public void InitHeroData( OperationBluehole.Content.Character characterStat )
 	{
 		heroData = new CharacterData(
@@ -39,10 +32,10 @@ public class Hero : MonoBehaviour
 			characterStat.baseStats[(int)OperationBluehole.Content.StatType.Lev] );
 	}
 
-	public void InitHeroUI()
+	public void InitHeroUI(int uiIndex)
 	{
 		faceUI.GetComponent<UISprite>().color = GameConfig.DEFALUT_HERO_COLOR;
-		faceUI.GetComponent<UISprite>().spriteName = DataManager.Instance.atlasSet.spriteList[0].name;
+		faceUI.GetComponent<UISprite>().spriteName = DataManager.Instance.atlasSet.spriteList[uiIndex].name;
 		hpUI.GetComponent<UISprite>().fillAmount = heroData.currentHp / heroData.maxHp;
 		mpUI.GetComponent<UISprite>().fillAmount = heroData.currentMp / heroData.maxMp;
 		levelUI.GetComponent<UILabel>().text = heroData.level.ToString();

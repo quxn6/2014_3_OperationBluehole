@@ -43,23 +43,10 @@ public class BattleManager : MonoBehaviour
 	public void AssignBattleArea( int targetMobId )
 	{
 		InitBattleObjects( targetMobId );
-		LoadEnemyData();
-		LoadHeroData();
 		battleUI.SetActive( true );
 		mobHpBarRoot.SetActive( true );
-
-
-// 		for ( int i = 0 ; i < 4 ; ++i )
-// 		{
-// 			Debug.Log(
-// 				"  dm:" + LogGenerator.Instance.tmpMaster.GetMapObject( enemyGroupData.position.x , enemyGroupData.position.y ).party.characters[i].actualParams[6] +
-// 				"  tmp:" + LogGenerator.Instance.dungeonMaster.GetMapObject( enemyGroupData.position.x , enemyGroupData.position.y ).party.characters[i].actualParams[6] +
-// 				"  partyList:" + enemyGroupData.characters[i].actualParams[6] +
-// 				"  displayData:" + enemyInstanceList[i].GetComponent<Mob>().MobData.maxHp +
-// 				" , " + enemyInstanceList[i].GetComponent<Mob>().MobData.currentHp +
-// 			" " );
-// 
-// 		}
+		LoadEnemyData();
+		LoadHeroData();
 	}
 
 	// Clear battle area and turn back main camera to dungeon
@@ -142,7 +129,13 @@ public class BattleManager : MonoBehaviour
 		// Set status of heroes and set UI values
 		for ( int i = 0 ; i < heroCount ; ++i )
 		{
-			heroStatus[i].GetComponent<Hero>().InitHeroData( DataManager.Instance.UserParty.characters[i] );
+			Hero hero = heroStatus[i].GetComponent<Hero>();
+			
+			// Set hero data
+			hero.InitHeroData( DataManager.Instance.UserParty.characters[i] );
+			
+			// Set hero UI value with character data
+			hero.InitHeroUI( i );
 		}
 
 		// Move camera on predetermined position in battle area

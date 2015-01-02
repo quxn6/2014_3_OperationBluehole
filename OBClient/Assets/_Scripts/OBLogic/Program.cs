@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace OperationBluehole.Content
 {
-    using System.Threading.Tasks;
+//    using System.Threading.Tasks;
     using System.Threading;
 
     class Program
@@ -59,7 +59,7 @@ namespace OperationBluehole.Content
 
             for ( int i = 0; i < 1; ++i )
             {
-                Task.Run( () => TestSimulation(i) );
+//                Task.Run( () => TestSimulation(i) );
             }
             
             Console.ReadLine();
