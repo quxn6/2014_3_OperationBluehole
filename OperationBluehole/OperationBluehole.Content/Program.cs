@@ -34,13 +34,15 @@ namespace OperationBluehole.Content
                 users.AddCharacter( p );
 
             DungeonMaster newMaster = new DungeonMaster();
-            newMaster.Init( 60, seed, users );
+            newMaster.Init( 100, seed, users );
 
             // 초기 정보 확인
             var mapInfo = newMaster.GetMapInfo();
             var itemList = newMaster.items;
             var mobList = newMaster.mobs;
 
+            // newMaster.TestPathFinding();
+            // Console.ReadLine();
             Debug.WriteLine( "turn : " + newMaster.Start() );
 
             // 시뮬레이션 결과 확인

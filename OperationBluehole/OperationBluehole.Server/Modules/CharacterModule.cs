@@ -124,7 +124,15 @@ namespace OperationBluehole.Server.Modules
             Get["/update"] = parameters =>
             {
                 // 캐릭터의 최신 정보 받기
-
+                /*
+                Console.WriteLine("update");
+                foreach ( var each in this.Context.Request.Headers )
+                {
+                    Console.WriteLine( each.Key + ": " );
+                    foreach ( var item in each.Value )
+                        Console.WriteLine( item );
+                }
+                */
                 // 일단 해당 유저의 id를 확인하고
                 this.RequiresAuthentication();
 

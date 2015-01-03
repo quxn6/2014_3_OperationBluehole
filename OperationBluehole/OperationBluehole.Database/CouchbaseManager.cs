@@ -208,4 +208,19 @@ namespace OperationBluehole.Database
             return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + data.Id, data );
         }
     }
+
+    public static class TestDatabase
+    {
+        public const string PREFIX = "TestData ";
+
+        public static string GetTestData( long resultIdx )
+        {
+            return CouchbaseManager.Client.GetJson<string>( PREFIX + resultIdx );
+        }
+
+        public static bool SetTestData( string data, long idx )
+        {
+            return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + idx, data );
+        }
+    }
 }

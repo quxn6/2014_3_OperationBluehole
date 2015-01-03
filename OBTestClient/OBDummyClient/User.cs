@@ -188,9 +188,11 @@ namespace OperationBluehole.DummyClient
                 do
                 {
                     result = await Network.LevelUp( this.token );
-                } while ( result.CompareTo( "level up" ) == 0 );
-
-                Console.WriteLine( "level up!" );
+                    if ( result.CompareTo( "level up" ) == 0 )
+                        Console.WriteLine( "level up!" );
+                    else
+                        break;
+                } while ( true );
             }
 
             // 스탯 상승
