@@ -57,4 +57,8 @@ static class GameConfig
 
 	// MainMenu
 	public const float MENU_SWIPE_TIME = 0.3f;
+	public const float RESULT_CHECKING_INTERVAL = 0.5f;
+	public const int DUNGEON_DIFFICULTY_DIFFICULT = 3;
+	public const int DUNGEON_DIFFICULTY_NORMAL = 0;
+	public const int DUNGEON_DIFFICULTY_EASY = -3;
 }

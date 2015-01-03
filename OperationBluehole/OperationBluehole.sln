@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nancy", "Nancy", "{E944109B-0B7A-4ADE-8602-004CEFA5897D}"
 EndProject
@@ -20,10 +20,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OperationBluehole.Matching", "OperationBluehole.Matching\OperationBluehole.Matching.csproj", "{4F3ABE19-6C2C-4FB6-8D13-032F78C8E4A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OperationBluehole.Simulation", "OperationBluehole.Simulation\OperationBluehole.Simulation.csproj", "{2C21FCB3-60D5-4570-A52B-4148FEB04DB1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouchbaseTest", "CouchbaseTest\CouchbaseTest.csproj", "{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NancyTest", "NancyTest\NancyTest.csproj", "{E5557514-B604-49A7-8147-049FCE0A7D9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,30 +129,6 @@ Global
 		{2C21FCB3-60D5-4570-A52B-4148FEB04DB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C21FCB3-60D5-4570-A52B-4148FEB04DB1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2C21FCB3-60D5-4570-A52B-4148FEB04DB1}.Release|x86.ActiveCfg = Release|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.MonoDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.MonoDebug|Any CPU.Build.0 = Debug|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.MonoDebug|x86.ActiveCfg = Debug|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.MonoRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.MonoRelease|Any CPU.Build.0 = Release|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.MonoRelease|x86.ActiveCfg = Release|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{32A55AE6-CBE7-4B7E-AA08-E036F1745BC6}.Release|x86.ActiveCfg = Release|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.MonoDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.MonoDebug|Any CPU.Build.0 = Debug|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.MonoDebug|x86.ActiveCfg = Debug|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.MonoRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.MonoRelease|Any CPU.Build.0 = Release|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.MonoRelease|x86.ActiveCfg = Release|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5557514-B604-49A7-8147-049FCE0A7D9E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

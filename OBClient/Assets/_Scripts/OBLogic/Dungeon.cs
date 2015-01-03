@@ -71,7 +71,9 @@ namespace OperationBluehole.Content
         public void GenerateRecursivly()
         {
             // Assert(depth <= upperDepth)
-            if ( depth == upperDepth )
+            int shortSpan = Math.Min(upperBoundary.x - lowerBoundary.x, upperBoundary.y - lowerBoundary.y) + 1;
+
+            if ( depth == upperDepth || shortSpan <= Config.MININUM_SPAN )
             {
                 // 여기서 DungeonZone을 생성하자
                 // offset을 진행하지만 나중에 통로 지역도 포함하기 위해서 zone의 범위는 offset하기 전으러 설정 = 맵 전체를 커버할 수 있어
@@ -87,7 +89,6 @@ namespace OperationBluehole.Content
 
                 // leafNode이므로 Bake하고
                 // 일정 거리를 offset
-                int shortSpan = Math.Min( upperBoundary.x - lowerBoundary.x, upperBoundary.y - lowerBoundary.y ) + 1;
                 int offset = Math.Min( random.Next( 0, Config.MAX_OFFSET ), ( shortSpan - 3 ) / 2 );
 
                 Offset( offset );
@@ -520,10 +521,7 @@ namespace OperationBluehole.Content
                             Console.Write( visualizer[2] );
 							dungeonMap[i, j] = visualizer[2];
                             break;
-                        default:								
-							Console.Write( visualizer[1] );
-							dungeonMap[i, j] = visualizer[1];		
-
+                        default:	
                             if ( map[i, j].party != null )
                             {
 								if ( map[i , j].party.partyType == PartyType.MOB )
@@ -538,11 +536,15 @@ namespace OperationBluehole.Content
 									dungeonMap[i, j] = visualizer[5];		
 								}
                             }
-                            
-							if ( map[i, j].gameObject != null )
+                            else if ( map[i, j].gameObject != null )
 							{
 								Console.Write( mobFlag? visualizer[7] : visualizer[3] );
 								dungeonMap[i, j] = mobFlag ? visualizer[7] : visualizer[3];		
+							}                                
+                            else
+							{
+								Console.Write( visualizer[1] );
+								dungeonMap[i, j] = visualizer[1];		
 							}
                                 
                             break;

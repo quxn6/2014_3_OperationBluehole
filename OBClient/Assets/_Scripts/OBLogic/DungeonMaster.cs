@@ -90,6 +90,16 @@ namespace OperationBluehole.Content
         {
             uint turn = 0;
 
+            /*
+            users.characters.ForEach( each =>
+            {
+                Console.Write( "actual params :" );
+                for ( int i = 0; i < each.actualParams.Length; ++i )
+                    Console.Write(" " + each.actualParams[i]);
+                Console.WriteLine( "" );
+            } );
+            */
+
             while ( true )
             {
                 ++turn;
@@ -115,14 +125,22 @@ namespace OperationBluehole.Content
                 //Thread.Sleep( 100 );
             }
 
-            // Console.WriteLine( "THE END ( turn : " + turn + " )" );
+            Console.WriteLine( "THE END ( turn : " + turn + " )" );
 
-            // Console.WriteLine( "Earned Exp : " + record.lootedExp );
-            // Console.WriteLine( "Earned gold : " + record.lootedGold );
+            Console.WriteLine( "Earned Exp : " + record.lootedExp );
+            Console.WriteLine( "Earned gold : " + record.lootedGold );
             // Console.WriteLine( "looted items : " );
             // record.lootedItems.ForEach(item => Console.Write(" " + ((ItemToken)item).level));
 
             return turn;
+        }
+
+        public void TestPathFinding()
+        {
+            // must init this class before calling TestPathFinding()
+            Console.WriteLine("start");
+
+            explorer.Test(); ;
         }
 
         // 구현할 것

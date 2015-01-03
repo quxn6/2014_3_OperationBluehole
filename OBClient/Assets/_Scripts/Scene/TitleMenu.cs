@@ -43,15 +43,23 @@ public class TitleMenu : MonoBehaviour
 		loginForm.SetActive( false );
 		signUpForm.SetActive( false );
 	}
-
+	
 	// post signup data
 	public void SubmitSignUpForm()
 	{
-		NetworkManager.Instance.SignupRequest(
-			SignupIDForm.GetComponent<UILabel>().text ,
-			SignupPWForm.GetComponent<UILabel>().text ,
-			SignupNameForm.GetComponent<UILabel>().text );
+		StartCoroutine( SignupProcess() );
 		//Debug.Log( "submit signup form" );
+	}
+
+	private IEnumerator SignupProcess()
+	{
+		string id = SignupIDForm.GetComponent<UILabel>().text;		
+		string pw = SignupPWForm.GetComponent<UILabel>().text;
+		string name = SignupNameForm.GetComponent<UILabel>().text;
+
+		yield return StartCoroutine( NetworkManager.Instance.SignupRequest( id , pw , name ) );		
+		CloseForm();
+		NetworkManager.Instance.LoginRequest( id , pw );
 	}
 
 	// post login data
@@ -61,6 +69,7 @@ public class TitleMenu : MonoBehaviour
 			LoginIDForm.GetComponent<UILabel>().text ,
 			LoginPWForm.GetComponent<UILabel>().text
 			);
+		CloseForm();
 		//Debug.Log( "submit login form" );
 	}
 }

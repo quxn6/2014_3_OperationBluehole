@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace OperationBluehole.Content
 {
@@ -344,12 +345,63 @@ namespace OperationBluehole.Content
             // Debug.WriteLine( "end!!!!" );
         }
 
-        private void ReconstructPath( ExploerNode currentNode )
+        private void ReconstructPath( ExploerNode endNode )
         {
-            if ( currentNode.cameFrom != null )
+            ExploerNode currentNode = endNode;
+            while( !currentNode.position.Equals(position) )
             {
-                currentMovePath.Push( currentNode.cameFrom.position );
-                ReconstructPath( currentNode.cameFrom );
+                currentMovePath.Push(currentNode.cameFrom.position);
+                currentNode = currentNode.cameFrom;
+            }
+        }
+
+        public void Test()
+        {
+            Int2D start = new Int2D();
+            bool stop = false;
+
+            for (int i = 0; i < mapSize; ++i)
+            {
+                for (int j = 0; j < mapSize; ++j)
+                {
+                    if ( dungeonMaster.GetMapInfo()[i,j].objectType == MapObjectType.TILE )
+                    {
+                        start.x = j;
+                        start.y = i;
+                        Teleport(start);
+                        Console.WriteLine("start : " + position.x + "," + position.y);
+                        stop = true;
+                        break;
+                    }
+                }
+
+                if (stop)
+                    break;
+            }
+
+            stop = false;
+            Int2D end = new Int2D();
+            for (int i = mapSize - 1; i >= 0; --i)
+            {
+                for (int j = mapSize - 1; j >= 0; --j)
+                {
+                    if (dungeonMaster.GetMapInfo()[i, j].objectType == MapObjectType.TILE)
+                    {
+                        end.x = j;
+                        end.y = i;
+                        Console.WriteLine("dest : " + end.x + "," + end.y);
+
+                        var runningTime = Stopwatch.StartNew();
+                        MakePath(end);
+
+                        Console.WriteLine("[Simulation : " + runningTime.ElapsedMilliseconds + " ms]");
+                        stop = true;
+                        break;
+                    }
+                }
+
+                if (stop)
+                    break;
             }
         }
     }
