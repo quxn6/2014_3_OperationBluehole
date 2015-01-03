@@ -101,7 +101,7 @@ ModelImporter:
     4300002: Weapon_Chibi_base
     4300004: BW_Chibi_Body_Base
     4300006: BW_Chibi_Face_Base
-    7400000: Take 001
+    7400000: BW_Chibi_Idle
     11100000: //RootNode
     13700000: BW_Chibi_Body_Base
     13700002: BW_Chibi_Face_Base
@@ -122,7 +122,154 @@ ModelImporter:
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: BW_Chibi_Idle
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 201
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Blade_male
+        weight: 1
+      - path: Blade_male/Blade_male Footsteps
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male L Thigh
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male L Thigh/Blade_male
+          L Calf
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male L Thigh/Blade_male
+          L Calf/Blade_male L Foot
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male L Thigh/Blade_male
+          L Calf/Blade_male L Foot/Blade_male L Toe0
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male L Thigh/Blade_male
+          L Calf/Blade_male L Foot/Blade_male L Toe0/Blade_male L Toe0Nub
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male R Thigh
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male R Thigh/Blade_male
+          R Calf
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male R Thigh/Blade_male
+          R Calf/Blade_male R Foot
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male R Thigh/Blade_male
+          R Calf/Blade_male R Foot/Blade_male R Toe0
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male R Thigh/Blade_male
+          R Calf/Blade_male R Foot/Blade_male R Toe0/Blade_male R Toe0Nub
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male Head
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male Head/Blade_male HeadNub
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male Head/Blade_male Ponytail1
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male Head/Blade_male Ponytail1/Blade_male Ponytail11
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male Head/Blade_male Ponytail1/Blade_male Ponytail11/Blade_male
+          Ponytail12
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male Head/Blade_male Ponytail1/Blade_male Ponytail11/Blade_male
+          Ponytail12/Blade_male Ponytail1Nub
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male L Clavicle
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male L Clavicle/Blade_male L UpperArm
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male L Clavicle/Blade_male L UpperArm/Blade_male L Forearm
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male L Clavicle/Blade_male L UpperArm/Blade_male L Forearm/Blade_male
+          L Hand
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male R Clavicle
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male R Clavicle/Blade_male R UpperArm
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male R Clavicle/Blade_male R UpperArm/Blade_male R Forearm
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/Blade_male Spine/Blade_male Spine1/Blade_male
+          Neck/Blade_male R Clavicle/Blade_male R UpperArm/Blade_male R Forearm/Blade_male
+          R Hand
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/L_B_scult01
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/L_B_scult01/L_B_scult02
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/L_F_scult01
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/L_F_scult01/L_F_scult0102
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/M_scult01
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/M_scult01/M_scult02
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/R_B_scult01
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/R_B_scult01/R_B_scult02
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/R_F_scult01
+        weight: 1
+      - path: Blade_male/Blade_male Pelvis/R_F_scult01/R_F_scult02
+        weight: 1
+      - path: Blade_male/Blade_male Prop1
+        weight: 1
+      - path: BW_Chibi_Body_Base
+        weight: 1
+      - path: BW_Chibi_Face_Base
+        weight: 1
+      - path: Hair_base001
+        weight: 1
+      - path: Weapon
+        weight: 1
+      - path: Weapon_Chibi_base
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
     isReadable: 1
   meshes:
     lODScreenPercentages: []

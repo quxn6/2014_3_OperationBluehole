@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class MainMenu : MonoBehaviour
 {
@@ -10,6 +11,10 @@ public class MainMenu : MonoBehaviour
 	public GameObject listObject = null;
 	public GameObject floatingMenu = null;
 	public GameObject replayButton = null;
+	public GameObject statusLabel;
+	public GameObject playerCharacter;
+	
+	private UILabel statusText;
 
 	// warning!!! for now, only 1 result can be checked
 	//private bool hasResult = false;
@@ -23,13 +28,35 @@ public class MainMenu : MonoBehaviour
 		Up = 3,
 	}
 
+	void Awake()
+	{
+		statusText = statusLabel.GetComponent<UILabel>();
+	}
+
 	void Start()
 	{
+		// Register Actions
+		NetworkManager.Instance.SetInventoryInfo = ItemManager.Instance.SetInventoryIcons;
+		NetworkManager.Instance.SetStatusInfo = SetStatusText;
+
 		// Load Player Data
 		NetworkManager.Instance.GetPlayerInfo();
 
 		// Start Pooling Result
 		StartCoroutine( PoolingResult() );
+	}
+
+	public void SetStatusText()
+	{
+		StringBuilder originalString = new StringBuilder();
+		for ( int i = 0 ; i < DataManager.Instance.clientPlayerData.Stat.Count ; ++i)
+		{
+			originalString.Append( (OperationBluehole.Content.StatType)i );
+			originalString.Append( " " );
+			originalString.AppendLine( DataManager.Instance.clientPlayerData.Stat[i].ToString() );
+		}
+
+		statusText.text = originalString.ToString();		
 	}
 
 	private IEnumerator PoolingResult()
@@ -75,6 +102,13 @@ public class MainMenu : MonoBehaviour
 		iTween.MoveTo( floatingMenu , iTween.Hash(
 			"x" , ( isVertical ? (int)MenuSwipeDirection.Default : (int)swipeDirection ) * swipeAmountWidth ,
 			"y" , ( isVertical ? ( (int)swipeDirection - (int)MenuSwipeDirection.Down ) : 0 ) * swipeAmountHeight ,
+			"isLocal" , true ,
+			"easetype" , iTween.EaseType.easeInOutExpo ,
+			"time" , swipeTime
+			) );
+
+		iTween.MoveTo( playerCharacter , iTween.Hash(
+			"x" , ( isVertical ? (int)MenuSwipeDirection.Default : (int)swipeDirection ) * 2.4f - 2.9f , // Got this value with NoGaDa
 			"isLocal" , true ,
 			"easetype" , iTween.EaseType.easeInOutExpo ,
 			"time" , swipeTime

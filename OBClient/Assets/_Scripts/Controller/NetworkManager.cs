@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using LitJson;
 using OperationBluehole.Content;
 
+public delegate void Action();
+
 public class NetworkManager : MonoBehaviour 
 {
 	public class ClientPlayerData
@@ -48,6 +50,8 @@ public class NetworkManager : MonoBehaviour
 
 	public bool HasResult {get;set;}
 	public bool IsRegisterd { get; set; }
+	public Action SetInventoryInfo { get; set; }
+	public Action SetStatusInfo { get; set; }
 	
 	static string token = "";
 	
@@ -231,8 +235,9 @@ public class NetworkManager : MonoBehaviour
 		Debug.Log( www.text );
 		DataManager.Instance.clientPlayerData = JsonMapper.ToObject<ClientPlayerData>( www.text );
 
-		// Warning!!! temporary Code, it must be execute by deligate or flag
-		ItemManager.Instance.SetStatus();
+		// Update character infomation
+		SetInventoryInfo();
+		SetStatusInfo();
 	}
 	
 	public void LevelUpRequest()
