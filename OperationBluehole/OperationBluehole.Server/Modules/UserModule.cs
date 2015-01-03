@@ -24,8 +24,6 @@ namespace OperationBluehole.Server.Modules
             // 이메일, 비밀번호, 
             Post["/signup"] = parameters =>
             {
-                var client = CouchbaseManager.Client;
-
                 string userId = Request.Form.userId;
                 string password = Request.Form.password;
                 string playerName = Request.Form.playername;
@@ -36,22 +34,25 @@ namespace OperationBluehole.Server.Modules
 
                 Console.WriteLine("finished PostgreSQL job");
 
-                if (task.Result)
+                // if (task.Result)
                 {
                     // user identity
                     // UserIdentityDatabase.SetUserIdentity( new UserIdentity { UserName = userId, Claims = new List<string> { "user", } } );
 
                     // user data
-                    UserDataDatabase.SetUserData( new UserData {
+                    bool result = UserDataDatabase.SetUserData( new UserData {
                         UserId = userId,
                         Gold = 0,
                         Inventory = new List<uint> { },
                         Token = new List<ItemToken> { },
                         BanList = new List<string> { },
                     } );
-                    
+                    if (!result)
+                        return "fail";
+                    Console.WriteLine("created user data");
+
                     // player data
-                    PlayerDataDatabase.SetPlayerData( new PlayerData
+                    result = PlayerDataDatabase.SetPlayerData(new PlayerData
                     {
                         pId = userId,
                         name = playerName,
@@ -61,65 +62,27 @@ namespace OperationBluehole.Server.Modules
                         consumables = new List<ItemCode> { ItemCode.HpPotion_S, },
                         equipments = new List<ItemCode> { ItemCode.Sword_Test, },
                         battleStyle = BattleStyle.AGGRESSIVE,
-                    } );
+                    });
+                    if (!result)
+                        return "fail";
+                    Console.WriteLine("created player data");
                     
                     // result table
-                    ResultTableDatabase.SetResultTable( new ResultTable
+                    result = ResultTableDatabase.SetResultTable(new ResultTable
                     {
                         PlayerId = userId,
                         ReadId = new List<long> { },
                         UnreadId = -1
-                    } );
+                    });
+                    if (!result)
+                        return "fail";
+                    Console.WriteLine("created result table");
 
                     // ranking list
-                    Debug.Assert( RedisManager.RegisterPlayerRank( userId ) );
+                    RedisManager.RegisterPlayerRank(userId);
 
                     return "success";
                 }
-                else
-                {
-                    // 조심해!!!!!!!
-                    // RDM 매번 초기화하기 힘들어서 이미 존재하는 아이디어도 덮어쓰기로 가입
-
-                    // user data
-                    UserDataDatabase.SetUserData( new UserData
-                    {
-                        UserId = userId,
-                        Gold = 0,
-                        Inventory = new List<uint> { },
-                        Token = new List<ItemToken> { },
-                        BanList = new List<string> { },
-                    } );
-
-                    // player data
-                    PlayerDataDatabase.SetPlayerData( new PlayerData
-                    {
-                        pId = userId,
-                        name = playerName,
-                        exp = 0,
-                        stats = new ushort[] { 1, 5, 5, 5, 5, 5, 5, 5, },
-						skills = new List<SkillId> { SkillId.Punch, },
-						consumables = new List<ItemCode> { ItemCode.HpPotion_S, },
-						equipments = new List<ItemCode> { ItemCode.Sword_Test, },
-                        battleStyle = BattleStyle.AGGRESSIVE,
-                    } );
-
-                    // result table
-                    ResultTableDatabase.SetResultTable( new ResultTable
-                    {
-                        PlayerId = userId,
-                        ReadId = new List<long> { },
-                        UnreadId = -1
-                    } );
-
-                    // ranking list
-                    // Debug.Assert( RedisManager.RegisterPlayerRank( userId ) );
-                    RedisManager.RegisterPlayerRank( userId );
-
-                    return "success";
-                }
-
-                return "fail";
             };
 
             // 로그인

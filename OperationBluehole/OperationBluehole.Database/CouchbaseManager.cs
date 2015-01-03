@@ -87,15 +87,6 @@ namespace OperationBluehole.Database
 
     public static class CouchbaseManager
     {
-        private readonly static CouchbaseClient _instance;
-
-        static CouchbaseManager()
-        {
-            _instance = new CouchbaseClient();
-        }
-
-        public static CouchbaseClient Client { get { return _instance; } }
-
         #region STORE JSON
         public static Tuple<bool, int, string> StoreDictionary(
             this ICouchbaseClient client,
@@ -134,33 +125,24 @@ namespace OperationBluehole.Database
         #endregion
     }
 
-    public static class AccountInfoDatabase
-    {
-        public const string PREFIX = "Account ";
-
-        public static AccountInfo GetAccountInfo( string userName )
-        {
-            return CouchbaseManager.Client.GetJson<AccountInfo>( PREFIX + userName );
-        }
-
-        public static bool SetAccountInfo( AccountInfo info )
-        {
-            return CouchbaseManager.Client.StoreJson( StoreMode.Add, PREFIX + info.AccountName, info );
-        }
-    }
-
     public static class UserDataDatabase
     {
         public const string PREFIX = "UserData ";
 
         public static UserData GetUserData( string userId )
         {
-            return CouchbaseManager.Client.GetJson<UserData>( PREFIX + userId );
+            using (var client = new CouchbaseClient())
+            {
+                return client.GetJson<UserData>(PREFIX + userId);
+            }
         }
 
         public static bool SetUserData( UserData data )
         {
-            return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + data.UserId, data );
+            using (var client = new CouchbaseClient())
+            {
+                return client.StoreJson(StoreMode.Set, PREFIX + data.UserId, data);
+            }
         }
     }
 
@@ -170,12 +152,18 @@ namespace OperationBluehole.Database
 
         public static PlayerData GetPlayerData( string playerId )
         {
-            return CouchbaseManager.Client.GetJson<PlayerData>( PREFIX + playerId );
+            using (var client = new CouchbaseClient())
+            {
+                return client.GetJson<PlayerData>(PREFIX + playerId);
+            }
         }
 
         public static bool SetPlayerData( PlayerData data )
         {
-            return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + data.pId, data );
+            using (var client = new CouchbaseClient())
+            {
+                return client.StoreJson(StoreMode.Set, PREFIX + data.pId, data);
+            }
         }
     }
 
@@ -185,12 +173,18 @@ namespace OperationBluehole.Database
 
         public static ResultTable GetResultTable( string playerId )
         {
-            return CouchbaseManager.Client.GetJson<ResultTable>( PREFIX + playerId );
+            using (var client = new CouchbaseClient())
+            {
+                return client.GetJson<ResultTable>(PREFIX + playerId);
+            }
         }
 
         public static bool SetResultTable( ResultTable data )
         {
-            return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + data.PlayerId, data );
+            using (var client = new CouchbaseClient())
+            {
+                return client.StoreJson(StoreMode.Set, PREFIX + data.PlayerId, data);
+            }
         }
     }
 
@@ -200,12 +194,18 @@ namespace OperationBluehole.Database
 
         public static SimulationResult GetSimulationResult( long resultIdx )
         {
-            return CouchbaseManager.Client.GetJson<SimulationResult>( PREFIX + resultIdx );
+            using (var client = new CouchbaseClient())
+            {
+                return client.GetJson<SimulationResult>(PREFIX + resultIdx);
+            }
         }
 
         public static bool SetSimulationResult( SimulationResult data )
         {
-            return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + data.Id, data );
+            using (var client = new CouchbaseClient())
+            {
+                return client.StoreJson(StoreMode.Set, PREFIX + data.Id, data);
+            }
         }
     }
 
@@ -215,12 +215,18 @@ namespace OperationBluehole.Database
 
         public static string GetTestData( long resultIdx )
         {
-            return CouchbaseManager.Client.GetJson<string>( PREFIX + resultIdx );
+            using (var client = new CouchbaseClient())
+            {
+                return client.GetJson<string>(PREFIX + resultIdx);
+            }
         }
 
         public static bool SetTestData( string data, long idx )
         {
-            return CouchbaseManager.Client.StoreJson( StoreMode.Set, PREFIX + idx, data );
+            using (var client = new CouchbaseClient())
+            {
+                return client.StoreJson(StoreMode.Set, PREFIX + idx, data);
+            }
         }
     }
 }
