@@ -492,69 +492,68 @@ namespace OperationBluehole.Content
         public MapObject GetMapObject( int x, int y ) { return map[y, x]; }
 
         #region FOR DEBUG
-        public char[,] PrintOutMAP()
-        {
+		public char[,] PrintOutMAP()
+		{
 			// emptySpace, tile, wall, Item, Mob, Player, Exit, Mob on the Item
 			char[] visualizer = { '#' , ' ' , 'X' , 'I' , 'M' , 'P' , 'O' , 'T' };
 
-            //Console.Clear();
+			//Console.Clear();
 			char[,] dungeonMap = new char[size , size];
-            for ( int i = 0; i < size; ++i )
-            {
-                for ( int j = 0; j < size; ++j )
-                {
-                    if ( j == ringPosition.x && i == ringPosition.y )
-                    {
-                        Console.Write( 'O' );
-						dungeonMap[i, j] = visualizer[6];
-                        continue;
-                    }
+			for ( int i = 0 ; i < size ; ++i )
+			{
+				for ( int j = 0 ; j < size ; ++j )
+				{
+					if ( j == ringPosition.x && i == ringPosition.y )
+					{
+						Console.Write( 'O' );
+						dungeonMap[i , j] = visualizer[6];
+						continue;
+					}
 
 					bool mobFlag = false;
-                    switch ( map[i, j].objectType )
-                    {
-                        case MapObjectType.VOID:
-                            Console.Write( visualizer[0] );
-							dungeonMap[i, j] = visualizer[0];
-                            break;
-                        case MapObjectType.WALL:
-                            Console.Write( visualizer[2] );
-							dungeonMap[i, j] = visualizer[2];
-                            break;
-                        default:	
-                            if ( map[i, j].party != null )
-                            {
+					switch ( map[i , j].objectType )
+					{
+						case MapObjectType.VOID:
+							Console.Write( visualizer[0] );
+							dungeonMap[i , j] = visualizer[0];
+							break;
+						case MapObjectType.WALL:
+							Console.Write( visualizer[2] );
+							dungeonMap[i , j] = visualizer[2];
+							break;
+						default:
+							Console.Write( visualizer[1] );
+							dungeonMap[i , j] = visualizer[1];
+
+							if ( map[i , j].party != null )
+							{
 								if ( map[i , j].party.partyType == PartyType.MOB )
 								{
 									mobFlag = true;
 									Console.Write( visualizer[4] );
-									dungeonMap[i, j] = visualizer[4];
+									dungeonMap[i , j] = visualizer[4];
 								}
 								else
 								{
 									Console.Write( visualizer[5] );
-									dungeonMap[i, j] = visualizer[5];		
+									dungeonMap[i , j] = visualizer[5];
 								}
-                            }
-                            else if ( map[i, j].gameObject != null )
-							{
-								Console.Write( mobFlag? visualizer[7] : visualizer[3] );
-								dungeonMap[i, j] = mobFlag ? visualizer[7] : visualizer[3];		
-							}                                
-                            else
-							{
-								Console.Write( visualizer[1] );
-								dungeonMap[i, j] = visualizer[1];		
 							}
-                                
-                            break;
-                    }
-                }
-                Console.WriteLine( "" );
-            }
+
+							if ( map[i , j].gameObject != null )
+							{
+								Console.Write( mobFlag ? visualizer[7] : visualizer[3] );
+								dungeonMap[i , j] = mobFlag ? visualizer[7] : visualizer[3];
+							}
+
+							break;
+					}
+				}
+				Console.WriteLine( "" );
+			}
 
 			return dungeonMap;
-        }
+		}
 
         public bool MovePlayer( Int2D position )
         {
