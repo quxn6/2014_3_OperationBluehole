@@ -91,11 +91,19 @@ public class LogExecuter : MonoBehaviour
 	{
 		Debug.Log( "Meet Fail" );
 		// show result popup
+		BackToMainMenu();
 	}
 
 	private void Clear()
 	{
+		Debug.Log( "Meet Win" );
 		// show result popup
+	}
+
+	public void BackToMainMenu()
+	{
+		MapManager.Instance.ClearAllMapObjects();
+		Application.LoadLevel( "MainMenu" );
 	}
 
 	private int lootedItemIterator = 0;

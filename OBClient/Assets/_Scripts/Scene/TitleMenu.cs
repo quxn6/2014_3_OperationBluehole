@@ -24,11 +24,13 @@ public class TitleMenu : MonoBehaviour
 
 	public void LoadloginForm()
 	{
+		CloseForm();
 		loginForm.SetActive( true );
 	}
 
 	public void LoadSignUpForm()
 	{
+		CloseForm();
 		signUpForm.SetActive( true );
 	}
 

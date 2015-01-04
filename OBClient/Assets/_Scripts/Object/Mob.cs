@@ -50,7 +50,7 @@ public class Mob : MonoBehaviour
 		//animatable.PlayWalk();
 		yield return new WaitForSeconds( GameConfig.MOB_ATTACKMOVING_TIME );
 		//animatable.PlayAttack();
-		Debug.Log( "   mob Action start " + turnInfo.srcIdx );
+//		Debug.Log( "   mob Action start " + turnInfo.srcIdx );
 
 		// if target is one enemy, use melee skills
 		if ( turnInfo.targets.Count == 1 && turnInfo.srcType != turnInfo.targets[0].targetType )
@@ -66,10 +66,10 @@ public class Mob : MonoBehaviour
 		// after animation over, accept damage to hero
 		while ( IsAnimationPlaying() )
 		{
-			Debug.Log( "      mob Action ~ing " + turnInfo.srcIdx );
+//			Debug.Log( "      mob Action ~ing " + turnInfo.srcIdx );
 			yield return null;
 		}
-		Debug.Log( "   mob Action end " + turnInfo.srcIdx );
+//		Debug.Log( "   mob Action end " + turnInfo.srcIdx );
 		animatable.PlayIdle();
 	}
 

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
 
 public class LgsObjectPool : ScriptableObject
@@ -168,6 +169,9 @@ public class LgsObjectPool : ScriptableObject
 
 		foreach ( GameObject instanceObject in objectPool)		
 		{
+			PrefabUtility.RevertPrefabInstance( instanceObject );
+			instanceObject.transform.position = originalObject.transform.position;
+			instanceObject.transform.rotation = originalObject.transform.rotation;			
 			instanceObject.SetActive( false );
 		}
 	}

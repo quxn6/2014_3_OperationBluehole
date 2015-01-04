@@ -195,6 +195,7 @@
      <Compile Include="Assets\_Scripts\Controller\Replay\LogExecuter.cs" />
      <Compile Include="Assets\_Scripts\Controller\Replay\LogGenerator.cs" />
      <Compile Include="Assets\_Scripts\Controller\Replay\MapManager.cs" />
+     <Compile Include="Assets\_Scripts\Controller\StatusManager.cs" />
      <Compile Include="Assets\_Scripts\OBLogic\Battle.cs" />
      <Compile Include="Assets\_Scripts\OBLogic\BattleAI.cs" />
      <Compile Include="Assets\_Scripts\OBLogic\Buff.cs" />
@@ -220,6 +221,7 @@
      <Compile Include="Assets\_Scripts\Object\FollowingCam.cs" />
      <Compile Include="Assets\_Scripts\Object\HPBar.cs" />
      <Compile Include="Assets\_Scripts\Object\Hero.cs" />
+     <Compile Include="Assets\_Scripts\Object\IncreaseStatButton.cs" />
      <Compile Include="Assets\_Scripts\Object\Mob.cs" />
      <Compile Include="Assets\_Scripts\Object\Model\ChibiWarrior.cs" />
      <Compile Include="Assets\_Scripts\Object\Model\OldVersion\Demon.cs" />

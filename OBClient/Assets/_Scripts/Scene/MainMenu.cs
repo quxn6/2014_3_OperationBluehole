@@ -33,30 +33,22 @@ public class MainMenu : MonoBehaviour
 		statusText = statusLabel.GetComponent<UILabel>();
 	}
 
+	public void OnEnable()
+	{
+		SwipeMenu( MenuSwipeDirection.Default , 0.0f );
+	}
+
 	void Start()
 	{
 		// Register Actions
 		NetworkManager.Instance.SetInventoryInfo = ItemManager.Instance.SetInventoryIcons;
-		NetworkManager.Instance.SetStatusInfo = SetStatusText;
+		NetworkManager.Instance.SetStatusInfo = SetStatusWindow;
 
 		// Load Player Data
-		NetworkManager.Instance.GetPlayerInfo();
+		NetworkManager.Instance.LevelUpRequest();
 
 		// Start Pooling Result
 		StartCoroutine( PoolingResult() );
-	}
-
-	public void SetStatusText()
-	{
-		StringBuilder originalString = new StringBuilder();
-		for ( int i = 0 ; i < DataManager.Instance.clientPlayerData.Stat.Count ; ++i)
-		{
-			originalString.Append( (OperationBluehole.Content.StatType)i );
-			originalString.Append( " " );
-			originalString.AppendLine( DataManager.Instance.clientPlayerData.Stat[i].ToString() );
-		}
-
-		statusText.text = originalString.ToString();		
 	}
 
 	private IEnumerator PoolingResult()
@@ -70,6 +62,7 @@ public class MainMenu : MonoBehaviour
 			replayButton.gameObject.SetActive( ( NetworkManager.Instance.HasResult ) ? true : false );
 			if ( !NetworkManager.Instance.HasResult && NetworkManager.Instance.IsRegisterd )
 			{
+				// Cannot request multiple at one time				
 				Debug.Log( "Pooling Sequence" + i++ );
 				NetworkManager.Instance.GetSimulationResult();
 			}
@@ -77,15 +70,45 @@ public class MainMenu : MonoBehaviour
 		}
 	}
 
+	public void FindParty( int difficulty )
+	{
+		if ( NetworkManager.Instance.IsRegisterd )
+			return;
+
+		NetworkManager.Instance.RegisterRequest( difficulty );
+	}
+
+	public void SetStatusWindow()
+	{
+		StringBuilder originalString = new StringBuilder();
+		for ( int i = 0 ; i < DataManager.Instance.clientPlayerData.Stat.Count ; ++i )
+		{
+			originalString.Append( (OperationBluehole.Content.StatType)i );
+			originalString.Append( " " );
+			originalString.AppendLine( DataManager.Instance.clientPlayerData.Stat[i].ToString() );
+		}
+		originalString.Remove( originalString.Length - 1 , 1 );
+
+		statusText.text = originalString.ToString();
+
+		StatusManager.Instance.CalculateStatPoint();
+	}
+
 	public void PlaySimulationResult()
 	{
-		NetworkManager.Instance.IsRegisterd = false;
+		NetworkManager.Instance.HasResult = false;
 		Application.LoadLevel( "ReplayScene" );
 	}
 
-	public void FindParty(int difficulty)
+
+	public void ChangeItem()
 	{
-		NetworkManager.Instance.RegisterRequest( difficulty );
+
+	}
+
+	public void ApplyStatUpResult()
+	{
+		StatusManager.Instance.ApplyStatUpResult();
 	}
 
 	private void SwipeMenu( MenuSwipeDirection swipeDirection, float swipeTime )
@@ -115,11 +138,6 @@ public class MainMenu : MonoBehaviour
 			) );
 	}
 
-	public void OnEnable()
-	{
-		SwipeMenu( MenuSwipeDirection.Default, 0.0f );
-	}
-
 	public void SelectDungeon()
 	{
 		SwipeMenu( MenuSwipeDirection.Right , GameConfig.MENU_SWIPE_TIME );
@@ -138,11 +156,6 @@ public class MainMenu : MonoBehaviour
 	public void MaintainCharacter()
 	{
 		SwipeMenu( MenuSwipeDirection.Left , GameConfig.MENU_SWIPE_TIME );
-	}
-
-	public void ChangeItem()
-	{
-
 	}
 
 

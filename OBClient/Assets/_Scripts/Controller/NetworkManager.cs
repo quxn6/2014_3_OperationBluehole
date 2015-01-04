@@ -173,10 +173,14 @@ public class NetworkManager : MonoBehaviour
 	private IEnumerator WaitForRegister( WWW www )
 	{
 		yield return www;
-
+		
 		// check for errors
 		if ( !RequestErrorHandling( www ) )
+		{
+			IsRegisterd = false;
 			yield break;
+		}
+			
 		
 		if (www.text.CompareTo ("success") == 0)
 		{
@@ -189,8 +193,12 @@ public class NetworkManager : MonoBehaviour
 		{
 			// check the previous game result
 			// ...
-			
+			IsRegisterd = false;
 			yield break;
+		}
+		else
+		{
+			IsRegisterd = false;
 		}
 	}
 	
@@ -215,7 +223,7 @@ public class NetworkManager : MonoBehaviour
 		Debug.Log( www.text );
 		DataManager.Instance.latestSimulationResult = JsonMapper.ToObject<SimulationResult>( www.text );
 		HasResult = true;
-		
+		IsRegisterd = false;
 	}
 	
 	public void GetPlayerInfo()
@@ -254,12 +262,24 @@ public class NetworkManager : MonoBehaviour
 			yield break;
 		
 		// apply the changed level
-		// ...
+		if ( www.text.CompareTo("levelup") == 0)
+		{
+			LevelUpRequest();
+			yield break;
+		}
+
+		Debug.Log( www.text );
+		GetPlayerInfo();
 	}
 	
 	public void ChangeStatsRequest( int[] stats )
 	{
-		
+		//string postData = "stat=" + JsonMapper.ToJson( stats );
+
+		var postData = new Dictionary<string , object>();
+		postData.Add( "stat" , JsonMapper.ToJson( stats ) );
+
+		StartCoroutine( WaitForStatChange( POST( "/character/increase_stat" , postData ) ) );
 	}
 	
 	private IEnumerator WaitForStatChange( WWW www )
@@ -272,6 +292,7 @@ public class NetworkManager : MonoBehaviour
 		
 		// apply the changed stat
 		// ...
+		GetPlayerInfo();
 	}
 
 
