@@ -11,6 +11,12 @@ namespace OperationBluehole.Content
 
     class Program
     {
+        static Stopwatch time;
+        static int testCount = 1000;
+        static int finishedTest = 0;
+        static int aveTurn = 0;
+        static Stack<long> latency = new Stack<long>();
+
         static void TestSimulation(int seed)
         {
             // 던전 테스트--------
@@ -29,21 +35,25 @@ namespace OperationBluehole.Content
             if ( TestData.playerList.TryGetValue( 101, out data ) )
                 player[3].LoadPlayer( data );
 
+            var start = time.ElapsedMilliseconds;
+
             Party users = new Party( PartyType.PLAYER, 1 );
             foreach ( Player p in player )
                 users.AddCharacter( p );
 
             DungeonMaster newMaster = new DungeonMaster();
-            newMaster.Init( 100, seed, users );
+            newMaster.Init( 60, seed, users );
+
+            UpdateResult( newMaster.Start(), time.ElapsedMilliseconds - start );
 
             // 초기 정보 확인
-            var mapInfo = newMaster.GetMapInfo();
-            var itemList = newMaster.items;
-            var mobList = newMaster.mobs;
+            // var mapInfo = newMaster.GetMapInfo();
+            // var itemList = newMaster.items;
+            // var mobList = newMaster.mobs;
 
             // newMaster.TestPathFinding();
             // Console.ReadLine();
-            Debug.WriteLine( "turn : " + newMaster.Start() );
+            // Debug.WriteLine( "turn : " + newMaster.Start() );
 
             // 시뮬레이션 결과 확인
             //             foreach( var each in newMaster.record.pathfinding )
@@ -59,12 +69,45 @@ namespace OperationBluehole.Content
             // 전투 로직 초기화
             ContentsPrepare.Init();
 
-            for ( int i = 0; i < 1; ++i )
+            time = Stopwatch.StartNew();
+
+            for ( int i = 0; i < testCount; ++i )
             {
                 Task.Run( () => TestSimulation(i) );
             }
-            
+
             Console.ReadLine();
+        }
+
+        public static void UpdateResult(uint turn, long simulationTime)
+        {
+            Interlocked.Add( ref aveTurn, (int)turn ); 
+            int currentFinished = Interlocked.Add( ref finishedTest, 1 );
+
+            latency.Push( simulationTime );
+
+            if ( currentFinished == testCount )
+            {
+                var runningTime = time.ElapsedMilliseconds;
+
+                long shortest = latency.Peek();
+                long longest = latency.Peek();
+
+                while ( latency.Count != 0 )
+                {
+                    long current = latency.Pop();
+
+                    shortest = Math.Min( current, shortest );
+                    longest = Math.Max( current, longest );
+                }
+
+                Console.WriteLine( "[running time : " + runningTime + " ms]" );
+                Console.WriteLine( "[Ave. time : " + runningTime / 1000 + " ms]" );
+                Console.WriteLine( "[Ave. turn : " + aveTurn / 1000 + " ms]" );
+                Console.WriteLine( "[longest : " + longest + " ms]" );
+                Console.WriteLine( "[shortest : " + shortest + " ms]" );
+
+            }
         }
     }
 

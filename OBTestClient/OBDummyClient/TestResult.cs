@@ -25,6 +25,9 @@ namespace OperationBluehole.DummyClient
 
             Console.WriteLine( "total simulation count : " + registeredCount + " (" + registeredCount/totalUsers + "/each)" );
             Console.WriteLine( "total update request count : " + updateRequestCount + " (" + updateRequestCount/totalUsers + "/each)" );
+
+            Console.WriteLine( "sent : " + Network.sent + "(" + ( Network.sent / (ulong)registeredCount ) + "/cycle)" );
+            Console.WriteLine( "recv : " + Network.recv + "(" + ( Network.recv / (ulong)registeredCount ) + "/cycle)" );
         }
     }
 }

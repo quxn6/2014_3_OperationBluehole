@@ -23,6 +23,8 @@ namespace OperationBluehole.DummyClient
 		static HttpRequestCachePolicy cachePolicy;
 		static string contentType;
 		static string userAgent;
+        public static ulong sent { get; private set; }
+        public static ulong recv { get; private set; }
 
 		public static bool Init(string rootUrl)
 		{
@@ -30,6 +32,9 @@ namespace OperationBluehole.DummyClient
 			cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
 			contentType = "application/x-www-form-urlencoded";
 			userAgent = "OperationBluehole DummyClient";
+
+            sent = 0;
+            recv = 0;
 
 			return true;
 		}
@@ -53,6 +58,7 @@ namespace OperationBluehole.DummyClient
 
 				Stream requestStream = await wRequest.GetRequestStreamAsync();
 				requestStream.Write(sendData, 0, sendData.Length);
+
 				requestStream.Close();
 			}
 
@@ -67,7 +73,10 @@ namespace OperationBluehole.DummyClient
 				if (wResponse.StatusCode == HttpStatusCode.OK)
 				{
 					StreamReader streamReader = new StreamReader(wResponse.GetResponseStream(), Encoding.GetEncoding("UTF-8"));
-					res = await streamReader.ReadToEndAsync();
+                    res = await streamReader.ReadToEndAsync();
+
+                    // recv += (ulong)wResponse.GetResponseStream().Length;
+
 					streamReader.Close();
 				}
 				else
