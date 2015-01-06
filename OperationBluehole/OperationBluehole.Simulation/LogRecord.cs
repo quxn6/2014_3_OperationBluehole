@@ -16,11 +16,9 @@ namespace OperationBluehole.Simulation
 
 		static LogRecord()
 		{
-			file = new System.IO.StreamWriter( "Simulation_" + Stopwatch.GetTimestamp() + ".txt", true );
+			file = new System.IO.StreamWriter( "Simulation_" + DateTime.Now.ToString( "yyyy.MM.dd-hhmmss" ) + ".txt", true );
 			file.AutoFlush = true;
 			inputStrs = new BlockingCollection<string>();
-
-			file.WriteLine( "[Tick Per Second : " + Stopwatch.Frequency + "]" );
 
 			Task.Factory.StartNew( Recording );
 		}

@@ -32,12 +32,14 @@ namespace OperationBluehole.Server
 
     public static class PostgresqlManager
 	{
-        const string Connection_String = 
-            "Server=" + Config.POSTGRESQL_SERVER + ";" +
-            "Port=" + Config.POSTGRESQL_PORT + ";" +
-            "User Id=" + Config.POSTGRESQL_ID + ";" +
-            "Password=" + Config.POSTGRESQL_PW + ";" +
-            "Database=" + Config.POSTGRESQL_TARGET_DB + ";";
+		static Npgsql.NpgsqlConnection baseConn = new NpgsqlConnection(
+				"Server=" + Config.POSTGRESQL_SERVER + ";" +
+				"Port=" + Config.POSTGRESQL_PORT + ";" +
+				"User Id=" + Config.POSTGRESQL_ID + ";" +
+				"Password=" + Config.POSTGRESQL_PW + ";" +
+				"Database=" + Config.POSTGRESQL_TARGET_DB + ";" +
+				"MaxPoolSize=" + Config.POSTGRESQL_MAX_POOL_SIZE + ";"
+				);
 
         const string Query_SetAccountInfo = "INSERT INTO accounts ( id, password, claims ) VALUES ( :id, :password, :claims );";
         const string Query_GetAccountInfo = "SELECT * FROM accounts WHERE id=:id LIMIT 1;";
@@ -46,7 +48,7 @@ namespace OperationBluehole.Server
 
         public static async Task<bool> SetAccountInfo(string userId, string password)
         {
-            var conn = new Npgsql.NpgsqlConnection(Connection_String);
+			var conn = baseConn.Clone();
             try
             {
                 NpgsqlCommand cmd = new NpgsqlCommand(Query_SetAccountInfo, conn);
@@ -56,7 +58,7 @@ namespace OperationBluehole.Server
                 cmd.Parameters[1].Value = password;
                 cmd.Parameters.Add("claims", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Varchar);
                 cmd.Parameters[2].Value = userIdentity;
-                conn.Open();
+				await conn.OpenAsync();
                 int rowAffected = await cmd.ExecuteNonQueryAsync();
                 conn.Close();
                 return rowAffected > 0;
@@ -70,11 +72,11 @@ namespace OperationBluehole.Server
 
         public static async Task<AccountData> GetAccountInfo(string userId)
         {
-            var conn = new Npgsql.NpgsqlConnection(Connection_String);
+			var conn = baseConn.Clone();
             NpgsqlCommand cmd = new NpgsqlCommand(Query_GetAccountInfo, conn);
             cmd.Parameters.Add("id", NpgsqlTypes.NpgsqlDbType.Varchar, 16);
             cmd.Parameters[0].Value = userId;
-            conn.Open();
+            await conn.OpenAsync();
             var res = await cmd.ExecuteReaderAsync();
 
             if (await res.ReadAsync())

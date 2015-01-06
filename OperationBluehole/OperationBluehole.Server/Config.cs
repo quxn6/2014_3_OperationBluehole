@@ -24,6 +24,7 @@ namespace OperationBluehole.Server
         public const string POSTGRESQL_ID = "OperationBluehole_User";
         public const string POSTGRESQL_PW = "next!@#123";
         public const string POSTGRESQL_TARGET_DB = "operation_bluehole";
+		public const string POSTGRESQL_MAX_POOL_SIZE = "64";
 
     }
 }

@@ -41,15 +41,16 @@ namespace OperationBluehole.Server.Module
                 {
                     using ( var channel = connection.CreateModel() )
                     {
-                        channel.QueueDeclare( "matching_queue", true, false, false, null );
+                        channel.QueueDeclare( "matching_lobby_queue", true, false, false, null );
 
                         var message = JsonMapper.ToJson( new Dictionary<string, object> { { "playerId", this.Context.CurrentUser.UserName}, { "difficulty", difficulty } } );
                         var body = Encoding.UTF8.GetBytes( message );
 
                         var properties = channel.CreateBasicProperties();
                         properties.SetPersistent( true );
+						properties.Type = "REG";
 
-                        channel.BasicPublish( "", "matching_queue", properties, body );
+						channel.BasicPublish( "", "matching_lobby_queue", properties, body );
                         Console.WriteLine( " [x] Sent {0}", message );
                     }
                 }
